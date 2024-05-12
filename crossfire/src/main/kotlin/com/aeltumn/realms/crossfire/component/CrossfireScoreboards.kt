@@ -1,4 +1,4 @@
-package com.aeltumn.realms.crossfire
+package com.aeltumn.realms.crossfire.component
 
 import io.github.ayfri.kore.arguments.DisplaySlots
 import io.github.ayfri.kore.arguments.chatcomponents.textComponent

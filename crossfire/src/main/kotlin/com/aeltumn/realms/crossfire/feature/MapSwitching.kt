@@ -1,9 +1,9 @@
-package com.aeltumn.realms.crossfire.functions
+package com.aeltumn.realms.crossfire.feature
 
 import com.aeltumn.realms.common.executeIfEqualTo
 import com.aeltumn.realms.common.executeIfGreaterThanOrEqualTo
 import com.aeltumn.realms.common.tick
-import com.aeltumn.realms.crossfire.CrossfireScoreboards
+import com.aeltumn.realms.crossfire.component.CrossfireScoreboards
 import com.aeltumn.realms.crossfire.References
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.scores.score

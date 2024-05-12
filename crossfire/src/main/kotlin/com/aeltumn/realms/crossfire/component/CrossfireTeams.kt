@@ -1,5 +1,6 @@
-package com.aeltumn.realms.crossfire
+package com.aeltumn.realms.crossfire.component
 
+import com.aeltumn.realms.crossfire.References
 import io.github.ayfri.kore.arguments.colors.FormattingColor
 import io.github.ayfri.kore.commands.CollisionRule
 import io.github.ayfri.kore.commands.Visibility

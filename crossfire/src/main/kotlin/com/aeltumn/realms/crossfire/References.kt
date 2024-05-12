@@ -1,6 +1,8 @@
 package com.aeltumn.realms.crossfire
 
+import io.github.ayfri.kore.arguments.colors.Color
 import io.github.ayfri.kore.arguments.colors.FormattingColor
+import io.github.ayfri.kore.arguments.colors.rgb
 
 /** For general crossfire references. */
 public object References {
@@ -19,8 +21,8 @@ public object References {
         "party" to mapOf(
             "red" to FormattingColor.RED,
             "yellow" to FormattingColor.YELLOW,
-            "green" to FormattingColor.GREEN,
-            "blue" to FormattingColor.BLUE,
+            "lime" to FormattingColor.GREEN,
+            "light_blue" to FormattingColor.BLUE,
         ),
         "duel" to mapOf(
             "orange" to FormattingColor.GOLD,
@@ -31,7 +33,34 @@ public object References {
     /** The names of all known teams. */
     public val TEAM_NAMES: List<String> = TEAMS.values.flatMap { it.keys }
 
+    /** Returns the color to use for [team]. */
+    public fun getColorForTeam(team: String): Color = when (team) {
+        "red" -> Color.RED
+        "yellow" -> Color.YELLOW
+        "lime" -> Color.GREEN
+        "light_blue" -> Color.AQUA
+        "orange" -> Color.GOLD
+        "magenta" -> Color.LIGHT_PURPLE
+        else -> Color.BLACK
+    }
+
+    /** Returns the armor color to use for [team]. */
+    public fun getArmorColorForTeam(team: String): Color = rgb(
+        when (team) {
+            "red" -> 14352389
+            "yellow" -> 16770580
+            "lime" -> 1572623
+            "light_blue" -> 1363455
+            "orange" -> 16082432
+            "magenta" -> 14549237
+            else -> 0
+        }
+    )
+
     /** Returns the name to display for [team]. */
-    public fun getDisplayNameForTeam(team: String): String =
-        team.substring(0, 1).uppercase() + team.substring(1).lowercase()
+    public fun getDisplayNameForTeam(team: String): String {
+        if (team == "light_blue") return "Blue"
+        if (team == "lime") return "Green"
+        return team.substring(0, 1).uppercase() + team.substring(1).lowercase()
+    }
 }

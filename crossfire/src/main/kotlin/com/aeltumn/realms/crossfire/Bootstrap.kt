@@ -3,25 +3,29 @@ package com.aeltumn.realms.crossfire
 import com.aeltumn.realms.common.BootstrapHelper
 import com.aeltumn.realms.common.filterOutDefaults
 import com.aeltumn.realms.common.load
-import com.aeltumn.realms.crossfire.functions.Intro
-import com.aeltumn.realms.crossfire.functions.MapSwitching
-import com.aeltumn.realms.crossfire.functions.TouchWater
+import com.aeltumn.realms.crossfire.component.CrossfireBossbars
+import com.aeltumn.realms.crossfire.component.CrossfirePredicates
+import com.aeltumn.realms.crossfire.component.CrossfireScoreboards
+import com.aeltumn.realms.crossfire.component.CrossfireTags
+import com.aeltumn.realms.crossfire.component.CrossfireTeams
+import com.aeltumn.realms.crossfire.component.CrossfireTimers
+import com.aeltumn.realms.crossfire.feature.Intro
+import com.aeltumn.realms.crossfire.feature.MapSwitching
+import com.aeltumn.realms.crossfire.feature.MapSystem
+import com.aeltumn.realms.crossfire.feature.TeamJoin
+import com.aeltumn.realms.crossfire.feature.TouchWater
 import io.github.ayfri.kore.arguments.chatcomponents.textComponent
 import io.github.ayfri.kore.arguments.enums.Difficulty
 import io.github.ayfri.kore.arguments.types.literals.allEntities
 import io.github.ayfri.kore.arguments.types.literals.literal
-import io.github.ayfri.kore.commands.bossBars
 import io.github.ayfri.kore.commands.difficulty
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.gamerule
 import io.github.ayfri.kore.commands.kill
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
-import io.github.ayfri.kore.commands.teams
-import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.generated.Gamerules
 import io.github.ayfri.kore.pack.pack
 import java.nio.file.Paths
-import io.github.ayfri.kore.arguments.types.literals.player as playerTarget
 
 /**
  * Bootstraps the datapack creation.
@@ -49,29 +53,27 @@ public fun main(args: Array<String>) {
             description = textComponent("The main datapack that makes our maps work!")
         }
 
-        // Configure basic tags
+        // Configure basic components
+        CrossfirePredicates.configure(this)
         CrossfireTags.configure(this)
+
+        // Configure features
+        Intro.configure(this)
+        MapSwitching.configure(this)
+        TouchWater.configure(this)
+        MapSystem.configure(this)
+        TeamJoin.configure(this)
 
         // Set up initial functions
         load("setup") {
-            // Create scoreboards
+            // Set up components
             CrossfireScoreboards.setup(this)
-
-            // Create timers
             CrossfireTimers.setup(this)
-
-            // Create teams
             CrossfireTeams.setup(this)
-
-            // Create boss bars
             CrossfireBossbars.setup(this)
 
             // Remove any entities marked as cleanup
-            kill(
-                allEntities {
-                    tag = "cleanup"
-                }
-            )
+            kill(allEntities { tag = "cleanup" })
 
             // Set up basic game state
             difficulty(Difficulty.PEACEFUL)
@@ -104,6 +106,8 @@ public fun main(args: Array<String>) {
             }
         }
 
+        // TODO -- Cleanup
+
         /*load("respawn") {
         }
 
@@ -113,37 +117,7 @@ public fun main(args: Array<String>) {
         load("team_deny_info") {
         }*/
 
-        for (map in References.MAPS) {
-            function("lobby_teleport_$map") {
-                // Clear the visibility of both boss bars
-                bossBars.get(CrossfireBossbars.getTimer(map), References.NAMESPACE).setPlayers(playerTarget("-"))
-                bossBars.get(CrossfireBossbars.getPostGame(map), References.NAMESPACE).setPlayers(playerTarget("-"))
-
-                // Clear out all teams
-                for (key in References.TEAMS[map]!!.keys) {
-                    teams.empty(key)
-                }
-
-                // Reset scoreboard values for this map
-                scoreboard {
-                    player(literal(map)) {
-                        set(CrossfireScoreboards.STARTED, 0)
-                        set(CrossfireScoreboards.JOINED, 0)
-                        set(CrossfireScoreboards.GAME_TIMER, -1)
-                        set(CrossfireScoreboards.POST_GAME_TIMER, -1)
-                        set(CrossfireScoreboards.START_TIMER, -1)
-                        set(CrossfireScoreboards.ROUND, 1)
-                    }
-                }
-            }
-        }
-
         // TODO Add reset player to auto trigger whenever the current map index of a player has changed
-
-        // Configure features
-        Intro.configure(this)
-        MapSwitching.configure(this)
-        TouchWater.configure(this)
     }
 }
 

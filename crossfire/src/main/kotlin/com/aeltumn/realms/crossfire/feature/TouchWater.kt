@@ -1,10 +1,11 @@
-package com.aeltumn.realms.crossfire.functions
+package com.aeltumn.realms.crossfire.feature
 
 import com.aeltumn.realms.common.AT_POSITION
+import com.aeltumn.realms.common.playSound
 import com.aeltumn.realms.common.tick
-import com.aeltumn.realms.crossfire.CrossfireScoreboards
-import com.aeltumn.realms.crossfire.CrossfireTags
 import com.aeltumn.realms.crossfire.References
+import com.aeltumn.realms.crossfire.component.CrossfireScoreboards
+import com.aeltumn.realms.crossfire.component.CrossfireTags
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.chatcomponents.entityComponent
 import io.github.ayfri.kore.arguments.chatcomponents.textComponent
@@ -16,18 +17,14 @@ import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.arguments.types.literals.tag
 import io.github.ayfri.kore.arguments.types.resources.EffectArgument
-import io.github.ayfri.kore.arguments.types.resources.item
-import io.github.ayfri.kore.commands.PlaySoundMixer
 import io.github.ayfri.kore.commands.TitleLocation
-import io.github.ayfri.kore.commands.clear
 import io.github.ayfri.kore.commands.effect
 import io.github.ayfri.kore.commands.execute.execute
-import io.github.ayfri.kore.commands.playSound
+import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.commands.tellraw
 import io.github.ayfri.kore.commands.title
-import io.github.ayfri.kore.generated.Sounds
 
 /** Sets up water touch handling. */
 public object TouchWater {
@@ -39,9 +36,9 @@ public object TouchWater {
                 execute {
                     asTarget(
                         allPlayers {
-                            tag(CrossfireTags.JOINED)
-                            tag("!${CrossfireTags.DIED_IN_WATER}")
-                            tag("!${CrossfireTags.ADMIN}")
+                            tag = CrossfireTags.JOINED
+                            tag = "!${CrossfireTags.DIED_IN_WATER}"
+                            tag = "!${CrossfireTags.ADMIN}"
                         }
                     )
                     at(self())
@@ -50,7 +47,7 @@ public object TouchWater {
                     }
 
                     run {
-                        // Send {player} tried to swim..
+                        // Send {player} tried to swim
                         for ((index, _) in References.MAPS.withIndex()) {
                             execute {
                                 ifCondition {
@@ -71,9 +68,7 @@ public object TouchWater {
                         }
 
                         // Reset the player's state to prepare them for spectating
-                        clear(self(), item("leather_chestplate"))
-                        clear(self(), item("leather_leggings"))
-                        clear(self(), item("leather_boots"))
+                        function(References.NAMESPACE, TeamJoin.CLEAR_ARMOR)
                         tag(self()) {
                             add(CrossfireTags.DIED_IN_WATER)
                             add(CrossfireTags.SPECTATING)
@@ -91,11 +86,9 @@ public object TouchWater {
                         for (teamName in References.TEAM_NAMES) {
                             execute {
                                 ifCondition {
-                                    entity(
-                                        self {
-                                            team = teamName
-                                        }
-                                    )
+                                    entity(self {
+                                        team = teamName
+                                    })
                                 }
 
                                 run {
@@ -108,7 +101,7 @@ public object TouchWater {
                         title(self(), TitleLocation.ACTIONBAR, textComponent("A point has been taken away because you fell in the water.", Color.RED))
 
                         // Play a sound effect
-                        playSound(Sounds.Liquid.SPLASH, PlaySoundMixer.PLAYER, self(), AT_POSITION, 2.0, 1.0)
+                        playSound("minecraft:entity.generic.splash", "player", self(), AT_POSITION, 2.0, 1.0)
                     }
                 }
             }

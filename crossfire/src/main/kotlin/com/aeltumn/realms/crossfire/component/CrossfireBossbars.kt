@@ -1,5 +1,6 @@
-package com.aeltumn.realms.crossfire
+package com.aeltumn.realms.crossfire.component
 
+import com.aeltumn.realms.crossfire.References
 import io.github.ayfri.kore.arguments.chatcomponents.textComponent
 import io.github.ayfri.kore.arguments.colors.BossBarColor
 import io.github.ayfri.kore.commands.bossBar
