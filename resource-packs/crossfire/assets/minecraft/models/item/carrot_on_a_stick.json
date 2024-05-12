@@ -1,0 +1,14 @@
+{
+	"parent": "item/generated",
+	"textures": {
+		"layer0": "item/carrot_on_a_stick"
+	},
+
+	"overrides": [
+		{"predicate": {"custom_model_data":0}, "model": "item/rapidfire"},
+		{"predicate": {"custom_model_data":1}, "model": "item/multishot"},
+		{"predicate": {"custom_model_data":2}, "model": "item/light_blue_dye"},
+		{"predicate": {"custom_model_data":3}, "model": "item/multishot"},
+		{"predicate": {"custom_model_data":4}, "model": "item/barrier"}
+	]
+}

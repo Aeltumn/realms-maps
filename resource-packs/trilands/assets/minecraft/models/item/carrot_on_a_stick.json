@@ -1,0 +1,20 @@
+{
+	"parent": "item/generated",
+	"textures": {
+		"layer0": "item/carrot_on_a_stick"
+	},
+
+	"overrides": [
+		{"predicate": {"custom_model_data":1}, "model": "item/not_ready"},
+		{"predicate": {"custom_model_data":2}, "model": "item/ready"},
+		{"predicate": {"custom_model_data":3}, "model": "item/settings"},
+		{"predicate": {"custom_model_data":4}, "model": "item/barrier"},
+		{"predicate": {"custom_model_data":5}, "model": "item/setting_time"},
+		{"predicate": {"custom_model_data":6}, "model": "item/setting_map"},
+		{"predicate": {"custom_model_data":7}, "model": "item/setting_next"},
+		{"predicate": {"custom_model_data":8}, "model": "item/setting_weather"},
+		{"predicate": {"custom_model_data":9}, "model": "item/setting_round"},
+		{"predicate": {"custom_model_data":10}, "model": "item/setting_roundtime"},
+		{"predicate": {"custom_model_data":11}, "model": "item/setting_tridentreload"}
+	]
+}

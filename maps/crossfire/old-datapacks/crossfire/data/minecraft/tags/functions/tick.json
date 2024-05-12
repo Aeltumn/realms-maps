@@ -1,0 +1,18 @@
+{
+	"values": [
+		"crossfire:tick/shoot_bow",
+        "crossfire:tick/tick_rockets",
+		"crossfire:tick/team_join",
+		"crossfire:tick/shooting_range_join",
+		"crossfire:tick/crossbowreload",
+		"crossfire:tick/detect_round",
+        "crossfire:tick/check_gamemode",
+		"crossfire:tick/check_water",
+		"crossfire:tick/flightpath",
+        "crossfire:tick/crate_tick",
+		"crossfire:tick/collect_powerup",
+		"crossfire:tick/use_powerup",
+		"crossfire:tick/increase_switch_timer",
+		"crossfire:tick/intro_completion"
+	]
+}

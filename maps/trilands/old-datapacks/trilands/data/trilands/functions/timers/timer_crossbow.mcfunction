@@ -1,0 +1,1 @@
+execute as @a if score data endround matches -1 if score data newround matches -1 if score @s crossbowreload matches 0.. run scoreboard players remove @s crossbowreload 1

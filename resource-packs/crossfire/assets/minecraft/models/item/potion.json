@@ -1,0 +1,14 @@
+{
+	"credit": "Made by GrafischMC",
+	"parent": "item/generated",
+	"textures": {
+		"layer0": "item/potion_overlay",
+		"layer1": "item/potion"
+	},
+	"display": {
+		"head": {
+			"translation": [0, -27.25, 0],
+			"scale": [2, 2, 2]
+		}
+	}
+}

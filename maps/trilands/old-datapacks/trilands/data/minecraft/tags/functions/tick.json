@@ -1,0 +1,23 @@
+{
+	"values": [
+		"trilands:use_item",
+		"trilands:tridentdestroy",
+		"trilands:timers/timer_trident",
+		"trilands:timers/timer_crossbow",
+		"trilands:use_trident",
+		"trilands:tick",
+		"trilands:use_crossbow",
+		"trilands:game/game_spectate",
+		"trilands:reset_item",
+		"trilands:arrow_land",
+		"trilands:villager_talk",
+		"trilands:water-die",
+		"trilands:tutorial_start",
+		"trilands:cosmetics/cosmetic_buy",
+		"trilands:cosmetics/cosmetic_open_hat",
+		"trilands:cosmetics/cosmetic_open_particle",
+		"trilands:cosmetics/cosmetic_open_armor",
+		"trilands:cosmetics/cosmetic_trident",
+		"trilands:challenge/challenge_check"
+	]
+}

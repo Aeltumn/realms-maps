@@ -1,0 +1,33 @@
+{
+	"credit": "Made by GrafischMC",
+	"texture_size": [32, 32],
+	"textures": {
+		"2": "entity/villager/profession/weaponsmith",
+		"particle": "entity/villager/profession/weaponsmith"
+	},
+	"elements": [
+		{
+			"from": [4, 0, 4],
+			"to": [12, 8, 12],
+			"rotation": {"angle": 0, "axis": "y", "origin": [12, 8, 12]},
+			"faces": {
+				"north": {"uv": [2, 2.5, 3.9995, 4.4995], "texture": "#2"},
+				"east": {"uv": [0, 2.5, 1.9995, 4.499], "texture": "#2"},
+				"south": {"uv": [6, 2.5, 7.9995, 4.4985], "texture": "#2"},
+				"west": {"uv": [4, 2.5, 5.9995, 4.4985], "texture": "#2"},
+				"up": {"uv": [0, 0, 1.9995, 1.9995], "texture": "#2"},
+				"down": {"uv": [0, 0, 1.9995, 1.9995], "texture": "#2"}
+			}
+		}
+	],
+	"display": {
+		"gui": {
+			"rotation": [5, 167, 0],
+			"translation": [0, 3.5, 0]
+		},
+		"head": {
+			"translation": [0, 5.5, 0],
+			"scale": [1.85, 1.85, 1.85]
+		}
+	}
+}

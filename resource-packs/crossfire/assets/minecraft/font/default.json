@@ -1,0 +1,95 @@
+{
+    "providers": [
+        {
+            "type": "bitmap",
+            "file": "minecraft:custom/firework_green.png",
+            "ascent": 22,
+            "height": 32,
+            "chars": ["\uE000"]
+        },
+		{
+            "type": "bitmap",
+            "file": "minecraft:custom/firework_yellow.png",
+            "ascent": 22,
+            "height": 32,
+            "chars": ["\uE001"]
+        },
+		{
+            "type": "bitmap",
+            "file": "minecraft:custom/firework_blue.png",
+            "ascent": 22,
+            "height": 32,
+            "chars": ["\uE002"]
+        },
+		{
+            "type": "bitmap",
+            "file": "minecraft:custom/firework_red.png",
+            "ascent": 22,
+            "height": 32,
+            "chars": ["\uE003"]
+        },
+		{
+            "type": "bitmap",
+            "file": "minecraft:custom/killed.png",
+            "ascent": 400,
+            "height": 1000,
+            "chars": ["\uE004"]
+        },
+		{
+            "type": "bitmap",
+            "file": "minecraft:custom/firework_explosion_blue.png",
+            "ascent": 13,
+            "height": 20,
+            "chars": ["\uE005"]
+        },
+		{
+            "type": "bitmap",
+            "file": "minecraft:custom/firework_explosion_red.png",
+            "ascent": 13,
+            "height": 20,
+            "chars": ["\uE006"]
+        },
+		{
+            "type": "bitmap",
+            "file": "minecraft:custom/firework_explosion_yellow.png",
+            "ascent": 13,
+            "height": 20,
+            "chars": ["\uE007"]
+        },
+		{
+            "type": "bitmap",
+            "file": "minecraft:custom/firework_explosion_green.png",
+            "ascent": 13,
+            "height": 20,
+            "chars": ["\uE008"]
+        },
+		{
+            "type": "bitmap",
+            "file": "minecraft:custom/firework_explosion_orange.png",
+            "ascent": 13,
+            "height": 20,
+            "chars": ["\uE009"]
+        },
+		{
+            "type": "bitmap",
+            "file": "minecraft:custom/firework_explosion_magenta.png",
+            "ascent": 13,
+            "height": 20,
+            "chars": ["\uE010"]
+        },
+		{
+            "type": "bitmap",
+            "file": "minecraft:custom/firework_orange.png",
+            "ascent": 22,
+            "height": 32,
+            "chars": ["\uE011"]
+        },
+		{
+            "type": "bitmap",
+            "file": "minecraft:custom/firework_magenta.png",
+            "ascent": 22,
+            "height": 32,
+            "chars": ["\uE012"]
+        }
+    ]
+}

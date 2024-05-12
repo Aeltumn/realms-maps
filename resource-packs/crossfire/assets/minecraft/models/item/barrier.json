@@ -1,0 +1,15 @@
+{
+	"credit": "Made by GrafischMC",
+	"parent": "item/generated",
+	"textures": {
+		"layer0": "item/barrier"
+	},
+	"display": {
+		"thirdperson_righthand": {
+			"scale": [0, 0, 0]
+		},
+		"thirdperson_lefthand": {
+			"scale": [0, 0, 0]
+		}
+	}
+}

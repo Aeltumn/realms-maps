@@ -1,0 +1,37 @@
+{
+	"credit": "Made by GrafischMC",
+	"textures": {
+		"1": "custom/crate",
+		"particle": "block/diamond_block"
+	},
+	"elements": [
+		{
+			"from": [4.5, -8, 4.5],
+			"to": [11.5, -1, 11.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [7.5, 8, 7.5]},
+			"faces": {
+				"north": {"uv": [0, 0, 7, 7], "texture": "#1"},
+				"east": {"uv": [0, 0, 7, 7], "texture": "#1"},
+				"south": {"uv": [0, 0, 7, 7], "texture": "#1"},
+				"west": {"uv": [0, 0, 7, 7], "texture": "#1"},
+				"up": {"uv": [0, 0, 7, 7], "texture": "#1"},
+				"down": {"uv": [0, 0, 7, 7], "texture": "#1"}
+			}
+		}
+	],
+	"display": {
+		"ground": {
+			"translation": [0, 14.25, 0]
+		},
+		"gui": {
+			"rotation": [7, 61, 0],
+			"translation": [0, 1.75, 0],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"head": {
+			"rotation": [0, -90, 0],
+			"translation": [0, -3.25, 0],
+			"scale": [2.5, 2.5, 2.5]
+		}
+	}
+}

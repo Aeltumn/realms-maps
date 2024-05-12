@@ -1,0 +1,10 @@
+{
+	"credit": "Made by GrafischMC",
+	"parent": "item/crates/crate_diamond",
+	"textures": {
+		"3": "block/blast_furnace_top",
+		"4": "block/iron_block",
+		"5": "block/propellor",
+		"particle": "block/diamond_block"
+	}
+}

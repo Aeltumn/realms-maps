@@ -1,0 +1,6 @@
+{
+    "parent": "item/crossbow",
+    "textures": {
+        "layer0": "item/iron_crossbow_firework_green"
+    }
+}

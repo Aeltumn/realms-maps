@@ -1,0 +1,8 @@
+{
+	"values": [
+        "crossfire:setup",
+		"crossfire:respawn",
+        "crossfire:introduction",
+        "crossfire:team_deny_info"
+	]
+}

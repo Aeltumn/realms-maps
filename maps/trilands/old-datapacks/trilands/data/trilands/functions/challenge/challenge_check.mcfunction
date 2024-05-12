@@ -1,0 +1,11 @@
+execute as @a if score @s c_progress matches 30.. if score @s challenge matches 0 run function trilands:challenge/challenge_complete
+execute as @a if score @s c_progress matches 5.. if score @s challenge matches 1 run function trilands:challenge/challenge_complete
+execute as @a if score @s c_progress matches 50.. if score @s challenge matches 2 run function trilands:challenge/challenge_complete
+execute as @a if score @s c_progress matches 500.. if score @s challenge matches 3 run function trilands:challenge/challenge_complete
+execute as @a if score @s c_progress matches 10.. if score @s challenge matches 4 run function trilands:challenge/challenge_complete
+execute as @a if score @s c_progress matches 1.. if score @s challenge matches 5 run function trilands:challenge/challenge_complete
+execute as @a if score @s c_progress matches 500.. if score @s challenge matches 6 run function trilands:challenge/challenge_complete
+execute as @a if score @s c_progress matches 10.. if score @s challenge matches 7 run function trilands:challenge/challenge_complete
+execute as @a if score @s c_progress matches 1.. if score @s challenge matches 8 run function trilands:challenge/challenge_complete
+execute as @a if score @s c_progress matches 15.. if score @s challenge matches 9 run function trilands:challenge/challenge_complete
+execute as @a if score @s c_progress matches 3.. if score @s challenge matches 10 run function trilands:challenge/challenge_complete
