@@ -2,18 +2,31 @@ package com.aeltumn.realms.crossfire
 
 import com.aeltumn.realms.common.BootstrapHelper
 import com.aeltumn.realms.common.filterOutDefaults
+import com.aeltumn.realms.crossfire.functions.Intro
+import com.aeltumn.realms.crossfire.functions.MapSwitching
+import com.aeltumn.realms.crossfire.functions.TouchWater
 import io.github.ayfri.kore.arguments.chatcomponents.textComponent
+import io.github.ayfri.kore.arguments.colors.Color
 import io.github.ayfri.kore.arguments.enums.Difficulty
+import io.github.ayfri.kore.arguments.scores.score
+import io.github.ayfri.kore.arguments.selector.scores
 import io.github.ayfri.kore.arguments.types.literals.allEntities
+import io.github.ayfri.kore.arguments.types.literals.allPlayers
+import io.github.ayfri.kore.arguments.types.literals.literal
+import io.github.ayfri.kore.arguments.types.literals.self
+import io.github.ayfri.kore.commands.TitleLocation
 import io.github.ayfri.kore.commands.bossBars
 import io.github.ayfri.kore.commands.difficulty
+import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.gamerule
 import io.github.ayfri.kore.commands.kill
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.teams
+import io.github.ayfri.kore.commands.title
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.functions.load
+import io.github.ayfri.kore.functions.tick
 import io.github.ayfri.kore.generated.Gamerules
 import io.github.ayfri.kore.pack.pack
 import java.nio.file.Paths
@@ -38,7 +51,7 @@ public fun main(args: Array<String>) {
         outputFolder,
         resourcePackSource,
         worldSource,
-        "crossfire"
+        References.NAMESPACE,
     ).execute {
         filterOutDefaults()
         pack {
@@ -88,7 +101,7 @@ public fun main(args: Array<String>) {
             // Set the value of round to 1 for both maps
             for (map in References.MAPS) {
                 scoreboard {
-                    player(playerTarget(map)) {
+                    player(literal(map)) {
                         set(CrossfireScoreboards.ROUND, 1)
                     }
                 }
@@ -110,7 +123,7 @@ public fun main(args: Array<String>) {
         }
 
         for (map in References.MAPS) {
-            function("lobby_teleport_$map", References.NAMESPACE) {
+            function("lobby_teleport_$map") {
                 // Clear the visibility of both boss bars
                 bossBars.get(CrossfireBossbars.getTimer(map), References.NAMESPACE).setPlayers(playerTarget("doesn't exist"))
                 bossBars.get(CrossfireBossbars.getPostGame(map), References.NAMESPACE).setPlayers(playerTarget("doesn't exist"))
@@ -122,7 +135,7 @@ public fun main(args: Array<String>) {
 
                 // Reset scoreboard values for this map
                 scoreboard {
-                    player(playerTarget(map)) {
+                    player(literal(map)) {
                         set(CrossfireScoreboards.STARTED, 0)
                         set(CrossfireScoreboards.JOINED, 0)
                         set(CrossfireScoreboards.GAME_TIMER, -1)
@@ -133,6 +146,13 @@ public fun main(args: Array<String>) {
                 }
             }
         }
+
+        // TODO Add reset player to auto trigger whenever the current map index of a player has changed
+
+        // Configure features
+        Intro.configure(this)
+        MapSwitching.configure(this)
+        TouchWater.configure(this)
     }
 }
 
@@ -150,8 +170,6 @@ Ticking functions:
 		"crossfire:tick/flightpath",
         "crossfire:tick/crate_tick",
 		"crossfire:tick/collect_powerup",
-		"crossfire:tick/use_powerup",
-		"crossfire:tick/increase_switch_timer",
-		"crossfire:tick/intro_completion"
+		"crossfire:tick/use_powerup"
 	]
  */

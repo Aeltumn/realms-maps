@@ -9,22 +9,29 @@ public object References {
     public val NAMESPACE: String = "crossfire"
 
     /** The different map identifiers. */
-    public val MAPS: List<String> = listOf("2", "4")
+    public val MAPS: List<String> = listOf("duel", "party")
 
     /** The different timer types. */
-    public val TIMER_TYPES: List<String> = listOf("0", "2", "3")
+    public val TIMER_TYPES: List<String> = listOf("start", "game", "post_game")
 
     /** All teams used in Crossfire. */
     public val TEAMS: Map<String, Map<String, FormattingColor>> = mapOf(
-        "2" to mapOf(
+        "party" to mapOf(
             "red" to FormattingColor.RED,
             "yellow" to FormattingColor.YELLOW,
             "green" to FormattingColor.GREEN,
             "blue" to FormattingColor.BLUE,
         ),
-        "4" to mapOf(
+        "duel" to mapOf(
             "orange" to FormattingColor.GOLD,
             "magenta" to FormattingColor.LIGHT_PURPLE,
         )
     )
+
+    /** The names of all known teams. */
+    public val TEAM_NAMES: List<String> = TEAMS.values.flatMap { it.keys }
+
+    /** Returns the name to display for [team]. */
+    public fun getDisplayNameForTeam(team: String): String =
+        team.substring(0, 1).uppercase() + team.substring(1).lowercase()
 }

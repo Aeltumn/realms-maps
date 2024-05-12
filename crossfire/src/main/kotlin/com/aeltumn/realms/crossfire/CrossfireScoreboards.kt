@@ -25,16 +25,13 @@ public object CrossfireScoreboards {
     public const val AGE: String = "age"
     public const val ROUND: String = "round"
     public const val RESULT: String = "result"
-    public const val MAP: String = "map"
     public const val SONG: String = "song"
     public const val WINS: String = "wins"
-    public const val COOLDOWN: String = "cooldown"
     public const val WINNER: String = "winner"
     public const val BAR: String = "bar"
     public const val KILLS: String = "kills"
 
     public const val RESPAWN_SHIELD: String = "respawn_shield"
-    public const val ROUND_KILLS: String = "round_kills"
     public const val SPECTATE_SUCCESS: String = "spectate_success"
     public const val IS_RELOADING: String = "is_reloading"
     public const val INTRO_COMPLETED: String = "intro_completed"
@@ -44,11 +41,20 @@ public object CrossfireScoreboards {
     public const val ITEM_LEAVE: String = "item_leave"
     public const val ITEM_CROSSBOW: String = "item_crossbow"
 
-    public const val INTRO_TRIGGER: String = "intro"
-    public const val INTRO_COMPLETED_TRIGGER: String = "intro_completed"
+    public const val INTRO: String = "intro"
+    public const val INTRO_SKIPPED_TRIGGER: String = "intro_skipped"
 
     public const val ITEM_USE_CROSSBOW: String = "item_use_crossbow"
     public const val ITEM_USE_POWER_UP: String = "item_use_power_up"
+
+    /** Stores the actual round kills of each player. */
+    public const val ROUND_KILLS: String = "round_kills"
+
+    /** The map that a player is meant to be in at this time. */
+    public const val TARGET_MAP_INDEX: String = "target_map_index"
+
+    /** A cooldown before the map switch button can be used again. */
+    public const val MAP_SWITCH_COOLDOWN: String = "cooldown"
 
     /** Sets up the scoreboards. */
     public fun setup(function: Function) {
@@ -69,10 +75,10 @@ public object CrossfireScoreboards {
                 AGE,
                 ROUND,
                 RESULT,
-                MAP,
+                TARGET_MAP_INDEX,
                 SONG,
                 WINS,
-                COOLDOWN,
+                MAP_SWITCH_COOLDOWN,
                 WINNER,
                 BAR,
                 RESPAWN_SHIELD,
@@ -89,8 +95,8 @@ public object CrossfireScoreboards {
             }
 
             // Create trigger objectives
-            scoreboard.objectives.add(INTRO_TRIGGER, ScoreboardCriteria.TRIGGER)
-            scoreboard.objectives.add(INTRO_COMPLETED_TRIGGER, ScoreboardCriteria.TRIGGER)
+            scoreboard.objectives.add(INTRO, ScoreboardCriteria.TRIGGER)
+            scoreboard.objectives.add(INTRO_SKIPPED_TRIGGER, ScoreboardCriteria.TRIGGER)
 
             // Create item use objectives
             scoreboard.objectives.add(ITEM_USE_CROSSBOW, criteriaStat(StatisticTypes.USED, StatisticArgument("crossbow")))

@@ -6,6 +6,24 @@ import io.github.ayfri.kore.features.tags.tag
 /** Defines basic tags for crossfire. */
 public object CrossfireTags {
 
+    // -- Tags added to entities
+    /** For players that have joined a game. */
+    public const val JOINED: String = "joined"
+
+    /** For players that died from touching water. */
+    public const val DIED_IN_WATER: String = "died_in_water"
+
+    /** For players that recently died. */
+    public const val DIED: String = "died"
+
+    /** For players that should be in the spectating sequence. */
+    public const val SPECTATING: String = "spectating"
+
+    /** For admin players that should be skipped when applying effects. */
+    public const val ADMIN: String = "admin"
+
+    // -- Tags that define items
+
     /** Contains just the crossbow. */
     public const val CROSSBOW: String = "crossbow"
 
