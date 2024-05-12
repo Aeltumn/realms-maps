@@ -2,31 +2,22 @@ package com.aeltumn.realms.crossfire
 
 import com.aeltumn.realms.common.BootstrapHelper
 import com.aeltumn.realms.common.filterOutDefaults
+import com.aeltumn.realms.common.load
 import com.aeltumn.realms.crossfire.functions.Intro
 import com.aeltumn.realms.crossfire.functions.MapSwitching
 import com.aeltumn.realms.crossfire.functions.TouchWater
 import io.github.ayfri.kore.arguments.chatcomponents.textComponent
-import io.github.ayfri.kore.arguments.colors.Color
 import io.github.ayfri.kore.arguments.enums.Difficulty
-import io.github.ayfri.kore.arguments.scores.score
-import io.github.ayfri.kore.arguments.selector.scores
 import io.github.ayfri.kore.arguments.types.literals.allEntities
-import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.literal
-import io.github.ayfri.kore.arguments.types.literals.self
-import io.github.ayfri.kore.commands.TitleLocation
 import io.github.ayfri.kore.commands.bossBars
 import io.github.ayfri.kore.commands.difficulty
-import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.gamerule
 import io.github.ayfri.kore.commands.kill
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.teams
-import io.github.ayfri.kore.commands.title
 import io.github.ayfri.kore.functions.function
-import io.github.ayfri.kore.functions.load
-import io.github.ayfri.kore.functions.tick
 import io.github.ayfri.kore.generated.Gamerules
 import io.github.ayfri.kore.pack.pack
 import java.nio.file.Paths
@@ -113,20 +104,20 @@ public fun main(args: Array<String>) {
             }
         }
 
-        load("respawn") {
+        /*load("respawn") {
         }
 
         load("introduction") {
         }
 
         load("team_deny_info") {
-        }
+        }*/
 
         for (map in References.MAPS) {
             function("lobby_teleport_$map") {
                 // Clear the visibility of both boss bars
-                bossBars.get(CrossfireBossbars.getTimer(map), References.NAMESPACE).setPlayers(playerTarget("doesn't exist"))
-                bossBars.get(CrossfireBossbars.getPostGame(map), References.NAMESPACE).setPlayers(playerTarget("doesn't exist"))
+                bossBars.get(CrossfireBossbars.getTimer(map), References.NAMESPACE).setPlayers(playerTarget("-"))
+                bossBars.get(CrossfireBossbars.getPostGame(map), References.NAMESPACE).setPlayers(playerTarget("-"))
 
                 // Clear out all teams
                 for (key in References.TEAMS[map]!!.keys) {

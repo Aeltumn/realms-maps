@@ -1,5 +1,6 @@
 package com.aeltumn.realms.crossfire.functions
 
+import com.aeltumn.realms.common.tick
 import com.aeltumn.realms.crossfire.CrossfireScoreboards
 import com.aeltumn.realms.crossfire.References
 import io.github.ayfri.kore.DataPack
@@ -10,7 +11,6 @@ import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.functions.function
-import io.github.ayfri.kore.functions.tick
 
 /** Sets up map switching. */
 public object MapSwitching {

@@ -1,6 +1,7 @@
 package com.aeltumn.realms.crossfire.functions
 
 import com.aeltumn.realms.common.AT_POSITION
+import com.aeltumn.realms.common.tick
 import com.aeltumn.realms.crossfire.CrossfireScoreboards
 import com.aeltumn.realms.crossfire.CrossfireTags
 import com.aeltumn.realms.crossfire.References
@@ -10,7 +11,6 @@ import io.github.ayfri.kore.arguments.chatcomponents.textComponent
 import io.github.ayfri.kore.arguments.colors.Color
 import io.github.ayfri.kore.arguments.scores.score
 import io.github.ayfri.kore.arguments.selector.scores
-import io.github.ayfri.kore.arguments.types.literals.allEntities
 import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
@@ -27,7 +27,6 @@ import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.commands.tellraw
 import io.github.ayfri.kore.commands.title
-import io.github.ayfri.kore.functions.tick
 import io.github.ayfri.kore.generated.Sounds
 
 /** Sets up water touch handling. */
@@ -60,7 +59,7 @@ public object TouchWater {
 
                                 run {
                                     tellraw(
-                                        allEntities {
+                                        allPlayers {
                                             scores {
                                                 score(CrossfireScoreboards.TARGET_MAP_INDEX, index)
                                             }

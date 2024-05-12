@@ -1,5 +1,6 @@
 package com.aeltumn.realms.crossfire.functions
 
+import com.aeltumn.realms.common.tick
 import com.aeltumn.realms.crossfire.CrossfireScoreboards
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.chatcomponents.ChatComponents
@@ -19,7 +20,6 @@ import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tellraw
 import io.github.ayfri.kore.commands.title
 import io.github.ayfri.kore.functions.Function
-import io.github.ayfri.kore.functions.tick
 
 /**
  * Sets up the intro
@@ -56,6 +56,24 @@ public object Intro {
                         scoreboard.players.set(self(), CrossfireScoreboards.INTRO_SKIPPED_TRIGGER, 0)
                         scoreboard.players.set(self(), CrossfireScoreboards.INTRO_COMPLETED, 1)
                         title(self(), TitleLocation.ACTIONBAR, textComponent("You've skipped the tutorial.", Color.YELLOW))
+                    }
+                }
+            }
+
+            // Listen to anyone triggering an intro start
+            tick("intro_start_trigger") {
+                execute {
+                    asTarget(
+                        allPlayers {
+                            scores {
+                                score(CrossfireScoreboards.INTRO_START_TRIGGER) greaterThanOrEqualTo 1
+                            }
+                        }
+                    )
+
+                    run {
+                        scoreboard.players.set(self(), CrossfireScoreboards.INTRO_START_TRIGGER, 0)
+                        scoreboard.players.set(self(), CrossfireScoreboards.TARGET_MAP_INDEX, -1)
                     }
                 }
             }

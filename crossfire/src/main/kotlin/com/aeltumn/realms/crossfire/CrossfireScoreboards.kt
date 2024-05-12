@@ -42,6 +42,7 @@ public object CrossfireScoreboards {
     public const val ITEM_CROSSBOW: String = "item_crossbow"
 
     public const val INTRO: String = "intro"
+    public const val INTRO_START_TRIGGER: String = "intro_start"
     public const val INTRO_SKIPPED_TRIGGER: String = "intro_skipped"
 
     public const val ITEM_USE_CROSSBOW: String = "item_use_crossbow"
@@ -95,7 +96,7 @@ public object CrossfireScoreboards {
             }
 
             // Create trigger objectives
-            scoreboard.objectives.add(INTRO, ScoreboardCriteria.TRIGGER)
+            scoreboard.objectives.add(INTRO_START_TRIGGER, ScoreboardCriteria.TRIGGER)
             scoreboard.objectives.add(INTRO_SKIPPED_TRIGGER, ScoreboardCriteria.TRIGGER)
 
             // Create item use objectives
