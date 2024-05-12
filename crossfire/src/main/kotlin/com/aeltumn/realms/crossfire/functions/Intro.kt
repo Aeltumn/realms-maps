@@ -1,5 +1,6 @@
 package com.aeltumn.realms.crossfire.functions
 
+import com.aeltumn.realms.common.executeIfEqualTo
 import com.aeltumn.realms.common.tick
 import com.aeltumn.realms.crossfire.CrossfireScoreboards
 import io.github.ayfri.kore.DataPack
@@ -22,7 +23,7 @@ import io.github.ayfri.kore.commands.title
 import io.github.ayfri.kore.functions.Function
 
 /**
- * Sets up the intro
+ * Sets up the intro.
  * The intro is accessed by setting ones map to -1.
  */
 public object Intro {
@@ -43,16 +44,9 @@ public object Intro {
 
                     run {
                         // If the player is currently in the intro we take them out of it!
-                        execute {
-                            ifCondition {
-                                score(self(), CrossfireScoreboards.TARGET_MAP_INDEX) equalTo -1
-                            }
-
-                            run {
-                                scoreboard.players.set(self(), CrossfireScoreboards.TARGET_MAP_INDEX, 0)
-                            }
+                        executeIfEqualTo(CrossfireScoreboards.TARGET_MAP_INDEX, -1) {
+                            scoreboard.players.set(self(), CrossfireScoreboards.TARGET_MAP_INDEX, 0)
                         }
-
                         scoreboard.players.set(self(), CrossfireScoreboards.INTRO_SKIPPED_TRIGGER, 0)
                         scoreboard.players.set(self(), CrossfireScoreboards.INTRO_COMPLETED, 1)
                         title(self(), TitleLocation.ACTIONBAR, textComponent("You've skipped the tutorial.", Color.YELLOW))
@@ -92,12 +86,7 @@ public object Intro {
                     run {
                         /** Runs a part of the intro at [amount] using [function]. */
                         fun runIfAt(amount: Int, function: Function.() -> Command) {
-                            execute {
-                                ifCondition {
-                                    score(self(), CrossfireScoreboards.INTRO) equalTo amount
-                                }
-                                run(function)
-                            }
+                            executeIfEqualTo(CrossfireScoreboards.INTRO, amount * 20, function)
                         }
 
                         // Increment their current intro value by one as long as they are in the intro
@@ -123,6 +112,7 @@ public object Intro {
                             tellraw(
                                 self(),
                                 ChatComponents().apply {
+                                    plus(textComponent(""))
                                     plus(textComponent("Crossfire", Color.GOLD))
                                     plus(textComponent(" can be played on two maps: "))
                                     plus(textComponent("Party", Color.AQUA) {
@@ -218,15 +208,9 @@ public object Intro {
                         }
 
                         // If the intro value has reached 40 we end the intro
-                        execute {
-                            ifCondition {
-                                score(self(), CrossfireScoreboards.INTRO) greaterThanOrEqualTo 40
-                            }
-
-                            run {
-                                scoreboard.players.set(self(), CrossfireScoreboards.INTRO_COMPLETED, 1)
-                                scoreboard.players.set(self(), CrossfireScoreboards.TARGET_MAP_INDEX, 0)
-                            }
+                        executeIfEqualTo(CrossfireScoreboards.INTRO, 40 * 20) {
+                            scoreboard.players.set(self(), CrossfireScoreboards.INTRO_COMPLETED, 1)
+                            scoreboard.players.set(self(), CrossfireScoreboards.TARGET_MAP_INDEX, 0)
                         }
                     }
                 }

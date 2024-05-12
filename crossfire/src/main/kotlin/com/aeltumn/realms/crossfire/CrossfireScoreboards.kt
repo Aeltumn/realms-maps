@@ -90,7 +90,8 @@ public object CrossfireScoreboards {
                 ITEM_TELEPORT_1,
                 ITEM_TELEPORT_2,
                 ITEM_LEAVE,
-                ITEM_CROSSBOW
+                ITEM_CROSSBOW,
+                INTRO
             )) {
                 scoreboard.objectives.add(objective, ScoreboardCriteria.DUMMY)
             }

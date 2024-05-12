@@ -1,5 +1,7 @@
 package com.aeltumn.realms.crossfire.functions
 
+import com.aeltumn.realms.common.executeIfEqualTo
+import com.aeltumn.realms.common.executeIfGreaterThanOrEqualTo
 import com.aeltumn.realms.common.tick
 import com.aeltumn.realms.crossfire.CrossfireScoreboards
 import com.aeltumn.realms.crossfire.References
@@ -20,31 +22,18 @@ public object MapSwitching {
         dataPack.apply {
             // Implement a function to switch the map
             function("change_map") {
-                execute {
-                    ifCondition {
-                        score(self(), CrossfireScoreboards.MAP_SWITCH_COOLDOWN) greaterThanOrEqualTo 50
-                    }
-                    run {
-                        // Increment the map of this player by 1
-                        scoreboard.players.add(self(), CrossfireScoreboards.TARGET_MAP_INDEX, 1)
-                        execute {
-                            asTarget(
-                                self {
-                                    scores {
-                                        score(CrossfireScoreboards.TARGET_MAP_INDEX, References.MAPS.size)
-                                    }
-                                }
-                            )
-                            run {
-                                // Jump back to 0 if they went over the highest map's index
-                                scoreboard.players.set(self(), CrossfireScoreboards.TARGET_MAP_INDEX, 0)
-                            }
-                        }
+                executeIfGreaterThanOrEqualTo(CrossfireScoreboards.MAP_SWITCH_COOLDOWN, 50) {
+                    // Increment the map of this player by 1
+                    scoreboard.players.add(self(), CrossfireScoreboards.TARGET_MAP_INDEX, 1)
 
-                        // Restart the cooldown and leave the intro
-                        scoreboard.players.set(self(), CrossfireScoreboards.INTRO, 0)
-                        scoreboard.players.set(self(), CrossfireScoreboards.MAP_SWITCH_COOLDOWN, 0)
+                    // Jump back to 0 if they went over the highest map's index
+                    executeIfEqualTo(CrossfireScoreboards.TARGET_MAP_INDEX, References.MAPS.size) {
+                        scoreboard.players.set(self(), CrossfireScoreboards.TARGET_MAP_INDEX, 0)
                     }
+
+                    // Restart the cooldown and leave the intro
+                    scoreboard.players.set(self(), CrossfireScoreboards.INTRO, 0)
+                    scoreboard.players.set(self(), CrossfireScoreboards.MAP_SWITCH_COOLDOWN, 0)
                 }
             }
 
