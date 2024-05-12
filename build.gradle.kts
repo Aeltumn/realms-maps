@@ -28,5 +28,8 @@ subprojects {
                 freeCompilerArgs += listOf("-Xexplicit-api=strict", "-Xcontext-receivers")
             }
         }
+        withType<JavaCompile> {
+            options.release = 21
+        }
     }
 }
