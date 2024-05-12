@@ -1,3 +1,3 @@
 rootProject.name = "realms-maps"
-include("crossfire", "trilands")
+include("common", "crossfire", "trilands")
 

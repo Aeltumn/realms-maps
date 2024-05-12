@@ -6,7 +6,7 @@ execute as @e[type=item,nbt={Item:{id:"minecraft:potion"}}] run kill @s
 execute as @e[type=item,nbt={Item:{id:"minecraft:glass_bottle"}}] run kill @s
 
 # Remove illegal items from your inventory
-clear @a[tag=!admin] #crossfire:illegalitems
+clear @a[tag=!admin] #crossfire:illegal_items
 
 # Remove pregame/postgame tag if you're spectating and not in the game
 tag @a[tag=spectating,tag=!joined] remove postgame

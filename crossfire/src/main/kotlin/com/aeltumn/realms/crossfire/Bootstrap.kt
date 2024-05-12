@@ -1,58 +1,80 @@
 package com.aeltumn.realms.crossfire
 
-import io.github.ayfri.kore.commands.say
-import io.github.ayfri.kore.dataPack
-import io.github.ayfri.kore.functions.function
-import java.io.BufferedOutputStream
-import java.io.File
-import java.io.FileOutputStream
+import com.aeltumn.realms.common.BootstrapHelper
+import com.aeltumn.realms.common.collect
+import com.aeltumn.realms.common.filterOutDefaults
+import io.github.ayfri.kore.arguments.chatcomponents.text
+import io.github.ayfri.kore.arguments.types.literals.allEntities
+import io.github.ayfri.kore.commands.kill
+import io.github.ayfri.kore.functions.load
+import io.github.ayfri.kore.pack.pack
 import java.nio.file.Paths
-import java.util.zip.ZipEntry
-import java.util.zip.ZipOutputStream
-import kotlin.io.path.ExperimentalPathApi
-import kotlin.io.path.copyToRecursively
-import kotlin.io.path.createDirectories
-import kotlin.io.path.deleteRecursively
 
 /**
  * Bootstraps the datapack creation.
+ * The target directory can be passed as an argument to generate the map directly in the Minecraft
+ * saves directory for easier testing/iteration.
  */
-@OptIn(ExperimentalPathApi::class)
-public fun main() {
-    // Clear out the target folder first
-    val outputFolder = Paths.get("out/crossfire/")
-    outputFolder.deleteRecursively()
-
-    // Copy across the resource files (after zipping)
+public fun main(args: Array<String>) {
+    val outputFolder = if (args.isEmpty()) {
+        Paths.get("out/crossfire/")
+    } else {
+        Paths.get("${args[0]}/crossfire")
+    }
     val resourcePackSource = Paths.get("resource-packs/crossfire/").toFile()
-    val outputZipFile = File.createTempFile("resources", ".zip")
-    ZipOutputStream(BufferedOutputStream(FileOutputStream(outputZipFile))).use { zos ->
-        resourcePackSource.walkTopDown().forEach { file ->
-            val zipFileName = file.absolutePath.removePrefix(resourcePackSource.absolutePath).replace(File.separatorChar, '/').removePrefix("/")
-            if (zipFileName.isEmpty()) return@forEach
-
-            val entry = ZipEntry("$zipFileName${(if (file.isDirectory) "/" else "")}")
-            zos.putNextEntry(entry)
-            if (file.isFile) {
-                file.inputStream().use { fis -> fis.copyTo(zos) }
-            }
-        }
-    }
-    outputZipFile.copyTo(outputFolder.resolve("resources.zip").toFile())
-    outputZipFile.delete()
-
-    // Copy across the world files
     val worldSource = Paths.get("maps/crossfire/")
-    worldSource.copyToRecursively(outputFolder, followLinks = false, overwrite = true)
 
-    // Create the datapack
-    val myDatapack = dataPack("crossfire") {
-        path = outputFolder.resolve("datapacks/").createDirectories()
+    BootstrapHelper(
+        outputFolder,
+        resourcePackSource,
+        worldSource,
+        "crossfire"
+    ).execute {
+        filterOutDefaults()
+        pack {
+            description = text("The main datapack that makes our maps work!").collect()
+        }
 
-        function("my_function") {
-            say("Hello Minecraft world !")
+        // Configure basic tags
+        CrossfireTags.configure(this)
+
+        // Set up initial functions
+        load("setup") {
+            // Remove any entities marked as cleanup
+            kill(
+                allEntities {
+                    tag = "cleanup"
+                }
+            )
+        }
+
+        load("respawn") {
+        }
+
+        load("introduction") {
+        }
+
+        load("team_deny_info") {
         }
     }
-
-    myDatapack.generateZip()
 }
+
+/*
+Ticking functions:
+"values": [
+		"crossfire:tick/shoot_bow",
+        "crossfire:tick/tick_rockets",
+		"crossfire:tick/team_join",
+		"crossfire:tick/shooting_range_join",
+		"crossfire:tick/crossbowreload",
+		"crossfire:tick/detect_round",
+        "crossfire:tick/check_gamemode",
+		"crossfire:tick/check_water",
+		"crossfire:tick/flightpath",
+        "crossfire:tick/crate_tick",
+		"crossfire:tick/collect_powerup",
+		"crossfire:tick/use_powerup",
+		"crossfire:tick/increase_switch_timer",
+		"crossfire:tick/intro_completion"
+	]
+ */
