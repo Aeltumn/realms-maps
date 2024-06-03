@@ -9,10 +9,6 @@ scoreboard players add @s isreloading 0
 scoreboard players add @s timer 0
 scoreboard players add @s respawnshield 0
 
-# Activate triggers
-scoreboard players enable @s introComplTr
-scoreboard players enable @s intro
-
 # Kick everyone out of spectator target
 execute as @s[tag=spectating] run spectate
 

@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.9.23" apply false
+    kotlin("jvm") version "2.0.0" apply false
 }
 
 allprojects {
@@ -18,7 +18,7 @@ subprojects {
 
     val implementation by configurations
     dependencies {
-        implementation("io.github.ayfri.kore:kore:1.8.0-24w14a")
+        implementation("io.github.ayfri.kore:kore:1.10.1-1.20.6")
     }
 
     tasks {

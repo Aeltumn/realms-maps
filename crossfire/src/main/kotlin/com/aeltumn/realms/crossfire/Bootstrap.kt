@@ -10,6 +10,7 @@ import com.aeltumn.realms.crossfire.component.CrossfireTags
 import com.aeltumn.realms.crossfire.component.CrossfireTeams
 import com.aeltumn.realms.crossfire.component.CrossfireTimers
 import com.aeltumn.realms.crossfire.feature.Intro
+import com.aeltumn.realms.crossfire.feature.ManagePlayers
 import com.aeltumn.realms.crossfire.feature.MapSwitching
 import com.aeltumn.realms.crossfire.feature.MapSystem
 import com.aeltumn.realms.crossfire.feature.TeamJoin
@@ -63,6 +64,7 @@ public fun main(args: Array<String>) {
         TouchWater.configure(this)
         MapSystem.configure(this)
         TeamJoin.configure(this)
+        ManagePlayers.configure(this)
 
         // Set up initial functions
         load("setup") {

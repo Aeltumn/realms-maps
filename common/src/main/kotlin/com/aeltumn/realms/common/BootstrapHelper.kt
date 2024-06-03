@@ -53,6 +53,6 @@ public data class BootstrapHelper(
             path = outputFolder.resolve("datapacks/").createDirectories()
             builder()
         }
-        datapack.generate() // TODO Change back to zip after Kore updates! Zip()
+        datapack.generateZip()
     }
 }

@@ -35,6 +35,7 @@ public object CrossfireScoreboards {
     public const val SPECTATE_SUCCESS: String = "spectate_success"
     public const val IS_RELOADING: String = "is_reloading"
     public const val INTRO_COMPLETED: String = "intro_completed"
+    public const val JUST_GOT_SPAMMED: String = "just_got_spammed"
 
     public const val ITEM_TELEPORT_1: String = "item_teleport_1"
     public const val ITEM_TELEPORT_2: String = "item_teleport_2"
@@ -91,7 +92,8 @@ public object CrossfireScoreboards {
                 ITEM_TELEPORT_2,
                 ITEM_LEAVE,
                 ITEM_CROSSBOW,
-                INTRO
+                INTRO,
+                JUST_GOT_SPAMMED
             )) {
                 scoreboard.objectives.add(objective, ScoreboardCriteria.DUMMY)
             }

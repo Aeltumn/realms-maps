@@ -7,6 +7,8 @@ import io.github.ayfri.kore.features.tags.tag
 public object CrossfireTags {
 
     // -- Tags added to entities
+    /** For players that have been initialized. */
+    public const val INITIALIZED: String = "initialized"
 
     /** For players that have joined a game. */
     public const val JOINED: String = "joined"
