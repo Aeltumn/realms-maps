@@ -93,15 +93,6 @@ public fun main(args: Array<String>) {
             gamerule(Gamerules.NATURAL_REGENERATION, false)
             gamerule(Gamerules.SEND_COMMAND_FEEDBACK, !release)
 
-            // Set the value of round to 1 for both maps
-            for (map in References.MAPS) {
-                scoreboard {
-                    player(literal(map)) {
-                        set(CrossfireScoreboards.ROUND, 1)
-                    }
-                }
-            }
-
             // Teleport all players to their lobbies
             for (map in References.MAPS) {
                 function(References.NAMESPACE, "lobby_teleport_$map")

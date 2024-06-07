@@ -10,14 +10,18 @@ import io.github.ayfri.kore.arguments.chatcomponents.events.showText
 import io.github.ayfri.kore.arguments.chatcomponents.hoverEvent
 import io.github.ayfri.kore.arguments.chatcomponents.textComponent
 import io.github.ayfri.kore.arguments.colors.Color
+import io.github.ayfri.kore.arguments.enums.Gamemode
 import io.github.ayfri.kore.arguments.scores.score
 import io.github.ayfri.kore.arguments.selector.scores
+import io.github.ayfri.kore.arguments.types.literals.allEntities
 import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.Command
 import io.github.ayfri.kore.commands.TitleLocation
 import io.github.ayfri.kore.commands.execute.execute
+import io.github.ayfri.kore.commands.gamemode
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
+import io.github.ayfri.kore.commands.spectate
 import io.github.ayfri.kore.commands.tellraw
 import io.github.ayfri.kore.commands.title
 import io.github.ayfri.kore.functions.Function
@@ -93,6 +97,9 @@ public object Intro {
 
                         // Increment their current intro value by one as long as they are in the intro
                         scoreboard.players.add(self(), CrossfireScoreboards.INTRO, 1)
+
+                        // Move the player into spectator
+                        gamemode(Gamemode.SPECTATOR, self())
 
                         // PHASE 1 - Lobby
                         runIfAt(1) {
@@ -213,7 +220,64 @@ public object Intro {
                         executeIfEqualTo(CrossfireScoreboards.INTRO, 40 * 20) {
                             scoreboard.players.set(self(), CrossfireScoreboards.INTRO_COMPLETED, 1)
                             scoreboard.players.set(self(), CrossfireScoreboards.TARGET_MAP_INDEX, 0)
+                            gamemode(Gamemode.ADVENTURE, self())
                         }
+                    }
+                }
+
+                // Set the current camera based on the current time
+                execute {
+                    asTarget(
+                        allPlayers {
+                            scores {
+                                score(CrossfireScoreboards.INTRO) matches (0 * 20)..<(18 * 20)
+                            }
+                        }
+                    )
+
+                    run {
+                        spectate(
+                            allEntities(true) {
+                                tag = "camera0"
+                            },
+                            self()
+                        )
+                    }
+                }
+                execute {
+                    asTarget(
+                        allPlayers {
+                            scores {
+                                score(CrossfireScoreboards.INTRO) matches (18 * 20)..(31 * 20)
+                            }
+                        }
+                    )
+
+                    run {
+                        spectate(
+                            allEntities(true) {
+                                tag = "camera1"
+                            },
+                            self()
+                        )
+                    }
+                }
+                execute {
+                    asTarget(
+                        allPlayers {
+                            scores {
+                                score(CrossfireScoreboards.INTRO) greaterThan (31 * 20)
+                            }
+                        }
+                    )
+
+                    run {
+                        spectate(
+                            allEntities(true) {
+                                tag = "camera2"
+                            },
+                            self()
+                        )
                     }
                 }
             }
