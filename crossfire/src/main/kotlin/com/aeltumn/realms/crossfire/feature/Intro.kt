@@ -19,6 +19,7 @@ import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.Command
 import io.github.ayfri.kore.commands.TitleLocation
 import io.github.ayfri.kore.commands.execute.execute
+import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.gamemode
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.spectate
@@ -220,7 +221,9 @@ public object Intro {
                         executeIfEqualTo(CrossfireScoreboards.INTRO, 40 * 20) {
                             scoreboard.players.set(self(), CrossfireScoreboards.INTRO_COMPLETED, 1)
                             scoreboard.players.set(self(), CrossfireScoreboards.TARGET_MAP_INDEX, 0)
-                            gamemode(Gamemode.ADVENTURE, self())
+
+                            // Reset the player
+                            function(ManagePlayers.RESET_PLAYER_FUNCTION)
                         }
                     }
                 }

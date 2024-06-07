@@ -5,10 +5,12 @@ import com.aeltumn.realms.crossfire.References
 import com.aeltumn.realms.crossfire.component.CrossfireScoreboards
 import com.aeltumn.realms.crossfire.component.CrossfireTags
 import io.github.ayfri.kore.DataPack
+import io.github.ayfri.kore.arguments.enums.Gamemode
 import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.gamemode
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.functions.function
@@ -42,9 +44,17 @@ public object ManagePlayers {
                     add(CrossfireTags.INITIALIZED)
                 }
 
+                // Reset game mode
+                gamemode(Gamemode.ADVENTURE, self())
+
+                // Reset values
+                scoreboard.players.set(self(), CrossfireScoreboards.INTRO, 0)
+
                 // Enable triggers
                 scoreboard.players.enable(self(), CrossfireScoreboards.INTRO_START_TRIGGER)
                 scoreboard.players.enable(self(), CrossfireScoreboards.INTRO_SKIPPED_TRIGGER)
+
+                // TODO Teleport player to their map
             }
         }
     }
