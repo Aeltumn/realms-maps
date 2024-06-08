@@ -2,6 +2,7 @@ package com.aeltumn.realms.crossfire.component
 
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.types.resources.EffectArgument
+import io.github.ayfri.kore.arguments.types.resources.PredicateArgument
 import io.github.ayfri.kore.features.predicates.conditions.entityProperties
 import io.github.ayfri.kore.features.predicates.predicate
 import io.github.ayfri.kore.features.predicates.sub.Effect
@@ -11,18 +12,25 @@ import io.github.ayfri.kore.features.predicates.types.EntityType
 /** Defines crossfire's predicates. */
 public object CrossfirePredicates {
 
+    /** Whether a player has the multishot effect. */
+    public lateinit var HAS_MULTISHOT: PredicateArgument
+
+    /** Whether a player has the rapid fire effect. */
+    public lateinit var HAS_RAPID_FIRE: PredicateArgument
+
     /** Configures the predicates. */
     public fun configure(dataPack: DataPack) {
         dataPack.apply {
             // Add predicates for detecting power-ups
-            predicate("has_multishot") {
+            HAS_MULTISHOT = predicate("has_multishot") {
                 entityProperties(EntityType.THIS) {
                     effects {
                         put(EffectArgument("luck"), Effect())
                     }
                 }
             }
-            predicate("has_rapid_fire") {
+
+            HAS_RAPID_FIRE = predicate("has_rapid_fire") {
                 entityProperties(EntityType.THIS) {
                     effects {
                         put(EffectArgument("unluck"), Effect())

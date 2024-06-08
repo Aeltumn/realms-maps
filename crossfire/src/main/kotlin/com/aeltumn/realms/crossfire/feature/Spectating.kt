@@ -92,15 +92,14 @@ public object Spectating {
 
             for ((index, map) in References.MAPS.withIndex()) {
                 tick("check_spectating-$map") {
-                    // Start spectating if applicable
+                    // Start spectating if applicable (when map has started, make all players in it spectate)
                     execute {
-                        ifCondition {
+                        unlessCondition {
                             score(literal(map), CrossfireScoreboards.STARTED, rangeOrInt(0))
                         }
                         asTarget(
                             allPlayers {
                                 tag = !"${CrossfireTags.JOINED}-${map}"
-                                tag = !CrossfireTags.ADMIN
                                 tag = !CrossfireTags.SPECTATING
 
                                 scores {

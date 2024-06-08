@@ -14,7 +14,7 @@ public object References {
     public val PLAYER_COUNT: Int = 12
 
     /** The different map identifiers. */
-    public val MAPS: List<String> = listOf("duel", "party")
+    public val MAPS: List<String> = listOf("party", "duel")
 
     /** The different timer types. */
     public val TIMER_TYPES: List<String> = listOf("start", "game", "post_game")

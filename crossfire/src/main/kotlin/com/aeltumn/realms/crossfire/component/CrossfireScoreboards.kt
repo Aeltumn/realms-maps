@@ -37,10 +37,7 @@ public object CrossfireScoreboards {
     public const val INTRO_COMPLETED: String = "intro_completed"
     public const val JUST_GOT_SPAMMED: String = "just_got_spammed"
 
-    public const val ITEM_TELEPORT_1: String = "item_teleport_1"
-    public const val ITEM_TELEPORT_2: String = "item_teleport_2"
-    public const val ITEM_LEAVE: String = "item_leave"
-    public const val ITEM_CROSSBOW: String = "item_crossbow"
+    public const val ITEM_COUNT: String = "item_count"
 
     public const val INTRO: String = "intro"
     public const val INTRO_START_TRIGGER: String = "intro_start"
@@ -88,10 +85,7 @@ public object CrossfireScoreboards {
                 SPECTATE_SUCCESS,
                 IS_RELOADING,
                 INTRO_COMPLETED,
-                ITEM_TELEPORT_1,
-                ITEM_TELEPORT_2,
-                ITEM_LEAVE,
-                ITEM_CROSSBOW,
+                ITEM_COUNT,
                 INTRO,
                 JUST_GOT_SPAMMED
             )) {

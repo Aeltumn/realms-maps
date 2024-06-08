@@ -4,6 +4,7 @@ import com.aeltumn.realms.common.tick
 import com.aeltumn.realms.crossfire.References
 import com.aeltumn.realms.crossfire.component.CrossfireScoreboards
 import com.aeltumn.realms.crossfire.component.CrossfireTags
+import com.aeltumn.realms.crossfire.component.CrossfireTeams
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.enums.Gamemode
 import io.github.ayfri.kore.arguments.types.literals.allPlayers
@@ -14,6 +15,7 @@ import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.gamemode
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
+import io.github.ayfri.kore.commands.teams
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.generated.Effects
 
@@ -38,11 +40,6 @@ public object ManagePlayers {
                         function(References.NAMESPACE, RESET_PLAYER_FUNCTION)
                     }
                 }
-
-                // # Remove pregame/postgame tag if you're spectating and not in the game
-                // tag @a[tag=spectating,tag=!joined] remove postgame
-                // tag @a[tag=spectating,tag=!joined] remove pregame
-                // tag @a[tag=spectating,tag=!joined] add mapchanger
             }
 
             function(RESET_PLAYER_FUNCTION) {
@@ -56,6 +53,9 @@ public object ManagePlayers {
                         remove("${CrossfireTags.PLAYER}-$playerIndex")
                     }
                     remove(CrossfireTags.SPECTATING)
+
+                    // Allow the player to have a crossbow normally
+                    add(CrossfireTags.GIVE_CROSSBOW)
                 }
 
                 // Reset game mode and state
@@ -65,8 +65,17 @@ public object ManagePlayers {
                     clear(Effects.INVISIBILITY)
                 }
 
+                // Add to the lobby team
+                teams {
+                    join(CrossfireTeams.LOBBY_TEAM, self())
+                }
+
                 // Reset values
                 scoreboard.players.set(self(), CrossfireScoreboards.INTRO, 0)
+                scoreboard.players.set(self(), CrossfireScoreboards.IS_RELOADING, 0)
+                scoreboard.players.set(self(), CrossfireScoreboards.RELOAD_TIMER, 0)
+                scoreboard.players.set(self(), CrossfireScoreboards.RESPAWN_SHIELD, 0)
+                scoreboard.players.set(self(), CrossfireScoreboards.WINS, 0)
 
                 // Enable triggers
                 scoreboard.players.enable(self(), CrossfireScoreboards.INTRO_START_TRIGGER)

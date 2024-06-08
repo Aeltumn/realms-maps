@@ -61,8 +61,7 @@ public object TeamJoin {
                         execute {
                             asTarget(
                                 allPlayers {
-                                    tag = "!${team}"
-                                    tag = "!${CrossfireTags.ADMIN}"
+                                    tag = !team
                                     scores {
                                         score(CrossfireScoreboards.INTRO_COMPLETED) greaterThanOrEqualTo 1
                                     }
@@ -113,8 +112,7 @@ public object TeamJoin {
                         execute {
                             asTarget(
                                 allPlayers {
-                                    tag = "!${team}"
-                                    tag = "!${CrossfireTags.ADMIN}"
+                                    tag = !team
                                 }
                             )
                             at(self())

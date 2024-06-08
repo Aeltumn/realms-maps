@@ -1,7 +1,6 @@
 package com.aeltumn.realms.crossfire.feature
 
 import com.aeltumn.realms.common.tick
-import com.aeltumn.realms.crossfire.References
 import com.aeltumn.realms.crossfire.component.CrossfireScoreboards
 import com.aeltumn.realms.crossfire.component.CrossfireTags
 import io.github.ayfri.kore.DataPack
@@ -13,7 +12,6 @@ import io.github.ayfri.kore.arguments.selector.scores
 import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.execute.execute
-import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.tag
 
 /** Sets up the shooting range. */
@@ -65,9 +63,6 @@ public object ShootingRange {
                             remove(CrossfireTags.RELOAD_CROSSBOW)
                             remove(CrossfireTags.SHOOTING_RANGE)
                         }
-
-                        // End reload early
-                        function(References.NAMESPACE, Crossbows.CANCEL_RELOAD)
                     }
                 }
             }

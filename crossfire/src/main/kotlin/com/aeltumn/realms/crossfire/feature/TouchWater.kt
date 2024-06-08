@@ -37,8 +37,7 @@ public object TouchWater {
                     asTarget(
                         allPlayers {
                             tag = CrossfireTags.JOINED
-                            tag = "!${CrossfireTags.DIED_IN_WATER}"
-                            tag = "!${CrossfireTags.ADMIN}"
+                            tag = !CrossfireTags.DIED_IN_WATER
                         }
                     )
                     at(self())

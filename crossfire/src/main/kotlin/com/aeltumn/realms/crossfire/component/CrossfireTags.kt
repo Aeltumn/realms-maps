@@ -22,9 +22,6 @@ public object CrossfireTags {
     /** For players that should be in the spectating sequence. */
     public const val SPECTATING: String = "spectating"
 
-    /** For admin players that should be skipped when applying effects. */
-    public const val ADMIN: String = "admin"
-
     /** Base for tags given out when playing as player slot. */
     public const val PLAYER: String = "player"
 
@@ -39,6 +36,12 @@ public object CrossfireTags {
 
     /** Indicates a player's crossbow should reload if possible. */
     public const val RELOAD_CROSSBOW: String = "reload_crossbow"
+
+    /** Indicates a player has their crossbow loaded. */
+    public const val HAS_CROSSBOW_LOADED: String = "has_crossbow_loaded"
+
+    /** Indicates a player's crossbow has multishot loaded. */
+    public const val HAS_MULTISHOT_LOADED: String = "has_multishot_loaded"
 
     // -- Tags that define items
 
