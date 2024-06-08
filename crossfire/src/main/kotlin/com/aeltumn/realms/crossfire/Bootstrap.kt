@@ -9,10 +9,14 @@ import com.aeltumn.realms.crossfire.component.CrossfireScoreboards
 import com.aeltumn.realms.crossfire.component.CrossfireTags
 import com.aeltumn.realms.crossfire.component.CrossfireTeams
 import com.aeltumn.realms.crossfire.component.CrossfireTimers
+import com.aeltumn.realms.crossfire.feature.Crossbows
+import com.aeltumn.realms.crossfire.feature.Flightpaths
 import com.aeltumn.realms.crossfire.feature.Intro
 import com.aeltumn.realms.crossfire.feature.ManagePlayers
 import com.aeltumn.realms.crossfire.feature.MapSwitching
 import com.aeltumn.realms.crossfire.feature.MapSystem
+import com.aeltumn.realms.crossfire.feature.ShootingRange
+import com.aeltumn.realms.crossfire.feature.Spectating
 import com.aeltumn.realms.crossfire.feature.TeamJoin
 import com.aeltumn.realms.crossfire.feature.TouchWater
 import io.github.ayfri.kore.arguments.chatcomponents.textComponent
@@ -65,6 +69,10 @@ public fun main(args: Array<String>) {
         MapSystem.configure(this)
         TeamJoin.configure(this)
         ManagePlayers.configure(this)
+        Flightpaths.configure(this)
+        Spectating.configure(this)
+        ShootingRange.configure(this)
+        Crossbows.configure(this)
 
         // Set up initial functions
         load("setup") {

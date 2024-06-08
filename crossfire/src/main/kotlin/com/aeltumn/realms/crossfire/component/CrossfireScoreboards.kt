@@ -17,7 +17,7 @@ public object CrossfireScoreboards {
     public const val POST_GAME_TIMER: String = "post_game_timer"
     public const val DEAD_TIMER: String = "dead_timer"
     public const val START_TIMER: String = "start_timer"
-    public const val TIMER: String = "timer"
+    public const val RELOAD_TIMER: String = "reload_timer"
 
     public const val STARTED: String = "started"
     public const val PLAYER: String = "player"
@@ -70,7 +70,7 @@ public object CrossfireScoreboards {
                 POST_GAME_TIMER,
                 DEAD_TIMER,
                 START_TIMER,
-                TIMER,
+                RELOAD_TIMER,
                 STARTED,
                 PLAYER,
                 JOINED,

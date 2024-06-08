@@ -8,12 +8,14 @@ import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.enums.Gamemode
 import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.self
+import io.github.ayfri.kore.commands.effect
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.gamemode
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.functions.function
+import io.github.ayfri.kore.generated.Effects
 
 /** Sets up player management. */
 public object ManagePlayers {
@@ -41,11 +43,22 @@ public object ManagePlayers {
             function(RESET_PLAYER_FUNCTION) {
                 // Mark as initialized
                 tag(self()) {
+                    // Give them the initialized tag if not already present
                     add(CrossfireTags.INITIALIZED)
+
+                    // Remove spectator system tags
+                    for (playerIndex in 0 until References.PLAYER_COUNT) {
+                        remove("${CrossfireTags.PLAYER}-$playerIndex")
+                    }
+                    remove(CrossfireTags.SPECTATING)
                 }
 
-                // Reset game mode
+                // Reset game mode and state
                 gamemode(Gamemode.ADVENTURE, self())
+                effect(self()) {
+                    clear(Effects.LEVITATION)
+                    clear(Effects.INVISIBILITY)
+                }
 
                 // Reset values
                 scoreboard.players.set(self(), CrossfireScoreboards.INTRO, 0)
@@ -53,6 +66,7 @@ public object ManagePlayers {
                 // Enable triggers
                 scoreboard.players.enable(self(), CrossfireScoreboards.INTRO_START_TRIGGER)
                 scoreboard.players.enable(self(), CrossfireScoreboards.INTRO_SKIPPED_TRIGGER)
+
 
                 // TODO Teleport player to their map
             }

@@ -25,6 +25,18 @@ public object CrossfireTags {
     /** For admin players that should be skipped when applying effects. */
     public const val ADMIN: String = "admin"
 
+    /** Base for tags given out when playing as player slot. */
+    public const val PLAYER: String = "player"
+
+    /** Base for tags given out when spectating specific players. */
+    public const val SPECTATE_PLAYER: String = "spectate_player"
+
+    /** For players in the shooting range. */
+    public const val SHOOTING_RANGE: String = "shooting_range"
+
+    /** Indicates a player's crossbow should reload if possible. */
+    public const val RELOAD_CROSSBOW: String = "reload_crossbow"
+
     // -- Tags that define items
 
     /** Contains just the crossbow. */
@@ -32,6 +44,21 @@ public object CrossfireTags {
 
     /** All items that are illegal for non-admins to have. */
     public const val ILLEGAL_ITEMS: String = "illegal_items"
+
+    // -- Tags added to entities
+
+    /** For copters with suply crates. */
+    public const val SUPPLY_CRATE: String = "supply_crate"
+
+    /** For copters with any crate. */
+    public const val CRATE: String = "crate"
+
+    /** For copters that are now crateless. */
+    public const val CRATELESS: String = "crateless"
+
+    /** For copters that dropped their crate. */
+    public const val DROPPED: String = "dropped"
+
 
     /** Configures the tags. */
     public fun configure(dataPack: DataPack) {

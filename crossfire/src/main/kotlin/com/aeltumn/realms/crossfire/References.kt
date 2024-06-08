@@ -10,6 +10,9 @@ public object References {
     /** The namespace used. */
     public val NAMESPACE: String = "crossfire"
 
+    /** The amount of players. */
+    public val PLAYER_COUNT: Int = 12
+
     /** The different map identifiers. */
     public val MAPS: List<String> = listOf("duel", "party")
 
