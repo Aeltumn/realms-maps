@@ -1,15 +1,3 @@
-# Hit Effect
-tag @s add dead
-
-# Firework Colours
-execute if entity @s[tag=red] at @s run summon firework_rocket ~ ~ ~ {Tags:["custom"],LifeTime:0,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;11743532]}],Flight:1}}}}
-execute if entity @s[tag=yellow] at @s run summon firework_rocket ~ ~ ~ {Tags:["custom"],LifeTime:0,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;14602026]}],Flight:1}}}}
-execute if entity @s[tag=green] at @s run summon firework_rocket ~ ~ ~ {Tags:["custom"],LifeTime:0,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;4312372]}],Flight:1}}}}
-execute if entity @s[tag=blue] at @s run summon firework_rocket ~ ~ ~ {Tags:["custom"],LifeTime:0,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;6719955]}],Flight:1}}}}
-execute if entity @s[tag=orange] at @s run summon firework_rocket ~ ~ ~ {Tags:["custom"],LifeTime:0,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;15435844]}],Flight:1}}}}
-execute if entity @s[tag=magenta] at @s run summon firework_rocket ~ ~ ~ {Tags:["custom"],LifeTime:0,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;12801229]}],Flight:1}}}}
-execute if entity @s[tag=lobby] at @s run summon firework_rocket ~ ~ ~ {Tags:["custom"],LifeTime:0,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;11250603]}],Flight:1}}}}
-
 # Killscreens
 # Red killscreen
 execute if entity @s[tag=red,tag=!shootrange] as @a[distance=..3,team=!red,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run title @s subtitle {"text":"\uE004"}
@@ -409,6 +397,3 @@ execute if entity @s[tag=player11,tag=orange,tag=!shootrange] as @e[tag=hit] run
 
 # Make hit effects work
 execute if entity @s[tag=!shootrange] as @e[tag=hit] run function crossfire:hit2
-
-# Kill the firework
-kill @s

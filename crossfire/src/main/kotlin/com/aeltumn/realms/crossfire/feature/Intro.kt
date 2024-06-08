@@ -2,6 +2,7 @@ package com.aeltumn.realms.crossfire.feature
 
 import com.aeltumn.realms.common.executeIfEqualTo
 import com.aeltumn.realms.common.tick
+import com.aeltumn.realms.crossfire.References
 import com.aeltumn.realms.crossfire.component.CrossfireScoreboards
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.chatcomponents.ChatComponents
@@ -223,7 +224,7 @@ public object Intro {
                             scoreboard.players.set(self(), CrossfireScoreboards.TARGET_MAP_INDEX, 0)
 
                             // Reset the player
-                            function(ManagePlayers.RESET_PLAYER_FUNCTION)
+                            function(References.NAMESPACE, ManagePlayers.RESET_PLAYER_FUNCTION)
                         }
                     }
                 }

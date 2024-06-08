@@ -21,6 +21,11 @@ public data class BootstrapHelper(
     public val datapackName: String,
 ) {
 
+    public companion object {
+        /** Whether active development is happening, during which exporting to a folder is easier to debug. */
+        public const val DEVELOPMENT_MODE: Boolean = true
+    }
+
     @OptIn(ExperimentalPathApi::class)
     public fun execute(
         builder: DataPack.() -> Unit,
@@ -53,6 +58,10 @@ public data class BootstrapHelper(
             path = outputFolder.resolve("datapacks/").createDirectories()
             builder()
         }
-        datapack.generateZip()
+        if (DEVELOPMENT_MODE) {
+            datapack.generate()
+        } else {
+            datapack.generateZip()
+        }
     }
 }

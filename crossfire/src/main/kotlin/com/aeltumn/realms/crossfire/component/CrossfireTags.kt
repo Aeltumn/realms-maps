@@ -22,6 +22,9 @@ public object CrossfireTags {
     /** For players that should be in the spectating sequence. */
     public const val SPECTATING: String = "spectating"
 
+    /** Base for tags given out when selecting a player to play in the game. */
+    public const val SELECTED: String = "selected"
+
     /** Base for tags given out when playing as player slot. */
     public const val PLAYER: String = "player"
 
@@ -53,7 +56,7 @@ public object CrossfireTags {
 
     // -- Tags added to entities
 
-    /** For copters with suply crates. */
+    /** For copters with supply crates. */
     public const val SUPPLY_CRATE: String = "supply_crate"
 
     /** For copters with any crate. */

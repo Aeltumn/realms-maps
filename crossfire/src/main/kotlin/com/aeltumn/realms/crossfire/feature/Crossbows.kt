@@ -17,6 +17,8 @@ import io.github.ayfri.kore.arguments.components.types.enchantments
 import io.github.ayfri.kore.arguments.components.types.itemName
 import io.github.ayfri.kore.arguments.components.types.projectile
 import io.github.ayfri.kore.arguments.components.types.unbreakable
+import io.github.ayfri.kore.arguments.maths.vec3
+import io.github.ayfri.kore.arguments.numbers.ranges.rangeEnd
 import io.github.ayfri.kore.arguments.numbers.ranges.rangeOrInt
 import io.github.ayfri.kore.arguments.scores.score
 import io.github.ayfri.kore.arguments.selector.scores
@@ -25,6 +27,7 @@ import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.arguments.types.resources.ItemArgument
+import io.github.ayfri.kore.arguments.types.resources.ParticleArgument
 import io.github.ayfri.kore.arguments.types.resources.SoundArgument
 import io.github.ayfri.kore.arguments.types.resources.item
 import io.github.ayfri.kore.arguments.types.resources.tagged.ItemTagArgument
@@ -32,19 +35,27 @@ import io.github.ayfri.kore.commands.Command
 import io.github.ayfri.kore.commands.PlaySoundMixer
 import io.github.ayfri.kore.commands.clear
 import io.github.ayfri.kore.commands.command
+import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.items
 import io.github.ayfri.kore.commands.kill
+import io.github.ayfri.kore.commands.particle.particle
 import io.github.ayfri.kore.commands.playSound
+import io.github.ayfri.kore.commands.say
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
+import io.github.ayfri.kore.commands.summon
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.functions.tick
 import io.github.ayfri.kore.generated.Enchantments
 import io.github.ayfri.kore.generated.EntityTypes
+import net.benwoodworth.knbt.NbtByte
 import net.benwoodworth.knbt.NbtCompound
+import net.benwoodworth.knbt.NbtInt
+import net.benwoodworth.knbt.NbtIntArray
+import net.benwoodworth.knbt.NbtList
 import net.benwoodworth.knbt.NbtString
 
 /** Sets up the crossbow mechanic as well as inventory items in general. */
@@ -234,11 +245,280 @@ public object Crossbows {
                 itemName("Empty Crossbow", color = Color.DARK_GRAY)
             }
 
+            // Detect living crossbow shots
+            tick("update_crossbow_bolts") {
+                // Add age to arrows so we kill them if they exist for too long
+                scoreboard.players.add(allEntities {
+                    type = EntityTypes.ARROW
+                }, CrossfireScoreboards.AGE, 1)
+
+                // Add particle to flying arrows
+                execute {
+                    asTarget(allEntities {
+                        type = EntityTypes.ARROW
+                        tag = !CrossfireTags.DIED
+                    })
+                    at(self())
+                    run {
+                        particle(ParticleArgument("firework", "minecraft"), AT_POSITION, vec3(0.0, 0.0, 0.0), 0.03, 2)
+                    }
+                }
+
+                // Add cloud particles when player is levitating upward after being 'sploded
+                execute {
+                    asTarget(allPlayers {
+                        tag = CrossfireTags.DIED
+                        tag = !CrossfireTags.DIED_IN_WATER
+                        tag = !CrossfireTags.SPECTATING
+                    })
+                    at(self())
+                    run {
+                        particle(ParticleArgument("cloud", "minecraft"), AT_POSITION, vec3(0.1, 0.3, 0.1), 0.0, 3)
+                    }
+                }
+
+                // Trigger a hit when the age limit is reached or in the ground
+                execute {
+                    asTarget(allEntities {
+                        type = EntityTypes.ARROW
+                        tag = CrossfireTags.INITIALIZED
+                        tag = !CrossfireTags.DIED
+                        scores {
+                            score(CrossfireScoreboards.AGE) greaterThanOrEqualTo 19
+                        }
+                    })
+                    run {
+                        function(References.NAMESPACE, "arrow_hit")
+                    }
+                }
+                execute {
+                    asTarget(allEntities {
+                        type = EntityTypes.ARROW
+                        tag = CrossfireTags.INITIALIZED
+                        tag = !CrossfireTags.DIED
+                        nbt = NbtCompound(
+                            mapOf(
+                                "inGround" to NbtByte(1)
+                            )
+                        )
+                    })
+                    run {
+                        function(References.NAMESPACE, "arrow_hit")
+                    }
+                }
+
+                // Trigger a hit on enemy teams
+                for (teamName in References.TEAM_NAMES) {
+                    execute {
+                        asTarget(allEntities {
+                            type = EntityTypes.ARROW
+                            tag = CrossfireTags.INITIALIZED
+                            tag = !CrossfireTags.DIED
+                            tag = teamName
+                        })
+                        at(self())
+                        ifCondition {
+                            entity(allPlayers {
+                                team = !teamName
+                                tag = !CrossfireTags.DIED
+                                tag = !CrossfireTags.SPECTATING
+                                tag = !CrossfireTags.SELECTED
+                                distance = rangeEnd(2.5)
+                            })
+                        }
+                        run {
+                            function(References.NAMESPACE, "arrow_hit")
+                        }
+                    }
+                }
+
+                // Trigger a hit on supply crates
+                execute {
+                    asTarget(allEntities {
+                        type = EntityTypes.ARROW
+                        tag = CrossfireTags.INITIALIZED
+                        tag = !CrossfireTags.DIED
+                    })
+                    at(self())
+                    run {
+                        // Merging this into the statement above caused some weird compilation error :/
+                        execute {
+                            ifCondition {
+                                entity(allEntities {
+                                    tag = CrossfireTags.SUPPLY_CRATE
+                                    distance = rangeEnd(2.5)
+                                })
+                            }
+                            run {
+                                function(References.NAMESPACE, "arrow_hit")
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Function for arrows hitting something
+            function("arrow_hit", References.NAMESPACE) {
+                // Prevent arrows from triggering multiple hits
+                tag(self()) {
+                    add(CrossfireTags.DIED)
+                }
+
+                // Add the firework explosion colors
+                for (teamName in (References.TEAM_NAMES + CrossfireTeams.LOBBY_TEAM)) {
+                    execute {
+                        ifCondition {
+                            entity(self {
+                                tag = teamName
+                            })
+                        }
+                        at(self())
+                        run {
+                            summon(EntityTypes.FIREWORK_ROCKET, AT_POSITION) {
+                                put("Tags", NbtList(listOf(NbtString("custom"))))
+                                put("LifeTime", NbtInt(0))
+                                put(
+                                    "FireworksItem", NbtCompound(
+                                        mapOf(
+                                            "id" to NbtString("minecraft:firework_rocket"),
+                                            "count" to NbtInt(1),
+                                            "components" to NbtCompound(
+                                                mapOf(
+                                                    "minecraft:fireworks" to NbtCompound(
+                                                        mapOf(
+                                                            "explosions" to NbtList(
+                                                                listOf(
+                                                                    NbtCompound(
+                                                                        mapOf(
+                                                                            "shape" to NbtString("small_ball"),
+                                                                            "colors" to NbtIntArray(
+                                                                                intArrayOf(
+                                                                                    when (teamName) {
+                                                                                        "red" -> 11743532
+                                                                                        "yellow" -> 14602026
+                                                                                        "lime" -> 4312372
+                                                                                        "light_blue" -> 6719955
+                                                                                        "orange" -> 15435844
+                                                                                        "magenta" -> 12801229
+                                                                                        "lobby" -> 11250603
+                                                                                        else -> throw IllegalArgumentException("No firework color known for team $teamName")
+                                                                                    }
+                                                                                )
+                                                                            )
+                                                                        )
+                                                                    )
+                                                                )
+                                                            )
+                                                        )
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Kill the arrow
+                kill(self())
+            }
+
+            // Detect shooting crossbow
+            tick("detect_crossbow_shot") {
+                execute {
+                    asTarget(allPlayers {
+                        scores {
+                            score(CrossfireScoreboards.ITEM_USE_CROSSBOW) greaterThanOrEqualTo 1
+                        }
+                    })
+
+                    run {
+                        // Reset their item use score
+                        scoreboard.players.set(self(), CrossfireScoreboards.ITEM_USE_CROSSBOW, 0)
+
+                        // Remove tags marking the players having the crossbow loaded
+                        tag(self()) {
+                            remove(CrossfireTags.HAS_CROSSBOW_LOADED)
+                            remove(CrossfireTags.HAS_MULTISHOT_LOADED)
+                        }
+
+                        // Give proper player shooter tags
+                        repeat(3) {
+                            execute {
+                                at(self())
+                                run {
+                                    // Run this only on one entity!
+                                    data(allEntities(true) {
+                                        type = EntityTypes.ARROW
+                                        distance = rangeEnd(4)
+
+                                        // This avoids selecting the same arrow multiple times
+                                        tag = !CrossfireTags.GIVE_CROSSBOW
+                                    }) {
+                                        // Copy the Tags over to the arrow
+                                        modify("Tags") {
+                                            set(self(), "Tags")
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        // Make all nearby arrows not able to be picked up (we don't need to keep the self context here)
+                        execute {
+                            at(self())
+                            asTarget(allEntities {
+                                type = EntityTypes.ARROW
+                                distance = rangeEnd(4)
+                            })
+                            run {
+                                data(self()) {
+                                    modify("pickup") {
+                                        set(NbtByte(0))
+                                    }
+                                }
+                            }
+                        }
+
+                        // Give the entities a tag based on the team of the shooter
+                        for (teamName in (References.TEAM_NAMES + CrossfireTeams.LOBBY_TEAM)) {
+                            execute {
+                                ifCondition {
+                                    entity(self {
+                                        team = teamName
+                                    })
+                                }
+                                at(self())
+                                run {
+                                    tag(allEntities {
+                                        // Find all nearby arrow entities that do not yet have any team
+                                        type = EntityTypes.ARROW
+                                        distance = rangeEnd(4)
+
+                                        for (otherTeamName in (References.TEAM_NAMES + CrossfireTeams.LOBBY_TEAM)) {
+                                            tag = !otherTeamName
+                                        }
+                                    }) {
+                                        add(teamName)
+                                        add(CrossfireTags.INITIALIZED)
+                                    }
+                                }
+                            }
+                        }
+
+                        // Play bow shooting sounds
+                        playSound(SoundArgument("item.trident.hit_ground", "minecraft"), PlaySoundMixer.AMBIENT, allPlayers(), AT_POSITION, 10.0, 0.0)
+                        playSound(SoundArgument("entity.firework_rocket.launch", "minecraft"), PlaySoundMixer.AMBIENT, allPlayers(), AT_POSITION, 10.0, 1.0)
+                    }
+                }
+            }
+
             // Updates crossbows in inventories
             tick("update_crossbows") {
                 // Kill all dropped items
                 fun killAllDropped(id: String) {
-
                     kill(allEntities {
                         type = EntityTypes.ITEM
                         nbt = NbtCompound(
@@ -289,7 +569,7 @@ public object Crossbows {
                         }
 
                         // Remove any actual crossbows
-                        clear(self(), item("minecraft:crossbow"))
+                        clear(self(), item("crossbow"))
                     }
                 }
                 execute {
@@ -588,7 +868,7 @@ public object Crossbows {
 
                     run {
                         // Play a sound effect
-                        playSound(SoundArgument("minecraft", "item.bottle.fill_dragonbreath"), PlaySoundMixer.PLAYER, self(), AT_POSITION, 0.4, 1.0)
+                        playSound(SoundArgument("item.bottle.fill_dragonbreath", "minecraft"), PlaySoundMixer.PLAYER, self(), AT_POSITION, 0.4, 1.0)
 
                         // Update the crossbow
                         function("update_crossbow_state")
