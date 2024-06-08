@@ -38,6 +38,11 @@ public object ManagePlayers {
                         function(References.NAMESPACE, RESET_PLAYER_FUNCTION)
                     }
                 }
+
+                // # Remove pregame/postgame tag if you're spectating and not in the game
+                // tag @a[tag=spectating,tag=!joined] remove postgame
+                // tag @a[tag=spectating,tag=!joined] remove pregame
+                // tag @a[tag=spectating,tag=!joined] add mapchanger
             }
 
             function(RESET_PLAYER_FUNCTION) {
@@ -67,8 +72,8 @@ public object ManagePlayers {
                 scoreboard.players.enable(self(), CrossfireScoreboards.INTRO_START_TRIGGER)
                 scoreboard.players.enable(self(), CrossfireScoreboards.INTRO_SKIPPED_TRIGGER)
 
-
-                // TODO Teleport player to their map
+                // TODO Teleport player to their map (add 0 to map so it's at least 0)
+                scoreboard.players.add(self(), CrossfireScoreboards.TARGET_MAP_INDEX, 0)
             }
         }
     }

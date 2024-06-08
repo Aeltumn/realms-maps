@@ -15,14 +15,13 @@ import io.github.ayfri.kore.arguments.types.literals.allEntities
 import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
+import io.github.ayfri.kore.commands.command
 import io.github.ayfri.kore.commands.effect
-import io.github.ayfri.kore.commands.execute.Anchor
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.gamemode
 import io.github.ayfri.kore.commands.spectate
 import io.github.ayfri.kore.commands.tag
-import io.github.ayfri.kore.commands.tp
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.generated.Effects
 
@@ -136,14 +135,16 @@ public object Spectating {
 
                         // Teleport them to face the target
                         run {
-                            tp(
+                            addLine(command(
+                                "tp",
                                 self(),
                                 vec3(0.0.localPos, 0.0.localPos, 18.0.localPos),
+                                literal("facing"),
+                                literal("entity"),
                                 allEntities(true) {
                                     tag = "spectatetarget${index}"
-                                },
-                                Anchor.EYES,
-                            )
+                                }
+                            ))
                         }
                     }
                 }

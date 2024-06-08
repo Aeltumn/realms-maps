@@ -34,6 +34,9 @@ public object CrossfireTags {
     /** For players in the shooting range. */
     public const val SHOOTING_RANGE: String = "shooting_range"
 
+    /** Indicates that a player should get their team colored crossbow. */
+    public const val GIVE_CROSSBOW: String = "give_crossbow"
+
     /** Indicates a player's crossbow should reload if possible. */
     public const val RELOAD_CROSSBOW: String = "reload_crossbow"
 

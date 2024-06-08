@@ -1,22 +1,3 @@
-# Kill all dropped crossbows
-execute as @e[type=item,nbt={Item:{id:"minecraft:crossbow"}}] run kill @s
-# Kill all power-ups
-execute as @e[type=item,nbt={Item:{id:"minecraft:carrot_on_a_stick"}}] run kill @s
-execute as @e[type=item,nbt={Item:{id:"minecraft:potion"}}] run kill @s
-execute as @e[type=item,nbt={Item:{id:"minecraft:glass_bottle"}}] run kill @s
-
-# Remove illegal items from your inventory
-clear @a[tag=!admin] #crossfire:illegal_items
-
-# Remove pregame/postgame tag if you're spectating and not in the game
-tag @a[tag=spectating,tag=!joined] remove postgame
-tag @a[tag=spectating,tag=!joined] remove pregame
-tag @a[tag=spectating,tag=!joined] add mapchanger
-
-# Take givecrossbow and reloadcrossbow tags from spectators and admins tag @s remove givecrossbow
-execute as @a[tag=givecrossbow] unless entity @s[tag=!spectating,tag=!died,tag=!admin] run tag @s remove givecrossbow
-execute as @a[tag=reloadcrossbow] unless entity @s[tag=!spectating,tag=!died,tag=!admin] run tag @s remove reloadcrossbow
-
 # Make sure you have the map switch item_tele and item_tele2
 execute as @a[tag=mapchanger,scores={map=1},tag=!admin] store result score @s item_tele2 run clear @s[tag=!admin] minecraft:carrot_on_a_stick{CustomModelData:3} 0
 execute as @a[tag=mapchanger,scores={map=1},tag=!admin] if score @s item_tele2 matches 2.. run clear @s[tag=!admin] minecraft:carrot_on_a_stick{CustomModelData:3}
