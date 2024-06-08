@@ -62,6 +62,10 @@ public object ShootingRange {
                         tag(self()) {
                             remove(CrossfireTags.RELOAD_CROSSBOW)
                             remove(CrossfireTags.SHOOTING_RANGE)
+
+                            // This removes any already loaded fireworks
+                            remove(CrossfireTags.HAS_CROSSBOW_LOADED)
+                            remove(CrossfireTags.HAS_MULTISHOT_LOADED)
                         }
                     }
                 }
