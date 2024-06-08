@@ -6,6 +6,7 @@ import com.aeltumn.realms.common.tick
 import com.aeltumn.realms.crossfire.References
 import com.aeltumn.realms.crossfire.component.CrossfireScoreboards
 import com.aeltumn.realms.crossfire.component.CrossfireTags
+import com.aeltumn.realms.crossfire.feature.ManagePlayers.NO_GRAVITY_ATTRIBUTE
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.chatcomponents.entityComponent
 import io.github.ayfri.kore.arguments.chatcomponents.textComponent
@@ -17,7 +18,9 @@ import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.arguments.types.literals.tag
 import io.github.ayfri.kore.arguments.types.resources.EffectArgument
+import io.github.ayfri.kore.commands.AttributeModifierOperation
 import io.github.ayfri.kore.commands.TitleLocation
+import io.github.ayfri.kore.commands.attributes
 import io.github.ayfri.kore.commands.effect
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
@@ -25,6 +28,7 @@ import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.commands.tellraw
 import io.github.ayfri.kore.commands.title
+import io.github.ayfri.kore.generated.Attributes
 
 /** Sets up water touch handling. */
 public object TouchWater {
@@ -73,8 +77,14 @@ public object TouchWater {
                             add(CrossfireTags.SPECTATING)
                             add(CrossfireTags.DIED)
                         }
+                        attributes {
+                            get(self(), Attributes.GENERIC_GRAVITY) {
+                                modifiers {
+                                    add(NO_GRAVITY_ATTRIBUTE, "no_gravity", -0.08, AttributeModifierOperation.ADD_VALUE)
+                                }
+                            }
+                        }
                         effect(self()) {
-                            giveInfinite(EffectArgument("levitation"), 255, true)
                             giveInfinite(EffectArgument("invisibility"), 255, true)
                         }
 

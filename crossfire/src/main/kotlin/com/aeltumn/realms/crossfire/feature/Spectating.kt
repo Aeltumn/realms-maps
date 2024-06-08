@@ -4,6 +4,7 @@ import com.aeltumn.realms.common.tick
 import com.aeltumn.realms.crossfire.References
 import com.aeltumn.realms.crossfire.component.CrossfireScoreboards
 import com.aeltumn.realms.crossfire.component.CrossfireTags
+import com.aeltumn.realms.crossfire.feature.ManagePlayers.NO_GRAVITY_ATTRIBUTE
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.enums.Gamemode
 import io.github.ayfri.kore.arguments.maths.vec3
@@ -15,6 +16,8 @@ import io.github.ayfri.kore.arguments.types.literals.allEntities
 import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
+import io.github.ayfri.kore.commands.AttributeModifierOperation
+import io.github.ayfri.kore.commands.attributes
 import io.github.ayfri.kore.commands.command
 import io.github.ayfri.kore.commands.effect
 import io.github.ayfri.kore.commands.execute.execute
@@ -23,6 +26,7 @@ import io.github.ayfri.kore.commands.gamemode
 import io.github.ayfri.kore.commands.spectate
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.functions.function
+import io.github.ayfri.kore.generated.Attributes
 import io.github.ayfri.kore.generated.Effects
 
 /** Sets up spectating. */
@@ -150,8 +154,14 @@ public object Spectating {
 
                 function("${ENTER_SPECTATING_FUNCTION}-$map") {
                     // Put them in the spectator system
+                    attributes {
+                        get(self(), Attributes.GENERIC_GRAVITY) {
+                            modifiers {
+                                add(NO_GRAVITY_ATTRIBUTE, "no_gravity", -0.08, AttributeModifierOperation.ADD_VALUE)
+                            }
+                        }
+                    }
                     effect(self()) {
-                        giveInfinite(Effects.LEVITATION, 255, true)
                         giveInfinite(Effects.INVISIBILITY, 255, true)
                     }
 
