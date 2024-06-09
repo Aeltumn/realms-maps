@@ -65,20 +65,8 @@ execute if score Blue winner matches 1.. run tag @a[team=blue,scores={map=0}] ad
 # Give lost if you don't have win
 tag @a[tag=!won0,scores={map=0}] add lost0
 
-# Play this game's song function (in case of simultanious wins we have two copies)
+# Play this game's song function (in case of simultaneous wins we have two copies)
 schedule function crossfire:song0 6s replace
 
-# Clear viewers of the timer
-bossbar set crossfire:timer0 players
-# Show the postgame bossbar
-bossbar set crossfire:postgame0 players
-bossbar set crossfire:postgame0 players @a[scores={map=0}]
-scoreboard players set game0 bar 2
-# Set the post game timer to its start value
-scoreboard players set postgametimer0 postgametimer 25
 # Reset all players in this map
 execute as @a[scores={map=0},tag=joined] run function crossfire:reset_player
-# Reset all players in this map
-function crossfire:timer0-3
-# Cleanup
-kill @e[tag=cleanup0]

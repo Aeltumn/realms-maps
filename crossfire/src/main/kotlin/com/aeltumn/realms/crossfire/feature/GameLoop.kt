@@ -2,6 +2,8 @@ package com.aeltumn.realms.crossfire.feature
 
 import com.aeltumn.realms.common.AT_POSITION
 import com.aeltumn.realms.common.Configurable
+import com.aeltumn.realms.common.clearBossBarPlayers
+import com.aeltumn.realms.common.setBossBarName
 import com.aeltumn.realms.crossfire.References
 import com.aeltumn.realms.crossfire.TimerIdentifier
 import com.aeltumn.realms.crossfire.component.CrossfireBossbars
@@ -19,20 +21,22 @@ import io.github.ayfri.kore.arguments.numbers.seconds
 import io.github.ayfri.kore.arguments.numbers.worldPos
 import io.github.ayfri.kore.arguments.scores.score
 import io.github.ayfri.kore.arguments.selector.scores
+import io.github.ayfri.kore.arguments.types.literals.SelectorArgument
+import io.github.ayfri.kore.arguments.types.literals.allEntities
 import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.literal
-import io.github.ayfri.kore.arguments.types.literals.player
 import io.github.ayfri.kore.arguments.types.literals.rotation
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.arguments.types.resources.BlockArgument
 import io.github.ayfri.kore.arguments.types.resources.SoundArgument
 import io.github.ayfri.kore.commands.PlaySoundMixer
 import io.github.ayfri.kore.commands.TitleLocation
-import io.github.ayfri.kore.commands.bossBar
+import io.github.ayfri.kore.commands.bossBars
 import io.github.ayfri.kore.commands.clone
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.fill
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.kill
 import io.github.ayfri.kore.commands.playSound
 import io.github.ayfri.kore.commands.schedules
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
@@ -40,6 +44,7 @@ import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.commands.tellraw
 import io.github.ayfri.kore.commands.title
 import io.github.ayfri.kore.commands.tp
+import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.functions.function
 
 /** Sets up the main game loop. */
@@ -50,6 +55,26 @@ public object GameLoop : Configurable {
             val startTimer = TimerIdentifier(map, "start")
             val gameTimer = TimerIdentifier(map, "game")
             val postGameTimer = TimerIdentifier(map, "post_game")
+
+            // All selectors that are in this map
+            val selector = mapMembersSelector(mapIndex)
+
+            /** Stores the amount of available teams in [CrossfireScoreboards.TEAM_COUNT]. */
+            fun Function.countTeams() {
+                scoreboard.players.set(literal(map), CrossfireScoreboards.TEAM_COUNT, 0)
+                for (teamName in References.getTeamNames(map)) {
+                    execute {
+                        ifCondition {
+                            entity(allPlayers {
+                                team = teamName
+                            })
+                        }
+                        run {
+                            scoreboard.players.add(literal(map), CrossfireScoreboards.TEAM_COUNT, 1)
+                        }
+                    }
+                }
+            }
 
             // Start function triggered by button in map
             function("start-$map") {
@@ -65,19 +90,7 @@ public object GameLoop : Configurable {
                 }
 
                 // Determine the amount of teams that exist
-                scoreboard.players.set(literal(map), CrossfireScoreboards.TEAM_COUNT, 0)
-                for (teamName in References.getTeamNames(map)) {
-                    execute {
-                        ifCondition {
-                            entity(allPlayers {
-                                team = teamName
-                            })
-                        }
-                        run {
-                            scoreboard.players.add(literal(map), CrossfireScoreboards.TEAM_COUNT, 1)
-                        }
-                    }
-                }
+                countTeams()
 
                 // If there only exists 0 or 1 teams set player count to 0
                 execute {
@@ -95,14 +108,12 @@ public object GameLoop : Configurable {
                         score(literal(map), CrossfireScoreboards.PLAYER_COUNT) lessThanOrEqualTo 0
                     }
                     run {
-                        tellraw(self(), textComponent(""))
                         tellraw(
-                            self(),
+                            selector,
                             ChatComponents().apply {
                                 plus(textComponent("You need to have at least 2 teams with players in them."))
                             }
                         )
-                        tellraw(self(), textComponent(""))
                     }
                 }
                 execute {
@@ -110,14 +121,12 @@ public object GameLoop : Configurable {
                         score(literal(map), CrossfireScoreboards.PLAYER_COUNT) equalTo 1
                     }
                     run {
-                        tellraw(self(), textComponent(""))
                         tellraw(
-                            self(),
+                            selector,
                             ChatComponents().apply {
                                 plus(textComponent("Not enough players have chosen a team yet!"))
                             }
                         )
-                        tellraw(self(), textComponent(""))
                     }
                 }
                 execute {
@@ -125,14 +134,12 @@ public object GameLoop : Configurable {
                         score(literal(map), CrossfireScoreboards.PLAYER_COUNT) greaterThan 12
                     }
                     run {
-                        tellraw(self(), textComponent(""))
                         tellraw(
-                            self(),
+                            selector,
                             ChatComponents().apply {
                                 plus(textComponent("Only a maximum of 12 players can participate in a game."))
                             }
                         )
-                        tellraw(self(), textComponent(""))
                     }
                 }
                 execute {
@@ -165,7 +172,7 @@ public object GameLoop : Configurable {
 
                         // Reset kills and winners for each team in use
                         for (teamName in References.getTeamNames(map)) {
-                            scoreboard.players.remove(literal(References.getDisplayNameForTeam(teamName)), CrossfireScoreboards.KILLS, 1)
+                            scoreboard.players.set(literal(References.getDisplayNameForTeam(teamName)), CrossfireScoreboards.KILLS, 0)
                             scoreboard.players.reset(literal(References.getDisplayNameForTeam(teamName)), CrossfireScoreboards.WINNER)
                         }
 
@@ -174,10 +181,14 @@ public object GameLoop : Configurable {
 
                         // Set this game to started
                         scoreboard.players.set(literal(map), CrossfireScoreboards.STARTED, 1)
+                        scoreboard.players.set(literal(map), CrossfireScoreboards.GAME_STATE, 1)
+
+                        // Set the timings for all players
+                        title(selector, 0.0, 20 * 6.0, 0.0)
 
                         // Start the pre-game timer
-                        scoreboard.players.set(literal(map), CrossfireScoreboards.START_TIMER, 5)
-                        schedules.replace(startTimer.path, 1.seconds)
+                        scoreboard.players.set(literal(map), CrossfireScoreboards.START_TIMER, 6)
+                        function(References.NAMESPACE, startTimer.path)
 
                         when (map) {
                             "party" -> {
@@ -219,12 +230,11 @@ public object GameLoop : Configurable {
                         score(literal(map), CrossfireScoreboards.START_TIMER) greaterThanOrEqualTo 1
                     }
                     run {
+                        // Reduce the timer by one and run it again after a second
+                        scoreboard.players.remove(literal(map), CrossfireScoreboards.START_TIMER, 1)
+                        schedules.replace(startTimer.id, 1.seconds)
+
                         // Show a countdown title
-                        val selector = allPlayers {
-                            scores {
-                                score(CrossfireScoreboards.TARGET_MAP_INDEX) equalTo mapIndex
-                            }
-                        }
                         title(
                             selector,
                             TitleLocation.SUBTITLE,
@@ -244,10 +254,6 @@ public object GameLoop : Configurable {
 
                         // Play a noise alongside the countdown
                         playSound(SoundArgument("entity.experience_orb.pickup", "minecraft"), PlaySoundMixer.PLAYER, selector, AT_POSITION, 0.2, 0.0)
-
-                        // Reduce the timer by one and run it again after a second
-                        scoreboard.players.remove(literal(map), CrossfireScoreboards.START_TIMER, 1)
-                        schedules.replace(startTimer.path, 1.seconds)
                     }
                 }
 
@@ -261,9 +267,84 @@ public object GameLoop : Configurable {
                     }
                 }
             }
-            function(gameTimer.path) {
-                // Update the boss bar's contents
 
+            function(gameTimer.path) {
+                // Reduce the game timer value
+                execute {
+                    ifCondition {
+                        score(literal(map), CrossfireScoreboards.GAME_TIMER) greaterThanOrEqualTo 1
+                    }
+                    run {
+                        // Reduce the timer by one and run it again after a second
+                        scoreboard.players.remove(literal(map), CrossfireScoreboards.GAME_TIMER, 1)
+                        schedules.replace(gameTimer.id, 1.seconds)
+                    }
+                }
+
+                // Update the boss bar's contents
+                execute {
+                    ifCondition {
+                        score(literal(map), CrossfireScoreboards.GAME_TIMER) greaterThanOrEqualTo 0
+                    }
+                    run {
+                        execute {
+                            storeResult {
+                                bossBarValue("${References.NAMESPACE}:${CrossfireBossbars.getTimer(map)}")
+                            }
+                            run {
+                                scoreboard.players.get(literal(map), CrossfireScoreboards.GAME_TIMER)
+                            }
+                        }
+                    }
+                }
+                execute {
+                    ifCondition {
+                        score(literal(map), CrossfireScoreboards.GAME_TIMER) greaterThanOrEqualTo 2
+                    }
+                    run {
+                        setBossBarName(CrossfireBossbars.getTimer(map), References.NAMESPACE, ChatComponents().apply {
+                            plus(textComponent("Game ends in: "))
+                            plus(scoreComponent(CrossfireScoreboards.GAME_TIMER, literal(map)) {
+                                bold = true
+                                color = Color.GOLD
+                            })
+                            plus(textComponent(" seconds."))
+                        })
+                    }
+                }
+                execute {
+                    ifCondition {
+                        score(literal(map), CrossfireScoreboards.GAME_TIMER) equalTo 1
+                    }
+                    run {
+                        setBossBarName(CrossfireBossbars.getTimer(map), References.NAMESPACE, ChatComponents().apply {
+                            plus(textComponent("Game ends in: "))
+                            plus(scoreComponent(CrossfireScoreboards.GAME_TIMER, literal(map)) {
+                                bold = true
+                                color = Color.GOLD
+                            })
+                            plus(textComponent(" second."))
+                        })
+                    }
+                }
+
+                /*
+                # Spawn random crates
+                execute if predicate crossfire:spawn_crates if score gametimer0 gametimer matches 20 run function crossfire:spawn/random_crates0
+                execute if predicate crossfire:spawn_crates if score gametimer0 gametimer matches 40 run function crossfire:spawn/random_crates0
+                execute if predicate crossfire:spawn_crates if score gametimer0 gametimer matches 60 run function crossfire:spawn/random_crates0
+                execute if predicate crossfire:spawn_crates if score gametimer0 gametimer matches 80 run function crossfire:spawn/random_crates0
+                execute if predicate crossfire:spawn_crates if score gametimer0 gametimer matches 100 run function crossfire:spawn/random_crates0
+                execute if predicate crossfire:spawn_crates if score gametimer0 gametimer matches 120 run function crossfire:spawn/random_crates0
+                execute if predicate crossfire:spawn_crates if score gametimer0 gametimer matches 140 run function crossfire:spawn/random_crates0
+                execute if predicate crossfire:spawn_crates if score gametimer0 gametimer matches 160 run function crossfire:spawn/random_crates0
+                execute if predicate crossfire:spawn_crates if score gametimer0 gametimer matches 180 run function crossfire:spawn/random_crates0
+                execute if predicate crossfire:spawn_crates if score gametimer0 gametimer matches 200 run function crossfire:spawn/random_crates0
+                execute if predicate crossfire:spawn_crates if score gametimer0 gametimer matches 220 run function crossfire:spawn/random_crates0
+                execute if predicate crossfire:spawn_crates if score gametimer0 gametimer matches 240 run function crossfire:spawn/random_crates0
+                execute if predicate crossfire:spawn_crates if score gametimer0 gametimer matches 260 run function crossfire:spawn/random_crates0
+                execute if predicate crossfire:spawn_crates if score gametimer0 gametimer matches 280 run function crossfire:spawn/random_crates0
+                 */
 
                 // Handle the timer's state
                 execute {
@@ -271,16 +352,22 @@ public object GameLoop : Configurable {
                         score(literal(map), CrossfireScoreboards.GAME_TIMER) greaterThanOrEqualTo 1
                     }
                     run {
-                        // Show a countdown title
-                        val selector = allPlayers {
-                            scores {
-                                score(CrossfireScoreboards.TARGET_MAP_INDEX) equalTo mapIndex
+                        // Detect if the game is ending and set the time to 0
+                        countTeams()
+                        execute {
+                            ifCondition {
+                                score(literal(map), CrossfireScoreboards.TEAM_COUNT) lessThanOrEqualTo 1
+                            }
+                            run {
+                                scoreboard.players.set(literal(map), CrossfireScoreboards.GAME_TIMER, 0)
+                                tellraw(
+                                    selector,
+                                    ChatComponents().apply {
+                                        plus(textComponent("Only one team is left, the game will end now."))
+                                    }
+                                )
                             }
                         }
-
-                        // Reduce the timer by one and run it again after a second
-                        scoreboard.players.remove(literal(map), CrossfireScoreboards.GAME_TIMER, 1)
-                        schedules.replace(gameTimer.path, 1.seconds)
                     }
                 }
 
@@ -295,14 +382,109 @@ public object GameLoop : Configurable {
                 }
             }
 
+            function(postGameTimer.path) {
+                // Handle the timer's state
+                execute {
+                    ifCondition {
+                        score(literal(map), CrossfireScoreboards.POST_GAME_TIMER) greaterThanOrEqualTo 1
+                    }
+                    run {
+                        // Reduce the timer by one and run it again after a second
+                        scoreboard.players.remove(literal(map), CrossfireScoreboards.POST_GAME_TIMER, 1)
+                        schedules.replace(postGameTimer.id, 1.seconds)
+                    }
+                }
+
+                // Update the boss bar's contents
+                execute {
+                    ifCondition {
+                        score(literal(map), CrossfireScoreboards.POST_GAME_TIMER) greaterThanOrEqualTo 0
+                    }
+                    run {
+                        execute {
+                            storeResult {
+                                bossBarValue("${References.NAMESPACE}:${CrossfireBossbars.getPostGameTimer(map)}")
+                            }
+                            run {
+                                scoreboard.players.get(literal(map), CrossfireScoreboards.POST_GAME_TIMER)
+                            }
+                        }
+                    }
+                }
+                execute {
+                    ifCondition {
+                        score(literal(map), CrossfireScoreboards.POST_GAME_TIMER) greaterThanOrEqualTo 2
+                    }
+                    run {
+                        setBossBarName(CrossfireBossbars.getPostGameTimer(map), References.NAMESPACE, ChatComponents().apply {
+                            plus(textComponent("Back to lobby in: "))
+                            plus(scoreComponent(CrossfireScoreboards.POST_GAME_TIMER, literal(map)) {
+                                bold = true
+                                color = Color.GOLD
+                            })
+                            plus(textComponent(" seconds."))
+                        })
+                    }
+                }
+                execute {
+                    ifCondition {
+                        score(literal(map), CrossfireScoreboards.POST_GAME_TIMER) equalTo 1
+                    }
+                    run {
+                        setBossBarName(CrossfireBossbars.getPostGameTimer(map), References.NAMESPACE, ChatComponents().apply {
+                            plus(textComponent("Back to lobby in: "))
+                            plus(scoreComponent(CrossfireScoreboards.POST_GAME_TIMER, literal(map)) {
+                                bold = true
+                                color = Color.GOLD
+                            })
+                            plus(textComponent(" second."))
+                        })
+                    }
+                }
+
+                /*
+                execute if score Red winner matches 1 run summon firework_rocket 534.5 73 416.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;11743532]}],Flight:2}}}}
+                execute if score Yellow winner matches 1 run summon firework_rocket 534.5 73 416.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;14602026]}],Flight:2}}}}
+                execute if score Green winner matches 1 run summon firework_rocket 534.5 73 416.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;4312372]}],Flight:2}}}}
+                execute if score Blue winner matches 1 run summon firework_rocket 534.5 73 416.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;6719955]}],Flight:2}}}}
+                execute if score Red winner matches 1 run summon firework_rocket 524.5 74 426.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;11743532]}],Flight:2}}}}
+                execute if score Yellow winner matches 1 run summon firework_rocket 524.5 74 426.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;14602026]}],Flight:2}}}}
+                execute if score Green winner matches 1 run summon firework_rocket 524.5 74 426.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;4312372]}],Flight:2}}}}
+                execute if score Blue winner matches 1 run summon firework_rocket 524.5 74 426.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;6719955]}],Flight:2}}}}
+
+                execute if score Orange winner matches 1 run summon firework_rocket 525.5 76 292.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;15435844]}],Flight:2}}}}
+                execute if score Magenta winner matches 1 run summon firework_rocket 525.5 76 292.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;12801229]}],Flight:2}}}}
+                execute if score Orange winner matches 1 run summon firework_rocket 533.5 76 300.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;15435844]}],Flight:2}}}}
+                execute if score Magenta winner matches 1 run summon firework_rocket 533.5 76 300.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;12801229]}],Flight:2}}}}
+                 */
+
+                // If we're at zero we run the end script
+                execute {
+                    ifCondition {
+                        score(literal(map), CrossfireScoreboards.POST_GAME_TIMER) equalTo 0
+                    }
+                    run {
+                        when (map) {
+                            "party" -> {
+                                // Copy back the logo
+                                clone(vec3(464, 95, 345), vec3(467, 75, 382), vec3(525, 89, 403))
+                            }
+
+                            "duel" -> {
+                                // Copy back the logo
+                                clone(vec3(464, 95, 345), vec3(467, 75, 382), vec3(525, 89, 278))
+                            }
+
+                            else -> throw IllegalArgumentException("Invalid map name $map")
+                        }
+                        function(References.NAMESPACE, "reset_map_$map")
+                    }
+                }
+            }
+
             // Start handling
             function("start_map_$map") {
                 // Select all players in this area
-                val selector = allPlayers {
-                    scores {
-                        score(CrossfireScoreboards.TARGET_MAP_INDEX) equalTo mapIndex
-                    }
-                }
                 execute {
                     asTarget(allPlayers {
                         // Only give crossbow permissions to those playing!
@@ -324,6 +506,7 @@ public object GameLoop : Configurable {
                     TitleLocation.SUBTITLE,
                     textComponent("")
                 )
+                title(selector, 0.0, 20.0, 0.0)
                 title(
                     selector,
                     TitleLocation.TITLE,
@@ -332,15 +515,16 @@ public object GameLoop : Configurable {
                     }
                 )
 
+                // Update the game state
+                scoreboard.players.set(literal(map), CrossfireScoreboards.GAME_STATE, 2)
+
                 // Show the boss bar for all players in the map
-                bossBar(CrossfireBossbars.getTimer(map), References.NAMESPACE) {
-                    setPlayers(player("-"))
-                    setPlayers(selector)
-                }
+                clearBossBarPlayers(CrossfireBossbars.getTimer(map), References.NAMESPACE)
+                bossBars.get(CrossfireBossbars.getTimer(map), References.NAMESPACE).setPlayers(selector)
 
                 // Start the game timer
-                scoreboard.players.remove(literal(map), CrossfireScoreboards.GAME_TIMER, 300)
-                schedules.replace(gameTimer.path, 1.seconds)
+                scoreboard.players.set(literal(map), CrossfireScoreboards.GAME_TIMER, 301)
+                function(References.NAMESPACE, gameTimer.path)
 
                 when (map) {
                     "party" -> {
@@ -363,7 +547,20 @@ public object GameLoop : Configurable {
 
             // End handling
             function("end_map_$map") {
+                // Set the game state to post game
+                scoreboard.players.set(literal(map), CrossfireScoreboards.GAME_STATE, 3)
 
+                // Show the post game boss bar for all players in the map
+                clearBossBarPlayers(CrossfireBossbars.getTimer(map), References.NAMESPACE)
+                clearBossBarPlayers(CrossfireBossbars.getPostGameTimer(map), References.NAMESPACE)
+                bossBars.get(CrossfireBossbars.getPostGameTimer(map), References.NAMESPACE).setPlayers(selector)
+
+                // Remove any entities marked as cleanup on this map specifically
+                kill(allEntities { tag = "cleanup-$map" })
+
+                // Start the post game timer
+                scoreboard.players.set(literal(map), CrossfireScoreboards.POST_GAME_TIMER, 26)
+                function(References.NAMESPACE, postGameTimer.path)
             }
         }
 
@@ -421,3 +618,11 @@ public object GameLoop : Configurable {
         }
     }
 }
+
+/** Creates a selector for all players in [mapIndex]. */
+public fun mapMembersSelector(mapIndex: Int): SelectorArgument =
+    allPlayers {
+        scores {
+            score(CrossfireScoreboards.TARGET_MAP_INDEX) equalTo mapIndex
+        }
+    }

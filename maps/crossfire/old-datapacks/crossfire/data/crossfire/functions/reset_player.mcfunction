@@ -17,14 +17,3 @@ execute if entity @s[scores={map=1}] unless score postgametimer1 postgametimer m
 # Teleport player different during post-game
 execute if entity @s[scores={map=1}] unless score postgametimer1 postgametimer matches -1 run tp @s[tag=!admin] 529 71 296 -90 0
 execute if entity @s[scores={map=0}] unless score postgametimer0 postgametimer matches -1 run tp @s[tag=!admin] 529 72 421 -90 0
-
-# Update boss bar viewers based on current state
-bossbar set crossfire:timer0 players
-bossbar set crossfire:postgame0 players
-execute if score game0 bar matches 1 run bossbar set crossfire:timer0 players @a[scores={map=0}]
-execute if score game0 bar matches 2 run bossbar set crossfire:postgame0 players @a[scores={map=0}]
-
-bossbar set crossfire:timer1 players
-bossbar set crossfire:postgame1 players
-execute if score game1 bar matches 1 run bossbar set crossfire:timer1 players @a[scores={map=1}]
-execute if score game1 bar matches 2 run bossbar set crossfire:postgame1 players @a[scores={map=1}]

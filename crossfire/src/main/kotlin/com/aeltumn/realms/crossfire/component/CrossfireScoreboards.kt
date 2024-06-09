@@ -14,6 +14,7 @@ import io.github.ayfri.kore.helpers.ScoreboardDisplay
 /** Manages crossfire's scoreboards. */
 public object CrossfireScoreboards : Setuppable {
 
+    public const val GAME_STATE: String = "game_state"
     public const val GAME_TIMER: String = "game_timer"
     public const val POST_GAME_TIMER: String = "post_game_timer"
     public const val DEAD_TIMER: String = "dead_timer"
@@ -24,12 +25,9 @@ public object CrossfireScoreboards : Setuppable {
     public const val PLAYER: String = "player"
     public const val JOINED: String = "joined"
     public const val AGE: String = "age"
-    public const val ROUND: String = "round"
-    public const val RESULT: String = "result"
     public const val SONG: String = "song"
     public const val WINS: String = "wins"
     public const val WINNER: String = "winner"
-    public const val BAR: String = "bar"
     public const val KILLS: String = "kills"
 
     public const val RESPAWN_SHIELD: String = "respawn_shield"
@@ -73,14 +71,11 @@ public object CrossfireScoreboards : Setuppable {
             PLAYER,
             JOINED,
             AGE,
-            ROUND,
-            RESULT,
             TARGET_MAP_INDEX,
             SONG,
             WINS,
             MAP_SWITCH_COOLDOWN,
             WINNER,
-            BAR,
             RESPAWN_SHIELD,
             ROUND_KILLS,
             SPECTATE_SUCCESS,

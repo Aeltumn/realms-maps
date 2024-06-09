@@ -14,19 +14,19 @@ public object CrossfireBossbars : Setuppable {
     public fun getTimer(map: String): String = "timer_$map"
 
     /** Returns the name of the post game boss bar for [map]. */
-    public fun getPostGame(map: String): String = "post_game_$map"
+    public fun getPostGameTimer(map: String): String = "post_game_$map"
 
     override fun Function.setup() {
         for (map in References.MAPS) {
-            bossBar(getPostGame(map), References.NAMESPACE) {
+            bossBar(getPostGameTimer(map), References.NAMESPACE) {
+                add(textComponent(""))
                 setColor(BossBarColor.BLUE)
                 setMax(25)
-                add(textComponent(""))
             }
             bossBar(getTimer(map), References.NAMESPACE) {
+                add(textComponent(""))
                 setColor(BossBarColor.YELLOW)
                 setMax(300)
-                add(textComponent(""))
             }
         }
     }

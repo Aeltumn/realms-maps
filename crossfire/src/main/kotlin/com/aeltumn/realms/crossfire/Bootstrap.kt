@@ -27,7 +27,6 @@ import io.github.ayfri.kore.arguments.chatcomponents.textComponent
 import io.github.ayfri.kore.arguments.enums.Difficulty
 import io.github.ayfri.kore.arguments.types.literals.allEntities
 import io.github.ayfri.kore.commands.difficulty
-import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.gamerule
 import io.github.ayfri.kore.commands.kill
 import io.github.ayfri.kore.generated.Gamerules
@@ -59,25 +58,6 @@ public fun main(args: Array<String>) {
             description = textComponent("The main datapack that makes our maps work!")
         }
 
-        // Configure features
-        Configurable.apply(
-            this,
-            CrossfirePredicates,
-            CrossfireTags,
-            Crossbows,
-            Flightpaths,
-            GameLoop,
-            Interactables,
-            Intro,
-            ManagePlayers,
-            MapSwitching,
-            MapSystem,
-            ShootingRange,
-            Spectating,
-            TeamJoin,
-            TouchWater
-        )
-
         // Set up initial functions
         load("setup") {
             // Set up components
@@ -107,11 +87,25 @@ public fun main(args: Array<String>) {
             gamerule(Gamerules.DO_MOB_SPAWNING, false)
             gamerule(Gamerules.NATURAL_REGENERATION, false)
             gamerule(Gamerules.SEND_COMMAND_FEEDBACK, BootstrapHelper.DEVELOPMENT_MODE)
-
-            // Teleport all players to their lobbies
-            for (map in References.MAPS) {
-                function(References.NAMESPACE, "lobby_teleport_$map")
-            }
         }
+
+        // Configure features after the initial load function
+        Configurable.apply(
+            this,
+            CrossfirePredicates,
+            CrossfireTags,
+            Crossbows,
+            Flightpaths,
+            GameLoop,
+            Interactables,
+            Intro,
+            ManagePlayers,
+            MapSwitching,
+            MapSystem,
+            ShootingRange,
+            Spectating,
+            TeamJoin,
+            TouchWater
+        )
     }
 }

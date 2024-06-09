@@ -12,6 +12,7 @@ import io.github.ayfri.kore.arguments.selector.scores
 import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.execute.execute
+import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.functions.function
 
@@ -33,6 +34,9 @@ public object MapSwitching : Configurable {
                 // Restart the cooldown and leave the intro
                 scoreboard.players.set(self(), CrossfireScoreboards.INTRO, 0)
                 scoreboard.players.set(self(), CrossfireScoreboards.MAP_SWITCH_COOLDOWN, 0)
+
+                // Reset the player
+                function(References.NAMESPACE, ManagePlayers.RESET_PLAYER_FUNCTION)
             }
         }
 

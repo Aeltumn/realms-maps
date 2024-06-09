@@ -1,8 +1,10 @@
 package com.aeltumn.realms.crossfire.feature
 
 import com.aeltumn.realms.common.Configurable
+import com.aeltumn.realms.common.clearBossBarPlayers
 import com.aeltumn.realms.common.tick
 import com.aeltumn.realms.crossfire.References
+import com.aeltumn.realms.crossfire.component.CrossfireBossbars
 import com.aeltumn.realms.crossfire.component.CrossfireScoreboards
 import com.aeltumn.realms.crossfire.component.CrossfireTags
 import com.aeltumn.realms.crossfire.component.CrossfireTeams
@@ -15,9 +17,11 @@ import io.github.ayfri.kore.arguments.numbers.rot
 import io.github.ayfri.kore.arguments.numbers.worldPos
 import io.github.ayfri.kore.arguments.scores.score
 import io.github.ayfri.kore.arguments.types.literals.allPlayers
+import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.rotation
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.attributes
+import io.github.ayfri.kore.commands.bossBars
 import io.github.ayfri.kore.commands.clear
 import io.github.ayfri.kore.commands.effect
 import io.github.ayfri.kore.commands.execute.execute
@@ -157,6 +161,29 @@ public object ManagePlayers : Configurable {
                 ifCondition { score(self(), CrossfireScoreboards.TARGET_MAP_INDEX) greaterThanOrEqualTo 1 }
                 run {
                     tp(self(), vec3(574.5.worldPos, 85.0.worldPos, 296.5.worldPos), rotation(90.0.rot, 0.0.rot))
+                }
+            }
+
+            // Update the boss bar membership of each map
+            for ((mapIndex, map) in References.MAPS.withIndex()) {
+                clearBossBarPlayers(CrossfireBossbars.getTimer(map), References.NAMESPACE)
+                clearBossBarPlayers(CrossfireBossbars.getPostGameTimer(map), References.NAMESPACE)
+
+                execute {
+                    ifCondition {
+                        score(literal(map), CrossfireScoreboards.GAME_STATE) equalTo 2
+                    }
+                    run {
+                        bossBars.get(CrossfireBossbars.getTimer(map), References.NAMESPACE).setPlayers(mapMembersSelector(mapIndex))
+                    }
+                }
+                execute {
+                    ifCondition {
+                        score(literal(map), CrossfireScoreboards.GAME_STATE) equalTo 3
+                    }
+                    run {
+                        bossBars.get(CrossfireBossbars.getPostGameTimer(map), References.NAMESPACE).setPlayers(mapMembersSelector(mapIndex))
+                    }
                 }
             }
         }

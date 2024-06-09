@@ -87,9 +87,7 @@ public object Interactables : Configurable {
                             ))
                         ))
                     ) {
-                        // Party -> Duel
-                        scoreboard.players.set(self(), CrossfireScoreboards.TARGET_MAP_INDEX, 1)
-                        function(References.NAMESPACE, ManagePlayers.RESET_PLAYER_FUNCTION)
+                        function(References.NAMESPACE, "change_map")
                     }
                     executeIfHolding(
                         NbtCompound(mapOf(
@@ -99,9 +97,7 @@ public object Interactables : Configurable {
                             ))
                         ))
                     ) {
-                        // Duel -> Party
-                        scoreboard.players.set(self(), CrossfireScoreboards.TARGET_MAP_INDEX, 0)
-                        function(References.NAMESPACE, ManagePlayers.RESET_PLAYER_FUNCTION)
+                        function(References.NAMESPACE, "change_map")
                     }
 
                     // Quit Game
