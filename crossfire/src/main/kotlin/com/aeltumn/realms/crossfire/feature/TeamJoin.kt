@@ -56,11 +56,11 @@ public object TeamJoin : Configurable {
     override fun DataPack.configure() {
         tick("team_join") {
             for ((map, teams) in References.TEAMS) {
-                for ((team) in teams) {
+                for ((teamName) in teams) {
                     execute {
                         asTarget(
                             allPlayers {
-                                tag = !team
+                                team = !teamName
                                 scores {
                                     score(CrossfireScoreboards.INTRO_COMPLETED) greaterThanOrEqualTo 1
                                 }
@@ -68,20 +68,20 @@ public object TeamJoin : Configurable {
                         )
                         at(self())
                         ifCondition {
-                            block(vec3(0.relativePos, (-1).relativePos, 0.relativePos), io.github.ayfri.kore.arguments.types.resources.block("${team}_concrete"))
+                            block(vec3(0.relativePos, (-1).relativePos, 0.relativePos), io.github.ayfri.kore.arguments.types.resources.block("${teamName}_concrete"))
                         }
 
                         run {
                             title(self(), 10.0, 40.0, 10.0)
-                            title(self(), TitleLocation.SUBTITLE, textComponent("Joined team: ").plus(textComponent(References.getDisplayNameForTeam(team), References.getColorForTeam(team)) { bold = true }))
-                            title(self(), TitleLocation.TITLE, textComponent("\uE000"))
+                            title(self(), TitleLocation.SUBTITLE, textComponent("Joined team: ").plus(textComponent(References.getDisplayNameForTeam(teamName), References.getColorForTeam(teamName)) { bold = true }))
+                            title(self(), TitleLocation.TITLE, textComponent(References.getDisplayIconForTeam(teamName)))
                             tag(self()) {
                                 add(CrossfireTags.JOINED)
                                 add("${CrossfireTags.JOINED}-${map}")
                             }
                             playSound("minecraft:block.tripwire.attach", "player", self(), AT_POSITION, 2.0, 1.0)
                             teams {
-                                join(team, self())
+                                join(teamName, self())
                             }
                             function(References.NAMESPACE, "give_armor")
                         }

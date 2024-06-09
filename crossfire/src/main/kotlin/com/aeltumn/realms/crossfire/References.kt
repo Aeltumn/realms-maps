@@ -60,6 +60,18 @@ public object References {
         }
     )
 
+    /** Returns the display icon to use for [team]. */
+    public fun getDisplayIconForTeam(team: String): String =
+        when (team) {
+            "red" -> "\uE003"
+            "yellow" -> "\uE001"
+            "lime" -> "\uE000"
+            "light_blue" -> "\uE002"
+            "orange" -> "\uE011"
+            "magenta" -> "\uE012"
+            else -> ""
+        }
+
     /** Returns the name to display for [team]. */
     public fun getDisplayNameForTeam(team: String): String {
         if (team == "light_blue") return "Blue"
