@@ -8,10 +8,10 @@ import io.github.ayfri.kore.arguments.colors.rgb
 public object References {
 
     /** The namespace used. */
-    public val NAMESPACE: String = "crossfire"
+    public const val NAMESPACE: String = "crossfire"
 
     /** The amount of players. */
-    public val PLAYER_COUNT: Int = 24
+    public const val PLAYER_COUNT: Int = 24
 
     /** The different map identifiers. */
     public val MAPS: List<String> = listOf("party", "duel")

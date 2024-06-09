@@ -464,6 +464,7 @@ public object GameLoop : Configurable {
                         score(literal(map), CrossfireScoreboards.POST_GAME_TIMER) equalTo 0
                     }
                     run {
+                        // Reset the map itself
                         when (map) {
                             "party" -> {
                                 // Copy back the logo
@@ -478,6 +479,14 @@ public object GameLoop : Configurable {
                             else -> throw IllegalArgumentException("Invalid map name $map")
                         }
                         function(References.NAMESPACE, "reset_map_$map")
+
+                        // Reset all players in the map
+                        execute {
+                            asTarget(selector)
+                            run {
+                                function(References.NAMESPACE, ManagePlayers.RESET_PLAYER_FUNCTION)
+                            }
+                        }
                     }
                 }
             }
@@ -558,6 +567,24 @@ public object GameLoop : Configurable {
                 // Remove any entities marked as cleanup on this map specifically
                 kill(allEntities { tag = "cleanup-$map" })
 
+                // Take away crossbow permissions so they stop reloading
+                tag(selector) {
+                    remove(CrossfireTags.RELOAD_CROSSBOW)
+                }
+
+                // Teleport all players to the middle of the map
+                when (map) {
+                    "party" -> {
+                        tp(selector, vec3(529, 72, 421), rotation((-90.0).rot, 0.0.rot))
+                    }
+
+                    "duel" -> {
+                        tp(selector, vec3(529, 71, 296), rotation((-90.0).rot, 0.0.rot))
+                    }
+
+                    else -> throw IllegalArgumentException("Invalid map name $map")
+                }
+
                 // Start the post game timer
                 scoreboard.players.set(literal(map), CrossfireScoreboards.POST_GAME_TIMER, 26)
                 function(References.NAMESPACE, postGameTimer.path)
@@ -613,8 +640,8 @@ public object GameLoop : Configurable {
             }
 
             // Set up the base timers
-            scoreboard.players.set(self(), CrossfireScoreboards.DEAD_TIMER, 6)
-            scoreboard.players.set(self(), CrossfireScoreboards.RESPAWN_SHIELD, 5)
+            scoreboard.players.set(self(), CrossfireScoreboards.DEAD_TIMER, 6 * 20)
+            scoreboard.players.set(self(), CrossfireScoreboards.RESPAWN_SHIELD, 5 * 20)
         }
     }
 }

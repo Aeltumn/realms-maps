@@ -1,11 +1,3 @@
-# Schedule this function to run again next second
-# This function is triggered by the init tag
-schedule function crossfire:respawn 1s
-
-# Decrease the dead timer
-execute as @a[tag=died] run scoreboard players remove @s deadtimer 1
-execute as @a[scores={respawnshield=1..}] run scoreboard players remove @s respawnshield 1
-
 # Update the title showing you when you died
 execute as @a[tag=died] if score @s deadtimer matches ..4 run title @s times 0 24 0
 execute as @a[tag=died] if score @s deadtimer matches ..4 run title @s title {"text":" "}
@@ -28,6 +20,3 @@ execute as @a[tag=died,tag=!waterdead] if score @s deadtimer matches 4 at @s run
 execute as @a[tag=died,tag=!waterdead] if score @s deadtimer matches 4 at @s run clear @s minecraft:leather_chestplate
 execute as @a[tag=died,tag=!waterdead] if score @s deadtimer matches 4 at @s run clear @s minecraft:leather_leggings
 execute as @a[tag=died,tag=!waterdead] if score @s deadtimer matches 4 at @s run clear @s minecraft:leather_boots
-
-# If the timer is done we respawn the player
-execute as @a[tag=died] at @s if score @s deadtimer matches ..0 run function crossfire:respawn2

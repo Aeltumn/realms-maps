@@ -16,6 +16,7 @@ import io.github.ayfri.kore.arguments.numbers.Xp
 import io.github.ayfri.kore.arguments.numbers.rot
 import io.github.ayfri.kore.arguments.numbers.worldPos
 import io.github.ayfri.kore.arguments.scores.score
+import io.github.ayfri.kore.arguments.selector.scores
 import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.rotation
@@ -58,6 +59,38 @@ public object ManagePlayers : Configurable {
 
                 run {
                     function(References.NAMESPACE, RESET_PLAYER_FUNCTION)
+                }
+            }
+        }
+
+        tick("tick_respawn") {
+            // Tick down the dead timer
+            execute {
+                asTarget(
+                    allPlayers {
+                        tag = CrossfireTags.DIED
+
+                        scores {
+                            score(CrossfireScoreboards.DEAD_TIMER) greaterThanOrEqualTo 1
+                        }
+                    }
+                )
+                run {
+                    scoreboard.players.remove(self(), CrossfireScoreboards.DEAD_TIMER, 1)
+                }
+            }
+
+            // Tick down the respawn shield
+            execute {
+                asTarget(
+                    allPlayers {
+                        scores {
+                            score(CrossfireScoreboards.RESPAWN_SHIELD) greaterThanOrEqualTo 1
+                        }
+                    }
+                )
+                run {
+                    scoreboard.players.remove(self(), CrossfireScoreboards.RESPAWN_SHIELD, 1)
                 }
             }
         }

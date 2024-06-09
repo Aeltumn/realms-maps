@@ -695,7 +695,7 @@ public object Crossbows : Configurable {
                         score(CrossfireScoreboards.IS_RELOADING, 0)
 
                         // Don't start reloading if the respawn shield is still above 3
-                        score(CrossfireScoreboards.RESPAWN_SHIELD, 0..3)
+                        score(CrossfireScoreboards.RESPAWN_SHIELD, 0..60)
                     }
                 })
 
@@ -730,7 +730,7 @@ public object Crossbows : Configurable {
                             )
                         )
                         scores {
-                            score(CrossfireScoreboards.RESPAWN_SHIELD, 0..3)
+                            score(CrossfireScoreboards.RESPAWN_SHIELD, 0..60)
                         }
                     })
                 }
