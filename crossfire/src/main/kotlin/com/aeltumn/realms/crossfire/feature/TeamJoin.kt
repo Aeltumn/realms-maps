@@ -20,6 +20,7 @@ import io.github.ayfri.kore.arguments.chatcomponents.textComponent
 import io.github.ayfri.kore.arguments.colors.Color
 import io.github.ayfri.kore.arguments.components.types.dyedColor
 import io.github.ayfri.kore.arguments.components.types.enchantment
+import io.github.ayfri.kore.arguments.components.types.enchantmentGlintOverride
 import io.github.ayfri.kore.arguments.components.types.enchantments
 import io.github.ayfri.kore.arguments.components.types.unbreakable
 import io.github.ayfri.kore.arguments.maths.vec3
@@ -202,6 +203,7 @@ public object TeamJoin : Configurable {
                                         enchantment(EnchantmentArgument("binding_curse"), 1)
                                         showInTooltip = false
                                     }
+                                    enchantmentGlintOverride(false)
                                     unbreakable(false)
                                 }
                             )
@@ -214,6 +216,7 @@ public object TeamJoin : Configurable {
                                         enchantment(EnchantmentArgument("binding_curse"), 1)
                                         showInTooltip = false
                                     }
+                                    enchantmentGlintOverride(false)
                                     unbreakable(false)
                                 }
                             )
@@ -226,6 +229,7 @@ public object TeamJoin : Configurable {
                                         enchantment(EnchantmentArgument("binding_curse"), 1)
                                         showInTooltip = false
                                     }
+                                    enchantmentGlintOverride(false)
                                     unbreakable(false)
                                 }
                             )
