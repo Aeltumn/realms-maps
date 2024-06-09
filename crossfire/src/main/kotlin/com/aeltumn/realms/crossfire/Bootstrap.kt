@@ -13,6 +13,7 @@ import com.aeltumn.realms.crossfire.component.CrossfireTeams
 import com.aeltumn.realms.crossfire.component.CrossfireTimers
 import com.aeltumn.realms.crossfire.feature.Crossbows
 import com.aeltumn.realms.crossfire.feature.Flightpaths
+import com.aeltumn.realms.crossfire.feature.GameLoop
 import com.aeltumn.realms.crossfire.feature.Interactables
 import com.aeltumn.realms.crossfire.feature.Intro
 import com.aeltumn.realms.crossfire.feature.ManagePlayers
@@ -65,6 +66,7 @@ public fun main(args: Array<String>) {
             CrossfireTags,
             Crossbows,
             Flightpaths,
+            GameLoop,
             Interactables,
             Intro,
             ManagePlayers,
