@@ -18,7 +18,7 @@ execute if entity @s[scores={map=1}] unless score postgametimer1 postgametimer m
 execute if entity @s[scores={map=1}] unless score postgametimer1 postgametimer matches -1 run tp @s[tag=!admin] 529 71 296 -90 0
 execute if entity @s[scores={map=0}] unless score postgametimer0 postgametimer matches -1 run tp @s[tag=!admin] 529 72 421 -90 0
 
-# Update bossbars
+# Update boss bar viewers based on current state
 bossbar set crossfire:timer0 players
 bossbar set crossfire:postgame0 players
 execute if score game0 bar matches 1 run bossbar set crossfire:timer0 players @a[scores={map=0}]

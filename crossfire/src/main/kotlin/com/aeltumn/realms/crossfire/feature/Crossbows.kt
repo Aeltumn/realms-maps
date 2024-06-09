@@ -632,6 +632,25 @@ public object Crossbows : Configurable {
                         giveExactlyOne(switchItem, CONTAINER[8])
                     }
                 }
+                execute {
+                    // If this map has started
+                    unlessCondition {
+                        score(literal(map), CrossfireScoreboards.STARTED, rangeOrInt(0))
+                    }
+
+                    // On all players in this map that are spectating
+                    asTarget(allPlayers {
+                        tag = CrossfireTags.SPECTATING
+                        scores {
+                            score(CrossfireScoreboards.TARGET_MAP_INDEX, index)
+                        }
+                    })
+
+                    // Give them the map changer item (once)
+                    run {
+                        giveExactlyOne(switchItem, CONTAINER[8])
+                    }
+                }
 
                 // If the game has started give out the quit item
                 execute {
@@ -640,8 +659,9 @@ public object Crossbows : Configurable {
                         score(literal(map), CrossfireScoreboards.STARTED, rangeOrInt(0))
                     }
 
-                    // On all players in this map
+                    // On all players in this map that are not spectating
                     asTarget(allPlayers {
+                        tag = !CrossfireTags.SPECTATING
                         scores {
                             score(CrossfireScoreboards.TARGET_MAP_INDEX, index)
                         }

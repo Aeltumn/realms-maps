@@ -27,10 +27,3 @@ execute if entity @a[team=green] run scoreboard players add temp8 result 1
 execute if entity @a[team=blue] run scoreboard players add temp8 result 1
 execute if score temp8 result matches ..1 run scoreboard players set gametimer0 gametimer 0
 execute if score temp8 result matches ..1 run tellraw @a[scores={map=0}] ["",{"text":"Only one team is left, the game will end now."}]
-
-# Run game end
-execute if score gametimer0 gametimer matches 0 run function crossfire:generated/end_game0
-
-# Re-run the timer
-execute if score gametimer0 gametimer matches 0.. run scoreboard players remove gametimer0 gametimer 1
-execute if score gametimer0 gametimer matches 0.. run schedule function crossfire:timer0-2 1s replace

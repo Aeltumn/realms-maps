@@ -11,7 +11,7 @@ public object References {
     public val NAMESPACE: String = "crossfire"
 
     /** The amount of players. */
-    public val PLAYER_COUNT: Int = 12
+    public val PLAYER_COUNT: Int = 24
 
     /** The different map identifiers. */
     public val MAPS: List<String> = listOf("party", "duel")
@@ -78,4 +78,8 @@ public object References {
         if (team == "lime") return "Green"
         return team.substring(0, 1).uppercase() + team.substring(1).lowercase()
     }
+
+    /** Returns the names of the teams in [map]. */
+    public fun getTeamNames(map: String): List<String> =
+        TEAMS.getOrDefault(map, emptyMap()).keys.toList()
 }

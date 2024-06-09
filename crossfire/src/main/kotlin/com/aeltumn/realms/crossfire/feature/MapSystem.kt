@@ -21,7 +21,9 @@ public object MapSystem : Configurable {
             function("lobby_teleport_$map") {
                 // Clear the visibility of both boss bars
                 bossBars.get(CrossfireBossbars.getTimer(map), References.NAMESPACE).setPlayers(player("-"))
+                bossBars.get(CrossfireBossbars.getTimer(map), References.NAMESPACE).setName("")
                 bossBars.get(CrossfireBossbars.getPostGame(map), References.NAMESPACE).setPlayers(player("-"))
+                bossBars.get(CrossfireBossbars.getPostGame(map), References.NAMESPACE).setName("")
 
                 // Clear out all teams
                 for (key in References.TEAMS[map]!!.keys) {
@@ -33,9 +35,9 @@ public object MapSystem : Configurable {
                     player(literal(map)) {
                         set(CrossfireScoreboards.STARTED, 0)
                         set(CrossfireScoreboards.JOINED, 0)
+                        set(CrossfireScoreboards.START_TIMER, -1)
                         set(CrossfireScoreboards.GAME_TIMER, -1)
                         set(CrossfireScoreboards.POST_GAME_TIMER, -1)
-                        set(CrossfireScoreboards.START_TIMER, -1)
                         set(CrossfireScoreboards.ROUND, 1)
                     }
                 }

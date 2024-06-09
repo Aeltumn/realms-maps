@@ -75,8 +75,10 @@ public object ManagePlayers : Configurable {
                 remove(CrossfireTags.RELOAD_CROSSBOW)
 
                 remove(CrossfireTags.JOINED)
-                for ((index, map) in References.MAPS.withIndex()) {
-                    remove("${CrossfireTags.JOINED}-$index")
+                remove(CrossfireTags.SELECTED)
+                for (map in References.MAPS) {
+                    remove("${CrossfireTags.JOINED}-$map")
+                    remove("${CrossfireTags.SELECTED}-$map")
                 }
                 remove(CrossfireTags.SHOOTING_RANGE)
 
@@ -127,6 +129,7 @@ public object ManagePlayers : Configurable {
                 giveInfinite(Effects.SPEED, 0, true)
                 giveInfinite(Effects.WEAKNESS, 255, true)
                 giveInfinite(Effects.RESISTANCE, 255, true)
+                giveInfinite(Effects.SATURATION, 255, true)
             }
 
             // Reset values
