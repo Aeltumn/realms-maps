@@ -888,26 +888,8 @@ public object Crossbows : Configurable {
                     function("update_crossbow_state")
                 }
             }
-            execute {
-                asTarget(
-                    allEntities {
-                        tag = CrossfireTags.GIVE_CROSSBOW
-                        tag = CrossfireTags.HAS_MULTISHOT_LOADED
-                    }
-                )
 
-                // Don't take away multi-shot if you have it still
-                unlessCondition {
-                    entity(self {
-                        predicate = CrossfirePredicates.HAS_MULTISHOT
-                    })
-                }
-
-                run {
-                    // Update the crossbow state to include multi-shot
-                    function("update_crossbow_state")
-                }
-            }
+            // We don't remove a charged multi-shot if you lose the effect!
         }
 
         function("update_crossbow_state") {

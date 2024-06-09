@@ -45,7 +45,7 @@ public object CrossfireScoreboards : Setuppable {
     public const val INTRO_SKIPPED_TRIGGER: String = "intro_skipped"
 
     public const val ITEM_USE_CROSSBOW: String = "item_use_crossbow"
-    public const val ITEM_USE_POWER_UP: String = "item_use_power_up"
+    public const val ITEM_USE_CARROT_STICK: String = "item_use_carrot_stick"
 
     /** Stores the actual round kills of each player. */
     public const val ROUND_KILLS: String = "round_kills"
@@ -97,7 +97,7 @@ public object CrossfireScoreboards : Setuppable {
 
         // Create item use objectives
         scoreboard.objectives.add(ITEM_USE_CROSSBOW, criteriaStat(StatisticTypes.USED, StatisticArgument("crossbow")))
-        scoreboard.objectives.add(ITEM_USE_POWER_UP, criteriaStat(StatisticTypes.USED, StatisticArgument("carrot_on_a_stick")))
+        scoreboard.objectives.add(ITEM_USE_CARROT_STICK, criteriaStat(StatisticTypes.USED, StatisticArgument("carrot_on_a_stick")))
 
         // Create the kills objective
         scoreboard {

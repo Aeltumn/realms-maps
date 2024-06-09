@@ -14,11 +14,8 @@ execute if entity @s[scores={map=1}] if score postgametimer1 postgametimer match
 execute if entity @s[scores={map=0}] unless score postgametimer0 postgametimer matches -1 run tag @s remove mapchanger
 execute if entity @s[scores={map=1}] unless score postgametimer1 postgametimer matches -1 run tag @s remove mapchanger
 
-# Teleport player
-execute if entity @s[scores={map=1}] if score postgametimer1 postgametimer matches -1 run tp @s[tag=!admin] 574.5 85 296.5 90 0
+# Teleport player different during post-game
 execute if entity @s[scores={map=1}] unless score postgametimer1 postgametimer matches -1 run tp @s[tag=!admin] 529 71 296 -90 0
-
-execute if entity @s[scores={map=0}] if score postgametimer0 postgametimer matches -1 run tp @s[tag=!admin] 574.5 85 421.5 90 0
 execute if entity @s[scores={map=0}] unless score postgametimer0 postgametimer matches -1 run tp @s[tag=!admin] 529 72 421 -90 0
 
 # Update bossbars

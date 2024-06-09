@@ -9,8 +9,13 @@ import com.aeltumn.realms.crossfire.component.CrossfireTeams
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.enums.ExperienceType
 import io.github.ayfri.kore.arguments.enums.Gamemode
+import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.arguments.numbers.Xp
+import io.github.ayfri.kore.arguments.numbers.rot
+import io.github.ayfri.kore.arguments.numbers.worldPos
+import io.github.ayfri.kore.arguments.scores.score
 import io.github.ayfri.kore.arguments.types.literals.allPlayers
+import io.github.ayfri.kore.arguments.types.literals.rotation
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.attributes
 import io.github.ayfri.kore.commands.clear
@@ -22,6 +27,7 @@ import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.spectate
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.commands.teams
+import io.github.ayfri.kore.commands.tp
 import io.github.ayfri.kore.commands.xp
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.generated.Attributes
@@ -136,8 +142,20 @@ public object ManagePlayers : Configurable {
             scoreboard.players.enable(self(), CrossfireScoreboards.INTRO_START_TRIGGER)
             scoreboard.players.enable(self(), CrossfireScoreboards.INTRO_SKIPPED_TRIGGER)
 
-            // TODO Teleport player to their map (add 0 to map so it's at least 0)
+            // Teleport player to their map (add 0 to map so it's at least 0)
             scoreboard.players.add(self(), CrossfireScoreboards.TARGET_MAP_INDEX, 0)
+            execute {
+                ifCondition { score(self(), CrossfireScoreboards.TARGET_MAP_INDEX) lessThanOrEqualTo 0 }
+                run {
+                    tp(self(), vec3(574.5.worldPos, 85.0.worldPos, 296.5.worldPos), rotation(90.0.rot, 0.0.rot))
+                }
+            }
+            execute {
+                ifCondition { score(self(), CrossfireScoreboards.TARGET_MAP_INDEX) greaterThanOrEqualTo 1 }
+                run {
+                    tp(self(), vec3(574.5.worldPos, 85.0.worldPos, 421.5.worldPos), rotation(90.0.rot, 0.0.rot))
+                }
+            }
         }
     }
 }
