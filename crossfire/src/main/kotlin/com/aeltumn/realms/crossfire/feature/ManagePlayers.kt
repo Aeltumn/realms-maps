@@ -147,13 +147,13 @@ public object ManagePlayers : Configurable {
             execute {
                 ifCondition { score(self(), CrossfireScoreboards.TARGET_MAP_INDEX) lessThanOrEqualTo 0 }
                 run {
-                    tp(self(), vec3(574.5.worldPos, 85.0.worldPos, 296.5.worldPos), rotation(90.0.rot, 0.0.rot))
+                    tp(self(), vec3(574.5.worldPos, 85.0.worldPos, 421.5.worldPos), rotation(90.0.rot, 0.0.rot))
                 }
             }
             execute {
                 ifCondition { score(self(), CrossfireScoreboards.TARGET_MAP_INDEX) greaterThanOrEqualTo 1 }
                 run {
-                    tp(self(), vec3(574.5.worldPos, 85.0.worldPos, 421.5.worldPos), rotation(90.0.rot, 0.0.rot))
+                    tp(self(), vec3(574.5.worldPos, 85.0.worldPos, 296.5.worldPos), rotation(90.0.rot, 0.0.rot))
                 }
             }
         }
