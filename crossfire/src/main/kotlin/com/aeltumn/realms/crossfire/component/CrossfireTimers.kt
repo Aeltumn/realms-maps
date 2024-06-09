@@ -1,21 +1,19 @@
 package com.aeltumn.realms.crossfire.component
 
+import com.aeltumn.realms.common.Setuppable
 import com.aeltumn.realms.crossfire.References
 import com.aeltumn.realms.crossfire.TimerIdentifier
 import io.github.ayfri.kore.commands.schedules
 import io.github.ayfri.kore.functions.Function
 
 /** Manages crossfire's timers. */
-public object CrossfireTimers {
+public object CrossfireTimers : Setuppable {
 
-    /** Sets up the timers. */
-    public fun setup(function: Function) {
-        function.apply {
-            for (map in References.MAPS) {
-                for (timer in References.TIMER_TYPES) {
-                    val id = TimerIdentifier(map, timer)
-                    schedules.clear(id.id)
-                }
+    override fun Function.setup() {
+        for (map in References.MAPS) {
+            for (timer in References.TIMER_TYPES) {
+                val id = TimerIdentifier(map, timer)
+                schedules.clear(id.id)
             }
         }
     }

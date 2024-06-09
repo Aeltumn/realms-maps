@@ -1,5 +1,6 @@
 package com.aeltumn.realms.crossfire.component
 
+import com.aeltumn.realms.common.Setuppable
 import io.github.ayfri.kore.arguments.DisplaySlots
 import io.github.ayfri.kore.arguments.chatcomponents.textComponent
 import io.github.ayfri.kore.arguments.scores.ScoreboardCriteria
@@ -11,7 +12,7 @@ import io.github.ayfri.kore.generated.StatisticTypes
 import io.github.ayfri.kore.helpers.ScoreboardDisplay
 
 /** Manages crossfire's scoreboards. */
-public object CrossfireScoreboards {
+public object CrossfireScoreboards : Setuppable {
 
     public const val GAME_TIMER: String = "game_timer"
     public const val POST_GAME_TIMER: String = "post_game_timer"
@@ -55,58 +56,55 @@ public object CrossfireScoreboards {
     /** A cooldown before the map switch button can be used again. */
     public const val MAP_SWITCH_COOLDOWN: String = "cooldown"
 
-    /** Sets up the scoreboards. */
-    public fun setup(function: Function) {
-        function.apply {
-            // Reset all previous scoreboards
-            ScoreboardDisplay.resetAll()
+    override fun Function.setup() {
+        // Reset all previous scoreboards
+        ScoreboardDisplay.resetAll()
 
-            // Create all dummy objectives
-            for (objective in listOf(
-                GAME_TIMER,
-                POST_GAME_TIMER,
-                DEAD_TIMER,
-                START_TIMER,
-                RELOAD_TIMER,
-                STARTED,
-                PLAYER,
-                JOINED,
-                AGE,
-                ROUND,
-                RESULT,
-                TARGET_MAP_INDEX,
-                SONG,
-                WINS,
-                MAP_SWITCH_COOLDOWN,
-                WINNER,
-                BAR,
-                RESPAWN_SHIELD,
-                ROUND_KILLS,
-                SPECTATE_SUCCESS,
-                IS_RELOADING,
-                INTRO_COMPLETED,
-                ITEM_COUNT,
-                INTRO,
-                JUST_GOT_SPAMMED
-            )) {
-                scoreboard.objectives.add(objective, ScoreboardCriteria.DUMMY)
-            }
+        // Create all dummy objectives
+        for (objective in listOf(
+            GAME_TIMER,
+            POST_GAME_TIMER,
+            DEAD_TIMER,
+            START_TIMER,
+            RELOAD_TIMER,
+            STARTED,
+            PLAYER,
+            JOINED,
+            AGE,
+            ROUND,
+            RESULT,
+            TARGET_MAP_INDEX,
+            SONG,
+            WINS,
+            MAP_SWITCH_COOLDOWN,
+            WINNER,
+            BAR,
+            RESPAWN_SHIELD,
+            ROUND_KILLS,
+            SPECTATE_SUCCESS,
+            IS_RELOADING,
+            INTRO_COMPLETED,
+            ITEM_COUNT,
+            INTRO,
+            JUST_GOT_SPAMMED
+        )) {
+            scoreboard.objectives.add(objective, ScoreboardCriteria.DUMMY)
+        }
 
-            // Create trigger objectives
-            scoreboard.objectives.add(INTRO_START_TRIGGER, ScoreboardCriteria.TRIGGER)
-            scoreboard.objectives.add(INTRO_SKIPPED_TRIGGER, ScoreboardCriteria.TRIGGER)
+        // Create trigger objectives
+        scoreboard.objectives.add(INTRO_START_TRIGGER, ScoreboardCriteria.TRIGGER)
+        scoreboard.objectives.add(INTRO_SKIPPED_TRIGGER, ScoreboardCriteria.TRIGGER)
 
-            // Create item use objectives
-            scoreboard.objectives.add(ITEM_USE_CROSSBOW, criteriaStat(StatisticTypes.USED, StatisticArgument("crossbow")))
-            scoreboard.objectives.add(ITEM_USE_POWER_UP, criteriaStat(StatisticTypes.USED, StatisticArgument("carrot_on_a_stick")))
+        // Create item use objectives
+        scoreboard.objectives.add(ITEM_USE_CROSSBOW, criteriaStat(StatisticTypes.USED, StatisticArgument("crossbow")))
+        scoreboard.objectives.add(ITEM_USE_POWER_UP, criteriaStat(StatisticTypes.USED, StatisticArgument("carrot_on_a_stick")))
 
-            // Create the kills objective
-            scoreboard {
-                objectives {
-                    add(KILLS, ScoreboardCriteria.DUMMY, textComponent("Kills"))
-                    setDisplay(DisplaySlots.belowName, KILLS)
-                    setDisplay(DisplaySlots.list, KILLS)
-                }
+        // Create the kills objective
+        scoreboard {
+            objectives {
+                add(KILLS, ScoreboardCriteria.DUMMY, textComponent("Kills"))
+                setDisplay(DisplaySlots.belowName, KILLS)
+                setDisplay(DisplaySlots.list, KILLS)
             }
         }
     }

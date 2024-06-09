@@ -1,10 +1,11 @@
 package com.aeltumn.realms.crossfire.component
 
+import com.aeltumn.realms.common.Configurable
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.features.tags.tag
 
 /** Defines basic tags for crossfire. */
-public object CrossfireTags {
+public object CrossfireTags : Configurable {
 
     // -- Tags added to entities
     /** For players that have been initialized. */
@@ -68,18 +69,14 @@ public object CrossfireTags {
     /** For copters that dropped their crate. */
     public const val DROPPED: String = "dropped"
 
+    override fun DataPack.configure() {
+        tag(CROSSBOW, "items") {
+            add("minecraft:crossbow")
+        }
 
-    /** Configures the tags. */
-    public fun configure(dataPack: DataPack) {
-        dataPack.apply {
-            tag(CROSSBOW, "items") {
-                add("minecraft:crossbow")
-            }
-
-            tag(ILLEGAL_ITEMS, "items") {
-                add("minecraft:arrow")
-                add("minecraft:glass_bottle")
-            }
+        tag(ILLEGAL_ITEMS, "items") {
+            add("minecraft:arrow")
+            add("minecraft:glass_bottle")
         }
     }
 }

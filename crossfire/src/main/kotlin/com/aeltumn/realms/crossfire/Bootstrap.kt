@@ -1,6 +1,8 @@
 package com.aeltumn.realms.crossfire
 
 import com.aeltumn.realms.common.BootstrapHelper
+import com.aeltumn.realms.common.Configurable
+import com.aeltumn.realms.common.Setuppable
 import com.aeltumn.realms.common.filterOutDefaults
 import com.aeltumn.realms.common.load
 import com.aeltumn.realms.crossfire.component.CrossfireBossbars
@@ -11,6 +13,7 @@ import com.aeltumn.realms.crossfire.component.CrossfireTeams
 import com.aeltumn.realms.crossfire.component.CrossfireTimers
 import com.aeltumn.realms.crossfire.feature.Crossbows
 import com.aeltumn.realms.crossfire.feature.Flightpaths
+import com.aeltumn.realms.crossfire.feature.Interactables
 import com.aeltumn.realms.crossfire.feature.Intro
 import com.aeltumn.realms.crossfire.feature.ManagePlayers
 import com.aeltumn.realms.crossfire.feature.MapSwitching
@@ -22,12 +25,10 @@ import com.aeltumn.realms.crossfire.feature.TouchWater
 import io.github.ayfri.kore.arguments.chatcomponents.textComponent
 import io.github.ayfri.kore.arguments.enums.Difficulty
 import io.github.ayfri.kore.arguments.types.literals.allEntities
-import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.commands.difficulty
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.gamerule
 import io.github.ayfri.kore.commands.kill
-import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.generated.Gamerules
 import io.github.ayfri.kore.pack.pack
 import java.nio.file.Paths
@@ -45,7 +46,6 @@ public fun main(args: Array<String>) {
     }
     val resourcePackSource = Paths.get("resource-packs/crossfire/").toFile()
     val worldSource = Paths.get("maps/crossfire/")
-    val release = false // TODO <- edit this!
 
     BootstrapHelper(
         outputFolder,
@@ -58,29 +58,34 @@ public fun main(args: Array<String>) {
             description = textComponent("The main datapack that makes our maps work!")
         }
 
-        // Configure basic components
-        CrossfirePredicates.configure(this)
-        CrossfireTags.configure(this)
-
         // Configure features
-        Intro.configure(this)
-        MapSwitching.configure(this)
-        TouchWater.configure(this)
-        MapSystem.configure(this)
-        TeamJoin.configure(this)
-        ManagePlayers.configure(this)
-        Flightpaths.configure(this)
-        Spectating.configure(this)
-        ShootingRange.configure(this)
-        Crossbows.configure(this)
+        Configurable.apply(
+            this,
+            CrossfirePredicates,
+            CrossfireTags,
+            Crossbows,
+            Flightpaths,
+            Interactables,
+            Intro,
+            ManagePlayers,
+            MapSwitching,
+            MapSystem,
+            ShootingRange,
+            Spectating,
+            TeamJoin,
+            TouchWater
+        )
 
         // Set up initial functions
         load("setup") {
             // Set up components
-            CrossfireScoreboards.setup(this)
-            CrossfireTimers.setup(this)
-            CrossfireTeams.setup(this)
-            CrossfireBossbars.setup(this)
+            Setuppable.apply(
+                this,
+                CrossfireBossbars,
+                CrossfireScoreboards,
+                CrossfireTeams,
+                CrossfireTimers,
+            )
 
             // Remove any entities marked as cleanup
             kill(allEntities { tag = "cleanup" })
@@ -99,43 +104,12 @@ public fun main(args: Array<String>) {
             gamerule(Gamerules.MOB_GRIEFING, false)
             gamerule(Gamerules.DO_MOB_SPAWNING, false)
             gamerule(Gamerules.NATURAL_REGENERATION, false)
-            gamerule(Gamerules.SEND_COMMAND_FEEDBACK, !release)
+            gamerule(Gamerules.SEND_COMMAND_FEEDBACK, BootstrapHelper.DEVELOPMENT_MODE)
 
             // Teleport all players to their lobbies
             for (map in References.MAPS) {
                 function(References.NAMESPACE, "lobby_teleport_$map")
             }
         }
-
-        // TODO -- Cleanup
-
-        /*load("respawn") {
-        }
-
-        load("introduction") {
-        }
-
-        load("team_deny_info") {
-        }*/
-
-        // TODO Add reset player to auto trigger whenever the current map index of a player has changed
     }
 }
-
-/*
-Ticking functions:
-"values": [
-		"crossfire:tick/shoot_bow",
-        "crossfire:tick/tick_rockets",
-		"crossfire:tick/team_join",
-		"crossfire:tick/shooting_range_join",
-		"crossfire:tick/crossbowreload",
-		"crossfire:tick/detect_round",
-        "crossfire:tick/check_gamemode",
-		"crossfire:tick/check_water",
-		"crossfire:tick/flightpath",
-        "crossfire:tick/crate_tick",
-		"crossfire:tick/collect_powerup",
-		"crossfire:tick/use_powerup"
-	]
- */
