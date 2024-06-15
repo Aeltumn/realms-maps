@@ -91,7 +91,7 @@ public object TouchWater : Configurable {
                             }
 
                             run {
-                                scoreboard.players.remove(literal(References.getDisplayNameForTeam(teamName)), CrossfireScoreboards.KILLS, 1)
+                                scoreboard.players.remove(literal(References.getDisplayNameForTeam(teamName)), CrossfireScoreboards.TEAM_KILLS, 1)
                             }
                         }
                     }

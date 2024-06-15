@@ -374,49 +374,7 @@ public object Crossbows : Configurable {
                     }
                     at(self())
                     run {
-                        summon(EntityTypes.FIREWORK_ROCKET, AT_POSITION) {
-                            put("Tags", NbtList(listOf(NbtString("custom"))))
-                            put("LifeTime", NbtInt(0))
-                            put(
-                                "FireworksItem", NbtCompound(
-                                    mapOf(
-                                        "id" to NbtString("minecraft:firework_rocket"),
-                                        "count" to NbtInt(1),
-                                        "components" to NbtCompound(
-                                            mapOf(
-                                                "minecraft:fireworks" to NbtCompound(
-                                                    mapOf(
-                                                        "explosions" to NbtList(
-                                                            listOf(
-                                                                NbtCompound(
-                                                                    mapOf(
-                                                                        "shape" to NbtString("small_ball"),
-                                                                        "colors" to NbtIntArray(
-                                                                            intArrayOf(
-                                                                                when (teamName) {
-                                                                                    "red" -> 11743532
-                                                                                    "yellow" -> 14602026
-                                                                                    "lime" -> 4312372
-                                                                                    "light_blue" -> 6719955
-                                                                                    "orange" -> 15435844
-                                                                                    "magenta" -> 12801229
-                                                                                    "lobby" -> 11250603
-                                                                                    else -> throw IllegalArgumentException("No firework color known for team $teamName")
-                                                                                }
-                                                                            )
-                                                                        )
-                                                                    )
-                                                                )
-                                                            )
-                                                        )
-                                                    )
-                                                )
-                                            )
-                                        )
-                                    )
-                                )
-                            )
-                        }
+                        summonFirework(teamName)
                     }
                 }
             }
@@ -1065,5 +1023,52 @@ public object Crossbows : Configurable {
             // Play a trident sound
             playSound(SoundArgument("item.trident.riptide_3"), PlaySoundMixer.PLAYER, self(), AT_POSITION, 1.0, 1.0)
         }
+    }
+}
+
+/** Summons a firework. */
+public fun Function.summonFirework(teamName: String, type: String = "small_ball", lifeTime: Int = 0): Command {
+    return summon(EntityTypes.FIREWORK_ROCKET, AT_POSITION) {
+        put("Tags", NbtList(listOf(NbtString("custom"))))
+        put("LifeTime", NbtInt(lifeTime))
+        put(
+            "FireworksItem", NbtCompound(
+                mapOf(
+                    "id" to NbtString("minecraft:firework_rocket"),
+                    "count" to NbtInt(1),
+                    "components" to NbtCompound(
+                        mapOf(
+                            "minecraft:fireworks" to NbtCompound(
+                                mapOf(
+                                    "explosions" to NbtList(
+                                        listOf(
+                                            NbtCompound(
+                                                mapOf(
+                                                    "shape" to NbtString(type),
+                                                    "colors" to NbtIntArray(
+                                                        intArrayOf(
+                                                            when (teamName) {
+                                                                "red" -> 11743532
+                                                                "yellow" -> 14602026
+                                                                "lime" -> 4312372
+                                                                "light_blue" -> 6719955
+                                                                "orange" -> 15435844
+                                                                "magenta" -> 12801229
+                                                                "lobby" -> 11250603
+                                                                else -> throw IllegalArgumentException("No firework color known for team $teamName")
+                                                            }
+                                                        )
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
     }
 }

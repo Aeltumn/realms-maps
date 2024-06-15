@@ -13,13 +13,16 @@ import com.aeltumn.realms.crossfire.component.CrossfireScoreboards
 import com.aeltumn.realms.crossfire.component.CrossfireTags
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.chatcomponents.ChatComponents
+import io.github.ayfri.kore.arguments.chatcomponents.entityComponent
 import io.github.ayfri.kore.arguments.chatcomponents.scoreComponent
 import io.github.ayfri.kore.arguments.chatcomponents.textComponent
 import io.github.ayfri.kore.arguments.colors.Color
+import io.github.ayfri.kore.arguments.enums.Relation
 import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.arguments.numbers.ranges.rangeOrInt
 import io.github.ayfri.kore.arguments.numbers.rot
 import io.github.ayfri.kore.arguments.numbers.seconds
+import io.github.ayfri.kore.arguments.numbers.ticks
 import io.github.ayfri.kore.arguments.numbers.worldPos
 import io.github.ayfri.kore.arguments.scores.score
 import io.github.ayfri.kore.arguments.selector.scores
@@ -32,6 +35,7 @@ import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.arguments.types.resources.BlockArgument
 import io.github.ayfri.kore.arguments.types.resources.SoundArgument
 import io.github.ayfri.kore.commands.PlaySoundMixer
+import io.github.ayfri.kore.commands.TitleAction
 import io.github.ayfri.kore.commands.TitleLocation
 import io.github.ayfri.kore.commands.bossBars
 import io.github.ayfri.kore.commands.clone
@@ -178,7 +182,7 @@ public object GameLoop : Configurable {
 
                         // Reset kills and winners for each team in use
                         for (teamName in References.getTeamNames(map)) {
-                            scoreboard.players.set(literal(References.getDisplayNameForTeam(teamName)), CrossfireScoreboards.KILLS, 0)
+                            scoreboard.players.set(literal(References.getDisplayNameForTeam(teamName)), CrossfireScoreboards.TEAM_KILLS, 0)
                             scoreboard.players.reset(literal(References.getDisplayNameForTeam(teamName)), CrossfireScoreboards.WINNER)
                         }
 
@@ -523,22 +527,47 @@ public object GameLoop : Configurable {
                     }
                 }
 
-                // Add fireworks for the winning team
-                /*
-                TODO execute if score Red winner matches 1 run summon firework_rocket 534.5 73 416.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;11743532]}],Flight:2}}}}
-                execute if score Yellow winner matches 1 run summon firework_rocket 534.5 73 416.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;14602026]}],Flight:2}}}}
-                execute if score Green winner matches 1 run summon firework_rocket 534.5 73 416.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;4312372]}],Flight:2}}}}
-                execute if score Blue winner matches 1 run summon firework_rocket 534.5 73 416.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;6719955]}],Flight:2}}}}
-                execute if score Red winner matches 1 run summon firework_rocket 524.5 74 426.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;11743532]}],Flight:2}}}}
-                execute if score Yellow winner matches 1 run summon firework_rocket 524.5 74 426.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;14602026]}],Flight:2}}}}
-                execute if score Green winner matches 1 run summon firework_rocket 524.5 74 426.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;4312372]}],Flight:2}}}}
-                execute if score Blue winner matches 1 run summon firework_rocket 524.5 74 426.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;6719955]}],Flight:2}}}}
+                // Add fireworks for the winning team throughout the post game timer
+                for (teamName in requireNotNull(References.TEAMS[map]) { "No teams defined for $map" }.keys) {
+                    execute {
+                        ifCondition {
+                            score(literal(References.getDisplayNameForTeam(teamName)), CrossfireScoreboards.WINNER) equalTo 1
+                        }
+                        when (map) {
+                            "party" -> {
+                                positioned(vec3(534.5.worldPos, 73.0.worldPos, 416.5.worldPos))
+                            }
 
-                execute if score Orange winner matches 1 run summon firework_rocket 525.5 76 292.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;15435844]}],Flight:2}}}}
-                execute if score Magenta winner matches 1 run summon firework_rocket 525.5 76 292.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;12801229]}],Flight:2}}}}
-                execute if score Orange winner matches 1 run summon firework_rocket 533.5 76 300.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;15435844]}],Flight:2}}}}
-                execute if score Magenta winner matches 1 run summon firework_rocket 533.5 76 300.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;12801229]}],Flight:2}}}}
-                 */
+                            "duel" -> {
+                                positioned(vec3(525.5.worldPos, 76.0.worldPos, 292.5.worldPos))
+                            }
+
+                            else -> throw IllegalArgumentException("Invalid map name $map")
+                        }
+                        run {
+                            summonFirework(teamName, lifeTime = 18)
+                        }
+                    }
+                    execute {
+                        ifCondition {
+                            score(literal(References.getDisplayNameForTeam(teamName)), CrossfireScoreboards.WINNER) equalTo 1
+                        }
+                        when (map) {
+                            "party" -> {
+                                positioned(vec3(524.5.worldPos, 74.0.worldPos, 426.5.worldPos))
+                            }
+
+                            "duel" -> {
+                                positioned(vec3(533.5.worldPos, 76.0.worldPos, 300.5.worldPos))
+                            }
+
+                            else -> throw IllegalArgumentException("Invalid map name $map")
+                        }
+                        run {
+                            summonFirework(teamName, lifeTime = 18)
+                        }
+                    }
+                }
 
                 // Play a song during the first 5 seconds of the post game
                 for ((index, winnerNote) in listOf(1.3, 1.1, 1.4, 1.6, 1.9).withIndex()) {
@@ -703,106 +732,197 @@ public object GameLoop : Configurable {
                 // Remove any entities marked as cleanup on this map specifically
                 kill(allEntities { tag = "cleanup-$map" })
 
-                // Take away crossbow permissions so they stop reloading
-                tag(selector) {
-                    remove(CrossfireTags.RELOAD_CROSSBOW)
+                // Add a summary showing how many kills each player got
+                tellraw(selector, textComponent(""))
+                tellraw(selector, textComponent(""))
+                tellraw(selector, textComponent("Point scoreboard for this game:") { bold = true })
+                tellraw(selector, textComponent("(kills give 1 point, death from water retracts 1 point)", color = Color.GRAY))
+                tellraw(selector, textComponent(""))
+                for (playerIndex in 0 until References.PLAYER_COUNT) {
+                    execute {
+                        val target = allPlayers(limitToOne = true) {
+                            tag = "${CrossfireTags.PLAYER}-$playerIndex"
+                            scores {
+                                score(CrossfireScoreboards.TARGET_MAP_INDEX) equalTo mapIndex
+                            }
+                        }
+                        ifCondition { entity(target) }
+                        run {
+                            tellraw(
+                                selector,
+                                ChatComponents().apply {
+                                    plus(entityComponent(target.toString()))
+                                    plus(textComponent(": "))
+                                    plus(scoreComponent(CrossfireScoreboards.ROUND_KILLS, target))
+                                    plus(textComponent(" points"))
+                                }
+                            )
+                        }
+                    }
+                }
+                tellraw(selector, textComponent(""))
+                for (teamName in requireNotNull(References.TEAMS[map]).keys) {
+                    execute {
+                        ifCondition {
+                            entity(allPlayers {
+                                team = teamName
+                                scores {
+                                    score(CrossfireScoreboards.TARGET_MAP_INDEX) equalTo mapIndex
+                                }
+                            })
+                        }
+                        run {
+                            tellraw(
+                                selector,
+                                ChatComponents().apply {
+                                    plus(textComponent("${References.getDisplayNameForTeam(teamName)} Team", color = References.getColorForTeam(teamName)))
+                                    plus(textComponent(": "))
+                                    plus(scoreComponent(CrossfireScoreboards.TEAM_KILLS, literal(References.getDisplayNameForTeam(teamName))))
+                                    plus(textComponent(" points"))
+                                }
+                            )
+                        }
+                    }
+                }
+                tellraw(selector, textComponent(""))
+                tellraw(selector, textComponent(""))
+
+                // Determine winners, start by setting all empty teams to -999
+                for (teamName in requireNotNull(References.TEAMS[map]).keys) {
+                    execute {
+                        // Unless someone is on this team!
+                        unlessCondition {
+                            entity(allPlayers {
+                                team = teamName
+                            })
+                        }
+                        run {
+                            scoreboard.players.set(literal(References.getDisplayNameForTeam(teamName)), CrossfireScoreboards.TEAM_KILLS, -999)
+                        }
+                    }
                 }
 
-                // Add a summary showing how many kills each player got
-                // TODO
-                /*
-                tellraw @a[scores={map=0}] [""]
-                tellraw @a[scores={map=0}] [""]
-                tellraw @a[scores={map=0}] ["",{"text":"Point scoreboard for this game:","bold":true}]
-                tellraw @a[scores={map=0}] ["",{"text":"(kills give 1 point, death from water retracts 1 point)","color":"gray"}]
-                tellraw @a[scores={map=0}] [""]
-                execute if entity @a[tag=player1,scores={map=0}] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player1]"},{"text":": "},{"score":{"name":"@a[tag=player1]","objective":"roundKills"},"color":"white"},{"text":" points","color":"white"}]
-                execute if entity @a[tag=player2,scores={map=0}] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player2]"},{"text":": "},{"score":{"name":"@a[tag=player2]","objective":"roundKills"},"color":"white"},{"text":" points","color":"white"}]
-                execute if entity @a[tag=player3,scores={map=0}] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player3]"},{"text":": "},{"score":{"name":"@a[tag=player3]","objective":"roundKills"},"color":"white"},{"text":" points","color":"white"}]
-                execute if entity @a[tag=player4,scores={map=0}] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player4]"},{"text":": "},{"score":{"name":"@a[tag=player4]","objective":"roundKills"},"color":"white"},{"text":" points","color":"white"}]
-                execute if entity @a[tag=player5,scores={map=0}] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player5]"},{"text":": "},{"score":{"name":"@a[tag=player5]","objective":"roundKills"},"color":"white"},{"text":" points","color":"white"}]
-                execute if entity @a[tag=player6,scores={map=0}] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player6]"},{"text":": "},{"score":{"name":"@a[tag=player6]","objective":"roundKills"},"color":"white"},{"text":" points","color":"white"}]
-                execute if entity @a[tag=player7,scores={map=0}] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player7]"},{"text":": "},{"score":{"name":"@a[tag=player7]","objective":"roundKills"},"color":"white"},{"text":" points","color":"white"}]
-                execute if entity @a[tag=player8,scores={map=0}] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player8]"},{"text":": "},{"score":{"name":"@a[tag=player8]","objective":"roundKills"},"color":"white"},{"text":" points","color":"white"}]
-                execute if entity @a[tag=player9,scores={map=0}] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player9]"},{"text":": "},{"score":{"name":"@a[tag=player9]","objective":"roundKills"},"color":"white"},{"text":" points","color":"white"}]
-                execute if entity @a[tag=player10,scores={map=0}] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player10]"},{"text":": "},{"score":{"name":"@a[tag=player10]","objective":"roundKills"},"color":"white"},{"text":" points","color":"white"}]
-                execute if entity @a[tag=player11,scores={map=0}] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player11]"},{"text":": "},{"score":{"name":"@a[tag=player11]","objective":"roundKills"},"color":"white"},{"text":" points","color":"white"}]
-                tellraw @a[scores={map=0}] [""]
-                execute if entity @a[team=red] run tellraw @a[scores={map=0}] ["",{"text":"Red Team","color":"red"},{"text":": "},{"score":{"name":"Red","objective":"kills"},"color":"white"},{"text":" points","color":"white"}]
-                execute if entity @a[team=yellow] run tellraw @a[scores={map=0}] ["",{"text":"Yellow Team","color":"yellow"},{"text":": "},{"score":{"name":"Yellow","objective":"kills"},"color":"white"},{"text":" points","color":"white"}]
-                execute if entity @a[team=green] run tellraw @a[scores={map=0}] ["",{"text":"Green Team","color":"green"},{"text":": "},{"score":{"name":"Green","objective":"kills"},"color":"white"},{"text":" points","color":"white"}]
-                execute if entity @a[team=blue] run tellraw @a[scores={map=0}] ["",{"text":"Blue Team","color":"aqua"},{"text":": "},{"score":{"name":"Blue","objective":"kills"},"color":"white"},{"text":" points","color":"white"}]
-                execute if entity @a[team=orange] run tellraw @a[scores={map=1}] ["",{"text":"Orange Team","color":"gold"},{"text":": "},{"score":{"name":"Orange","objective":"kills"},"color":"white"},{"text":" points","color":"white"}]
-                execute if entity @a[team=magenta] run tellraw @a[scores={map=1}] ["",{"text":"Magenta Team","color":"light_purple"},{"text":": "},{"score":{"name":"Magenta","objective":"kills"},"color":"white"},{"text":" points","color":"white"}]
-                tellraw @a[scores={map=0}] [""]
-                tellraw @a[scores={map=0}] [""]
-                 */
+                // Prepare to send out titles to winners
+                title(selector, TitleAction.CLEAR)
+                title(selector, TitleLocation.SUBTITLE, textComponent(""))
+                title(selector, 40.ticks, 160.ticks, 40.ticks)
 
-                // TODO
-                /*
-                # Send titles to winners
-                title @a[scores={map=0}] clear
-                title @a[scores={map=0}] subtitle {"text":""}
-                title @a[scores={map=0}] times 40 160 40
+                // Determine the winner by comparison
+                for (team1 in requireNotNull(References.TEAMS[map]).keys) {
+                    execute {
+                        for (team2 in requireNotNull(References.TEAMS[map]).keys) {
+                            if (team1 == team2) continue
 
-                execute unless entity @a[team=red] run scoreboard players set Red kills -999
-                execute unless entity @a[team=yellow] run scoreboard players set Yellow kills -999
-                execute unless entity @a[team=green] run scoreboard players set Green kills -999
-                execute unless entity @a[team=blue] run scoreboard players set Blue kills -999
-                execute if score Red kills > Blue kills if score Red kills > Yellow kills if score Red kills > Green kills run scoreboard players set Red winner 1
-                execute if score Blue kills > Red kills if score Blue kills > Yellow kills if score Blue kills > Green kills run scoreboard players set Blue winner 1
-                execute if score Yellow kills > Blue kills if score Yellow kills > Red kills if score Yellow kills > Green kills run scoreboard players set Yellow winner 1
-                execute if score Green kills > Red kills if score Green kills > Yellow kills if score Green kills > Blue kills run scoreboard players set Green winner 1
-                execute unless score Red winner matches 1.. unless score Green winner matches 1.. unless score Yellow winner matches 1.. unless score Blue winner matches 1.. run scoreboard players set Draw0 winner 1
-                execute if score Red winner matches 1.. run tellraw @a[scores={map=0}] ["",{"text":"Red","bold":true,"color":"red"},{"text":" won the game!"}]
-                execute if score Red winner matches 1.. run title @a[scores={map=0}] title ["",{"text":"Red","bold":true,"color":"red"},{"text":" won the game!"}]
-                execute if score Blue winner matches 1.. run tellraw @a[scores={map=0}] ["",{"text":"Blue","bold":true,"color":"aqua"},{"text":" won the game!"}]
-                execute if score Blue winner matches 1.. run title @a[scores={map=0}] title ["",{"text":"Blue","bold":true,"color":"aqua"},{"text":" won the game!"}]
-                execute if score Yellow winner matches 1.. run tellraw @a[scores={map=0}] ["",{"text":"Yellow","bold":true,"color":"yellow"},{"text":" won the game!"}]
-                execute if score Yellow winner matches 1.. run title @a[scores={map=0}] title ["",{"text":"Yellow","bold":true,"color":"yellow"},{"text":" won the game!"}]
-                execute if score Green winner matches 1.. run tellraw @a[scores={map=0}] ["",{"text":"Green","bold":true,"color":"green"},{"text":" won the game!"}]
-                execute if score Green winner matches 1.. run title @a[scores={map=0}] title ["",{"text":"Green","bold":true,"color":"green"},{"text":" won the game!"}]
-                execute if score Draw0 winner matches 1.. run tellraw @a[scores={map=0}] ["",{"text":"It's a draw!","bold":true,"color":"gold"}]
-                execute if score Draw0 winner matches 1.. run title @a[scores={map=0}] title ["",{"text":"It's a draw!","bold":true,"color":"gold"}]
+                            ifCondition {
+                                score(literal(References.getDisplayNameForTeam(team1)), CrossfireScoreboards.TEAM_KILLS, literal(References.getDisplayNameForTeam(team2)), CrossfireScoreboards.TEAM_KILLS, Relation.GREATER_THAN)
+                            }
+                        }
+                        run {
+                            scoreboard.players.set(literal(References.getDisplayNameForTeam(team1)), CrossfireScoreboards.WINNER, 1)
 
-                execute unless entity @a[team=orange] run scoreboard players set Orange kills -999
-                execute unless entity @a[team=magenta] run scoreboard players set Magenta kills -999
-                execute if score Orange kills > Magenta kills run scoreboard players set Orange winner 1
-                execute if score Magenta kills > Orange kills run scoreboard players set Magenta winner 1
-                execute unless score Orange winner matches 1.. unless score Magenta winner matches 1.. run scoreboard players set Draw1 winner 1
-                execute if score Orange winner matches 1.. run tellraw @a[scores={map=1}] ["",{"text":"Orange","bold":true,"color":"gold"},{"text":" won the game!"}]
-                execute if score Orange winner matches 1.. run title @a[scores={map=1}] title ["",{"text":"Orange","bold":true,"color":"gold"},{"text":" won the game!"}]
-                execute if score Magenta winner matches 1.. run tellraw @a[scores={map=1}] ["",{"text":"Magenta","bold":true,"color":"light_purple"},{"text":" won the game!"}]
-                execute if score Magenta winner matches 1.. run title @a[scores={map=1}] title ["",{"text":"Magenta","bold":true,"color":"light_purple"},{"text":" won the game!"}]
-                execute if score Draw1 winner matches 1.. run tellraw @a[scores={map=1}] ["",{"text":"It's a draw!","bold":true,"color":"gold"}]
-                execute if score Draw1 winner matches 1.. run title @a[scores={map=1}] title ["",{"text":"It's a draw!","bold":true,"color":"gold"}]
+                            val message = ChatComponents().apply {
+                                plus(textComponent("${References.getDisplayNameForTeam(team1)} Team", color = References.getColorForTeam(team1)))
+                                plus(textComponent(" won the game!"))
+                            }
+                            tellraw(selector, message)
+                            title(selector, TitleLocation.TITLE, message)
+                        }
+                    }
+                }
 
-                # Actually give the wins to the players
-                execute if score Red winner matches 1.. run scoreboard players add @a[team=red] wins 1
-                execute if score Yellow winner matches 1.. run scoreboard players add @a[team=yellow] wins 1
-                execute if score Green winner matches 1.. run scoreboard players add @a[team=green] wins 1
-                execute if score Blue winner matches 1.. run scoreboard players add @a[team=blue] wins 1
+                // If none of the teams won we draw (store as winner on map literal)
+                execute {
+                    for (teamName in requireNotNull(References.TEAMS[map]).keys) {
+                        // Don't call it a draw if some team won!
+                        unlessCondition {
+                            score(literal(References.getDisplayNameForTeam(teamName)), CrossfireScoreboards.WINNER) equalTo 1
+                        }
+                    }
+                    run {
+                        scoreboard.players.set(literal(map), CrossfireScoreboards.WINNER, 1)
 
-                # Play sound to play depending on if they won or lost
-                execute if score Red winner matches 1.. run tag @a[team=red,scores={map=0}] add won0
-                execute if score Yellow winner matches 1.. run tag @a[team=yellow,scores={map=0}] add won0
-                execute if score Green winner matches 1.. run tag @a[team=green,scores={map=0}] add won0
-                execute if score Blue winner matches 1.. run tag @a[team=blue,scores={map=0}] add won0
+                        val message = textComponent("It's a draw!") {
+                            bold = true
+                            color = Color.GOLD
+                        }
+                        tellraw(selector, message)
+                        title(selector, TitleLocation.TITLE, message)
+                    }
+                }
 
-                # Actually give the wins to the players
-                execute if score Orange winner matches 1.. run scoreboard players add @a[team=orange] wins 1
-                execute if score Magenta winner matches 1.. run scoreboard players add @a[team=magenta] wins 1
+                // Clear empty teams off the scoreboard again after we finish calculations
+                for (teamName in requireNotNull(References.TEAMS[map]).keys) {
+                    execute {
+                        // Unless someone is on this team!
+                        unlessCondition {
+                            entity(allPlayers {
+                                team = teamName
+                            })
+                        }
+                        run {
+                            scoreboard.players.reset(literal(References.getDisplayNameForTeam(teamName)), CrossfireScoreboards.TEAM_KILLS)
+                        }
+                    }
+                }
 
-                # Play sound to play depending on if they won or lost
-                execute if score Orange winner matches 1.. run tag @a[team=orange,scores={map=1}] add won1
-                execute if score Magenta winner matches 1.. run tag @a[team=magenta,scores={map=1}] add won1
+                // Hand out wins to the members of each team
+                for (teamName in requireNotNull(References.TEAMS[map]).keys) {
+                    execute {
+                        ifCondition {
+                            score(literal(References.getDisplayNameForTeam(teamName)), CrossfireScoreboards.WINNER) equalTo 1
+                        }
+                        run {
+                            // If this team won:
+                            execute {
+                                asTarget(
+                                    allPlayers {
+                                        team = teamName
+                                        tag = "${CrossfireTags.SELECTED}-$map"
+                                    }
+                                )
+                                run {
+                                    // Award wins to the winning players
+                                    scoreboard.players.add(self(), CrossfireScoreboards.WINS, 1)
 
-                # Give lost if you don't have win
-                tag @a[tag=!won0,scores={map=0}] add lost0
+                                    // Call them winners!
+                                    tag(self()) {
+                                        add(CrossfireTags.WINNER)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    execute {
+                        unlessCondition {
+                            score(literal(References.getDisplayNameForTeam(teamName)), CrossfireScoreboards.WINNER) equalTo 1
+                        }
+                        run {
+                            // If this team lost:
+                            execute {
+                                asTarget(
+                                    allPlayers {
+                                        team = teamName
+                                        tag = "${CrossfireTags.SELECTED}-$map"
+                                    }
+                                )
+                                run {
+                                    // Mark them as losers... :(
+                                    tag(self()) {
+                                        add(CrossfireTags.LOSER)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
 
-                # Reset all players in this map
-                execute as @a[scores={map=0},tag=joined] run function crossfire:reset_player
-                 */
+                // Take away crossbows and loaded ammo!
+                tag(selector) {
+                    remove(CrossfireTags.RELOAD_CROSSBOW)
+                    remove(CrossfireTags.SHOOTING_RANGE)
+                    remove(CrossfireTags.HAS_CROSSBOW_LOADED)
+                    remove(CrossfireTags.HAS_MULTISHOT_LOADED)
+                }
 
                 when (map) {
                     "party" -> {

@@ -180,49 +180,7 @@ public object ManagePlayers : Configurable {
                             }
                             at(self())
                             run {
-                                summon(EntityTypes.FIREWORK_ROCKET, AT_POSITION) {
-                                    put("LifeTime", NbtInt(0))
-                                    put(
-                                        "FireworksItem", NbtCompound(
-                                            mapOf(
-                                                "id" to NbtString("minecraft:firework_rocket"),
-                                                "count" to NbtInt(1),
-                                                "components" to NbtCompound(
-                                                    mapOf(
-                                                        "minecraft:fireworks" to NbtCompound(
-                                                            mapOf(
-                                                                "explosions" to NbtList(
-                                                                    listOf(
-                                                                        NbtCompound(
-                                                                            mapOf(
-                                                                                "shape" to NbtString("large_ball"),
-                                                                                "has_twinkle" to NbtByte(1),
-                                                                                "colors" to NbtIntArray(
-                                                                                    intArrayOf(
-                                                                                        when (teamName) {
-                                                                                            "red" -> 11743532
-                                                                                            "yellow" -> 14602026
-                                                                                            "lime" -> 4312372
-                                                                                            "light_blue" -> 6719955
-                                                                                            "orange" -> 15435844
-                                                                                            "magenta" -> 12801229
-                                                                                            "lobby" -> 11250603
-                                                                                            else -> throw IllegalArgumentException("No firework color known for team $teamName")
-                                                                                        }
-                                                                                    )
-                                                                                )
-                                                                            )
-                                                                        )
-                                                                    )
-                                                                )
-                                                            )
-                                                        )
-                                                    )
-                                                )
-                                            )
-                                        )
-                                    )
-                                }
+                                summonFirework(teamName, "large_ball")
                             }
                         }
                     }
@@ -332,6 +290,10 @@ public object ManagePlayers : Configurable {
 
                 // We always give people crossbows, a bit dangerous, but alright.
                 add(CrossfireTags.GIVE_CROSSBOW)
+
+                // Reset winning state
+                remove(CrossfireTags.WINNER)
+                remove(CrossfireTags.LOSER)
             }
 
             // Remove them from any spectator target
@@ -386,7 +348,6 @@ public object ManagePlayers : Configurable {
             scoreboard.players.set(self(), CrossfireScoreboards.RELOAD_TIMER, 0)
             scoreboard.players.set(self(), CrossfireScoreboards.DEAD_TIMER, 0)
             scoreboard.players.set(self(), CrossfireScoreboards.RESPAWN_SHIELD, 0)
-            scoreboard.players.set(self(), CrossfireScoreboards.WINS, 0)
             scoreboard.players.set(self(), CrossfireScoreboards.ROUND_KILLS, 0)
 
             // Enable triggers

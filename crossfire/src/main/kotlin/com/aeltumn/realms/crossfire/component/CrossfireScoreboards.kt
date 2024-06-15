@@ -28,7 +28,12 @@ public object CrossfireScoreboards : Setuppable {
     public const val SONG: String = "song"
     public const val WINS: String = "wins"
     public const val WINNER: String = "winner"
-    public const val KILLS: String = "kills"
+
+    /** Shows the current kills of teams. */
+    public const val TEAM_KILLS: String = "team_kills"
+
+    /** Shows the lifetime kills of players. */
+    public const val LIFETIME_KILLS: String = "lifetime_kills"
 
     public const val RESPAWN_SHIELD: String = "respawn_shield"
     public const val SPECTATE_SUCCESS: String = "spectate_success"
@@ -49,7 +54,7 @@ public object CrossfireScoreboards : Setuppable {
     public const val ITEM_USE_CROSSBOW: String = "item_use_crossbow"
     public const val ITEM_USE_CARROT_STICK: String = "item_use_carrot_stick"
 
-    /** Stores the actual round kills of each player. */
+    /** Stores the actual round kills of each player and team. */
     public const val ROUND_KILLS: String = "round_kills"
 
     /** The map that a player is meant to be in at this time. */
@@ -104,9 +109,10 @@ public object CrossfireScoreboards : Setuppable {
         // Create the kills objective
         scoreboard {
             objectives {
-                add(KILLS, ScoreboardCriteria.DUMMY, textComponent("Kills"))
-                setDisplay(DisplaySlots.belowName, KILLS)
-                setDisplay(DisplaySlots.list, KILLS)
+                add(TEAM_KILLS, ScoreboardCriteria.DUMMY, textComponent("Kills"))
+                add(LIFETIME_KILLS, ScoreboardCriteria.DUMMY, textComponent("Kills"))
+                setDisplay(DisplaySlots.list, TEAM_KILLS)
+                setDisplay(DisplaySlots.belowName, LIFETIME_KILLS)
             }
         }
     }
