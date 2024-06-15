@@ -75,19 +75,19 @@ execute unless score data1 result matches 1 as @s[tag=!unequip3,tag=!ownedarmor3
 
 #Equip the armor if possible.
 execute unless score data1 result matches 1 as @s[tag=!unequip3,tag=ownedarmor1] if entity @e[type=minecraft:villager,distance=..0.5,limit=1,tag=armor1] run tag @s[tag=!unequip] add armor1selected
-execute unless score data1 result matches 1 as @s[tag=!unequip3,tag=ownedarmor1] if entity @e[type=minecraft:villager,distance=..0.5,limit=1,tag=armor1] run item replace entity @s armor.chest with minecraft:leather_chestplate{display:{color:1184274}}
-execute unless score data1 result matches 1 as @s[tag=!unequip3,tag=ownedarmor1] if entity @e[type=minecraft:villager,distance=..0.5,limit=1,tag=armor1] run item replace entity @s armor.legs with minecraft:leather_leggings{display:{color:1184274}}
-execute unless score data1 result matches 1 store success score data1 result as @s[tag=!unequip3,tag=ownedarmor1] if entity @e[type=minecraft:villager,distance=..0.5,limit=1,tag=armor1] run item replace entity @s armor.feet with minecraft:leather_boots{display:{color:1184274}}
+execute unless score data1 result matches 1 as @s[tag=!unequip3,tag=ownedarmor1] if entity @e[type=minecraft:villager,distance=..0.5,limit=1,tag=armor1] run item replace entity @s armor.chest with minecraft:leather_chestplate[minecraft:dyed_color=1184274]
+execute unless score data1 result matches 1 as @s[tag=!unequip3,tag=ownedarmor1] if entity @e[type=minecraft:villager,distance=..0.5,limit=1,tag=armor1] run item replace entity @s armor.legs with minecraft:leather_leggings[minecraft:dyed_color=1184274]
+execute unless score data1 result matches 1 store success score data1 result as @s[tag=!unequip3,tag=ownedarmor1] if entity @e[type=minecraft:villager,distance=..0.5,limit=1,tag=armor1] run item replace entity @s armor.feet with minecraft:leather_boots[minecraft:dyed_color=1184274]
 
 execute unless score data1 result matches 1 as @s[tag=!unequip3,tag=ownedarmor2] if entity @e[type=minecraft:villager,distance=..0.5,limit=1,tag=armor2] run tag @s[tag=!unequip] add armor2selected
-execute unless score data1 result matches 1 as @s[tag=!unequip3,tag=ownedarmor2] if entity @e[type=minecraft:villager,distance=..0.5,limit=1,tag=armor2] run item replace entity @s armor.chest with minecraft:leather_chestplate{display:{color:13041687}}
-execute unless score data1 result matches 1 as @s[tag=!unequip3,tag=ownedarmor2] if entity @e[type=minecraft:villager,distance=..0.5,limit=1,tag=armor2] run item replace entity @s armor.legs with minecraft:leather_leggings{display:{color:13041687}}
-execute unless score data1 result matches 1 store success score data1 result as @s[tag=!unequip3,tag=ownedarmor2] if entity @e[type=minecraft:villager,distance=..0.5,limit=1,tag=armor2] run item replace entity @s armor.feet with minecraft:leather_boots{display:{color:13041687}}
+execute unless score data1 result matches 1 as @s[tag=!unequip3,tag=ownedarmor2] if entity @e[type=minecraft:villager,distance=..0.5,limit=1,tag=armor2] run item replace entity @s armor.chest with minecraft:leather_chestplate[minecraft:dyed_color=13041687]
+execute unless score data1 result matches 1 as @s[tag=!unequip3,tag=ownedarmor2] if entity @e[type=minecraft:villager,distance=..0.5,limit=1,tag=armor2] run item replace entity @s armor.legs with minecraft:leather_leggings[minecraft:dyed_color=13041687]
+execute unless score data1 result matches 1 store success score data1 result as @s[tag=!unequip3,tag=ownedarmor2] if entity @e[type=minecraft:villager,distance=..0.5,limit=1,tag=armor2] run item replace entity @s armor.feet with minecraft:leather_boots[minecraft:dyed_color=13041687]
 
 execute unless score data1 result matches 1 as @s[tag=!unequip3,tag=ownedarmor3] if entity @e[type=minecraft:villager,distance=..0.5,limit=1,tag=armor3] run tag @s[tag=!unequip] add armor3selected
-execute unless score data1 result matches 1 as @s[tag=!unequip3,tag=ownedarmor3] if entity @e[type=minecraft:villager,distance=..0.5,limit=1,tag=armor3] run item replace entity @s armor.chest with minecraft:leather_chestplate{display:{color:16777215}}
-execute unless score data1 result matches 1 as @s[tag=!unequip3,tag=ownedarmor3] if entity @e[type=minecraft:villager,distance=..0.5,limit=1,tag=armor3] run item replace entity @s armor.legs with minecraft:leather_leggings{display:{color:16777215}}
-execute unless score data1 result matches 1 store success score data1 result as @s[tag=!unequip3,tag=ownedarmor3] if entity @e[type=minecraft:villager,distance=..0.5,limit=1,tag=armor3] run item replace entity @s armor.feet with minecraft:leather_boots{display:{color:16777215}}
+execute unless score data1 result matches 1 as @s[tag=!unequip3,tag=ownedarmor3] if entity @e[type=minecraft:villager,distance=..0.5,limit=1,tag=armor3] run item replace entity @s armor.chest with minecraft:leather_chestplate[minecraft:dyed_color=16777215]
+execute unless score data1 result matches 1 as @s[tag=!unequip3,tag=ownedarmor3] if entity @e[type=minecraft:villager,distance=..0.5,limit=1,tag=armor3] run item replace entity @s armor.legs with minecraft:leather_leggings[minecraft:dyed_color=16777215]
+execute unless score data1 result matches 1 store success score data1 result as @s[tag=!unequip3,tag=ownedarmor3] if entity @e[type=minecraft:villager,distance=..0.5,limit=1,tag=armor3] run item replace entity @s armor.feet with minecraft:leather_boots[minecraft:dyed_color=16777215]
 
 
 

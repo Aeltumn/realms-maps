@@ -28,7 +28,7 @@ public data class BootstrapHelper(
 
     @OptIn(ExperimentalPathApi::class)
     public fun execute(
-        builder: DataPack.() -> Unit,
+        builder: (DataPack.() -> Unit)? = null,
     ) {
         // Clear out the target folder first
         outputFolder.deleteRecursively()
@@ -53,7 +53,8 @@ public data class BootstrapHelper(
         // Copy across the world files
         worldSource.copyToRecursively(outputFolder, followLinks = false, overwrite = true)
 
-        // Create the datapack
+        // Create the datapack (if a builder is given)
+        if (builder == null) return
         val datapack = dataPack(datapackName) {
             path = outputFolder.resolve("datapacks/").createDirectories()
             builder()
