@@ -93,7 +93,7 @@ public object Intro : Configurable {
                 run {
                     /** Runs a part of the intro at [amount] using [function]. */
                     fun runIfAt(amount: Int, function: Function.() -> Command) {
-                        executeIfEqualTo(CrossfireScoreboards.INTRO, amount * 20, function)
+                        executeIfEqualTo(CrossfireScoreboards.INTRO, amount * 20, function = function)
                     }
 
                     // Increment their current intro value by one as long as they are in the intro

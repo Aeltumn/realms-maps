@@ -343,7 +343,7 @@ public object Crossbows : Configurable {
                     execute {
                         ifCondition {
                             entity(allEntities {
-                                tag = CrossfireTags.SUPPLY_CRATE
+                                tag = CrossfireTags.CRATE
                                 distance = rangeEnd(2.5)
                             })
                         }

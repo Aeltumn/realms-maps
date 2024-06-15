@@ -40,6 +40,8 @@ public object CrossfireScoreboards : Setuppable {
     public const val PLAYER_COUNT: String = "player_count"
     public const val TEAM_COUNT: String = "team_count"
 
+    public const val SELECTED_RANDOM: String = "selected_random"
+
     public const val INTRO: String = "intro"
     public const val INTRO_START_TRIGGER: String = "intro_start"
     public const val INTRO_SKIPPED_TRIGGER: String = "intro_skipped"
@@ -84,6 +86,7 @@ public object CrossfireScoreboards : Setuppable {
             ITEM_COUNT,
             PLAYER_COUNT,
             TEAM_COUNT,
+            SELECTED_RANDOM,
             INTRO,
             JUST_GOT_SPAMMED
         )) {

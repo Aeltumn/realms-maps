@@ -3,6 +3,8 @@ package com.aeltumn.realms.crossfire.feature
 import com.aeltumn.realms.common.AT_POSITION
 import com.aeltumn.realms.common.Configurable
 import com.aeltumn.realms.common.clearBossBarPlayers
+import com.aeltumn.realms.common.executeAt
+import com.aeltumn.realms.common.executeIfEqualTo
 import com.aeltumn.realms.common.setBossBarName
 import com.aeltumn.realms.crossfire.References
 import com.aeltumn.realms.crossfire.TimerIdentifier
@@ -38,6 +40,7 @@ import io.github.ayfri.kore.commands.fill
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.kill
 import io.github.ayfri.kore.commands.playSound
+import io.github.ayfri.kore.commands.randomValue
 import io.github.ayfri.kore.commands.schedules
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
@@ -46,6 +49,7 @@ import io.github.ayfri.kore.commands.title
 import io.github.ayfri.kore.commands.tp
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.functions.function
+import io.github.ayfri.kore.helpers.predicateRandomChance
 
 /** Sets up the main game loop. */
 public object GameLoop : Configurable {
@@ -328,23 +332,98 @@ public object GameLoop : Configurable {
                     }
                 }
 
-                /*
-                # Spawn random crates
-                execute if predicate crossfire:spawn_crates if score gametimer0 gametimer matches 20 run function crossfire:spawn/random_crates0
-                execute if predicate crossfire:spawn_crates if score gametimer0 gametimer matches 40 run function crossfire:spawn/random_crates0
-                execute if predicate crossfire:spawn_crates if score gametimer0 gametimer matches 60 run function crossfire:spawn/random_crates0
-                execute if predicate crossfire:spawn_crates if score gametimer0 gametimer matches 80 run function crossfire:spawn/random_crates0
-                execute if predicate crossfire:spawn_crates if score gametimer0 gametimer matches 100 run function crossfire:spawn/random_crates0
-                execute if predicate crossfire:spawn_crates if score gametimer0 gametimer matches 120 run function crossfire:spawn/random_crates0
-                execute if predicate crossfire:spawn_crates if score gametimer0 gametimer matches 140 run function crossfire:spawn/random_crates0
-                execute if predicate crossfire:spawn_crates if score gametimer0 gametimer matches 160 run function crossfire:spawn/random_crates0
-                execute if predicate crossfire:spawn_crates if score gametimer0 gametimer matches 180 run function crossfire:spawn/random_crates0
-                execute if predicate crossfire:spawn_crates if score gametimer0 gametimer matches 200 run function crossfire:spawn/random_crates0
-                execute if predicate crossfire:spawn_crates if score gametimer0 gametimer matches 220 run function crossfire:spawn/random_crates0
-                execute if predicate crossfire:spawn_crates if score gametimer0 gametimer matches 240 run function crossfire:spawn/random_crates0
-                execute if predicate crossfire:spawn_crates if score gametimer0 gametimer matches 260 run function crossfire:spawn/random_crates0
-                execute if predicate crossfire:spawn_crates if score gametimer0 gametimer matches 280 run function crossfire:spawn/random_crates0
-                 */
+                // Spawn random crates throughout the round
+                for (i in 20..280 step 20) {
+                    execute {
+                        ifCondition(predicateRandomChance(0.8f))
+                        ifCondition {
+                            score(literal(map), CrossfireScoreboards.GAME_TIMER) equalTo i
+                        }
+                        run {
+                            when (map) {
+                                "party" -> {
+                                    execute {
+                                        storeResult {
+                                            score(literal(map), CrossfireScoreboards.SELECTED_RANDOM)
+                                        }
+                                        run {
+                                            randomValue(0..7)
+                                        }
+                                    }
+                                    executeIfEqualTo(CrossfireScoreboards.SELECTED_RANDOM, 0, literal(map)) {
+                                        executeAt(vec3(529.worldPos, 80.worldPos, 411.worldPos)) {
+                                            function(References.NAMESPACE, "${Crates.SPAWN_IRON}-$map")
+                                        }
+                                    }
+                                    executeIfEqualTo(CrossfireScoreboards.SELECTED_RANDOM, 1, literal(map)) {
+                                        executeAt(vec3(539.worldPos, 80.worldPos, 421.worldPos)) {
+                                            function(References.NAMESPACE, "${Crates.SPAWN_IRON}-$map")
+                                        }
+                                    }
+                                    executeIfEqualTo(CrossfireScoreboards.SELECTED_RANDOM, 2, literal(map)) {
+                                        executeAt(vec3(529.worldPos, 80.worldPos, 431.worldPos)) {
+                                            function(References.NAMESPACE, "${Crates.SPAWN_IRON}-$map")
+                                        }
+                                    }
+                                    executeIfEqualTo(CrossfireScoreboards.SELECTED_RANDOM, 3, literal(map)) {
+                                        executeAt(vec3(519.worldPos, 80.worldPos, 421.worldPos)) {
+                                            function(References.NAMESPACE, "${Crates.SPAWN_IRON}-$map")
+                                        }
+                                    }
+
+                                    executeIfEqualTo(CrossfireScoreboards.SELECTED_RANDOM, 4, literal(map)) {
+                                        executeAt(vec3(537.worldPos, 80.worldPos, 413.worldPos)) {
+                                            function(References.NAMESPACE, "${Crates.SPAWN_GOLD}-$map")
+                                        }
+                                    }
+                                    executeIfEqualTo(CrossfireScoreboards.SELECTED_RANDOM, 5, literal(map)) {
+                                        executeAt(vec3(537.worldPos, 80.worldPos, 429.worldPos)) {
+                                            function(References.NAMESPACE, "${Crates.SPAWN_GOLD}-$map")
+                                        }
+                                    }
+                                    executeIfEqualTo(CrossfireScoreboards.SELECTED_RANDOM, 6, literal(map)) {
+                                        executeAt(vec3(521.worldPos, 80.worldPos, 429.worldPos)) {
+                                            function(References.NAMESPACE, "${Crates.SPAWN_GOLD}-$map")
+                                        }
+                                    }
+                                    executeIfEqualTo(CrossfireScoreboards.SELECTED_RANDOM, 7, literal(map)) {
+                                        executeAt(vec3(521.worldPos, 80.worldPos, 413.worldPos)) {
+                                            function(References.NAMESPACE, "${Crates.SPAWN_GOLD}-$map")
+                                        }
+                                    }
+                                }
+
+                                "duel" -> {
+                                    execute {
+                                        storeResult {
+                                            score(literal(map), CrossfireScoreboards.SELECTED_RANDOM)
+                                        }
+                                        run {
+                                            randomValue(0..2)
+                                        }
+                                    }
+                                    executeIfEqualTo(CrossfireScoreboards.SELECTED_RANDOM, 0, literal(map)) {
+                                        executeAt(vec3(517.worldPos, 80.worldPos, 296.worldPos)) {
+                                            function(References.NAMESPACE, "${Crates.SPAWN_IRON}-$map")
+                                        }
+                                    }
+                                    executeIfEqualTo(CrossfireScoreboards.SELECTED_RANDOM, 1, literal(map)) {
+                                        executeAt(vec3(541.worldPos, 80.worldPos, 296.worldPos)) {
+                                            function(References.NAMESPACE, "${Crates.SPAWN_IRON}-$map")
+                                        }
+                                    }
+                                    executeIfEqualTo(CrossfireScoreboards.SELECTED_RANDOM, 2, literal(map)) {
+                                        executeAt(vec3(529.worldPos, 80.worldPos, 296.worldPos)) {
+                                            function(References.NAMESPACE, "${Crates.SPAWN_GOLD}-$map")
+                                        }
+                                    }
+                                }
+
+                                else -> throw IllegalArgumentException("Invalid map name $map")
+                            }
+                        }
+                    }
+                }
 
                 // Handle the timer's state
                 execute {

@@ -57,17 +57,23 @@ public object CrossfireTags : Configurable {
 
     // -- Tags added to entities
 
-    /** For copters with supply crates. */
-    public const val SUPPLY_CRATE: String = "supply_crate"
-
-    /** For copters with any crate. */
+    /** For crates. */
     public const val CRATE: String = "crate"
 
-    /** For copters that are now crateless. */
-    public const val CRATELESS: String = "crateless"
+    /** For copters. */
+    public const val COPTER: String = "copter"
 
-    /** For copters that dropped their crate. */
+    /** For copters that have dropped their crate or crates that are leaving. */
+    public const val LEFT_PAYLOAD: String = "left_payload"
+
+    /** For crates that have dropped. */
     public const val DROPPED: String = "dropped"
+
+    /** For dropped power-ups. */
+    public const val POWER_UP: String = "power_up"
+
+    /** For copters and crates ready to drop their item. */
+    public const val READY_TO_DROP: String = "ready_to_drop"
 
     override fun DataPack.configure() {
         tag(CROSSBOW, "items") {
