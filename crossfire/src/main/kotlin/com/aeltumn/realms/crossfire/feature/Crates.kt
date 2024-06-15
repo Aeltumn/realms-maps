@@ -8,14 +8,19 @@ import com.aeltumn.realms.crossfire.References
 import com.aeltumn.realms.crossfire.component.CrossfireScoreboards
 import com.aeltumn.realms.crossfire.component.CrossfireTags
 import io.github.ayfri.kore.DataPack
+import io.github.ayfri.kore.arguments.CONTAINER
 import io.github.ayfri.kore.arguments.chatcomponents.ChatComponents
 import io.github.ayfri.kore.arguments.chatcomponents.events.HoverAction
 import io.github.ayfri.kore.arguments.chatcomponents.events.showText
 import io.github.ayfri.kore.arguments.chatcomponents.hoverEvent
 import io.github.ayfri.kore.arguments.chatcomponents.textComponent
 import io.github.ayfri.kore.arguments.colors.Color
+import io.github.ayfri.kore.arguments.components.types.customModelData
+import io.github.ayfri.kore.arguments.components.types.itemName
 import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.arguments.numbers.localPos
+import io.github.ayfri.kore.arguments.numbers.ranges.rangeEnd
+import io.github.ayfri.kore.arguments.numbers.ranges.rangeOrInt
 import io.github.ayfri.kore.arguments.numbers.relativePos
 import io.github.ayfri.kore.arguments.numbers.relativeRot
 import io.github.ayfri.kore.arguments.numbers.rot
@@ -23,16 +28,19 @@ import io.github.ayfri.kore.arguments.numbers.worldPos
 import io.github.ayfri.kore.arguments.scores.score
 import io.github.ayfri.kore.arguments.selector.scores
 import io.github.ayfri.kore.arguments.types.literals.allEntities
+import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.rotation
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.arguments.types.resources.ParticleArgument
 import io.github.ayfri.kore.arguments.types.resources.SoundArgument
+import io.github.ayfri.kore.arguments.types.resources.item
 import io.github.ayfri.kore.commands.Command
 import io.github.ayfri.kore.commands.PlaySoundMixer
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.items
 import io.github.ayfri.kore.commands.kill
 import io.github.ayfri.kore.commands.particle.particle
 import io.github.ayfri.kore.commands.playSound
@@ -44,6 +52,7 @@ import io.github.ayfri.kore.commands.tellraw
 import io.github.ayfri.kore.commands.tp
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.functions.function
+import io.github.ayfri.kore.generated.ComponentTypes
 import io.github.ayfri.kore.generated.EntityTypes
 import io.github.ayfri.kore.generated.Particles
 import net.benwoodworth.knbt.NbtByte
@@ -781,6 +790,230 @@ public object Crates : Configurable {
                     }
                     run {
                         handleDrop(true, map, index)
+                    }
+                }
+            }
+        }
+
+        // Add logic for picking up power-ups
+        tick("collect_power_up") {
+            for ((index, map) in References.MAPS.withIndex()) {
+                execute {
+                    // Only allow picking up after the map has started
+                    ifCondition {
+                        score(literal(map), CrossfireScoreboards.STARTED, rangeOrInt(1))
+                    }
+
+                    // Allow picking up your map's drops
+                    asTarget(allEntities {
+                        tag = CrossfireTags.POWER_UP
+                        tag = map
+                    })
+                    at(self())
+
+                    // Determine if there is some entity that can pick it up
+                    ifCondition {
+                        entity(allPlayers {
+                            // Find someone in this map that is not spectating
+                            tag = "${CrossfireTags.SELECTED}-$map"
+                            tag = !CrossfireTags.SPECTATING
+
+                            // Find someone within 1.5 blocks of the power-up
+                            distance = rangeEnd(1.5)
+
+                            // Find someone with any of the three slots available still
+                            nbt = !NbtCompound(
+                                mapOf(
+                                    "Inventory" to NbtList(
+                                        listOf(
+                                            NbtCompound(
+                                                mapOf(
+                                                    "Slot" to NbtByte(3)
+                                                )
+                                            ),
+                                            NbtCompound(
+                                                mapOf(
+                                                    "Slot" to NbtByte(4)
+                                                )
+                                            ),
+                                            NbtCompound(
+                                                mapOf(
+                                                    "Slot" to NbtByte(5)
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        })
+                    }
+
+                    run {
+                        // Play effects to everyone in the same map
+                        execute {
+                            asTarget(mapMembersSelector(index))
+                            run {
+                                playSound(SoundArgument("block.note_block.chime"), PlaySoundMixer.PLAYER, self(), AT_POSITION, 1.0, 0.5)
+                                tellraw(
+                                    self(),
+                                    textComponent("A power-up was picked up, watch out!")
+                                )
+                            }
+                        }
+
+                        // Give the player the corresponding item
+                        val items = mapOf(
+                            "rapid_fire" to item("carrot_on_a_stick") {
+                                customModelData(0)
+                                itemName("Rapid Fire Power-up", Color.GOLD)
+                            },
+                            "multishot" to item("carrot_on_a_stick") {
+                                customModelData(1)
+                                itemName("Multishot Power-up", Color.LIGHT_PURPLE)
+                            },
+                            "swiftness" to item("potion") {
+                                set(
+                                    ComponentTypes.POTION_CONTENTS, NbtCompound(
+                                        mapOf(
+                                            "custom_color" to NbtInt(10806260),
+                                            "custom_effects" to NbtList(
+                                                listOf(
+                                                    NbtCompound(
+                                                        mapOf(
+                                                            "id" to NbtString("minecraft:speed"),
+                                                            "amplifier" to NbtInt(1),
+                                                            "duration" to NbtInt(400)
+                                                        )
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
+                                itemName("Swiftness II Potion", Color.AQUA)
+                            },
+                            "jump_boost" to item("potion") {
+                                set(
+                                    ComponentTypes.POTION_CONTENTS, NbtCompound(
+                                        mapOf(
+                                            "custom_color" to NbtInt(1309504),
+                                            "custom_effects" to NbtList(
+                                                listOf(
+                                                    NbtCompound(
+                                                        mapOf(
+                                                            "id" to NbtString("minecraft:jump_boost"),
+                                                            "amplifier" to NbtInt(4),
+                                                            "duration" to NbtInt(400)
+                                                        )
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
+                                itemName("Jump Boost V Potion", Color.GREEN)
+                            },
+                            "slow_falling" to item("potion") {
+                                set(
+                                    ComponentTypes.POTION_CONTENTS, NbtCompound(
+                                        mapOf(
+                                            "custom_color" to NbtInt(16777215),
+                                            "custom_effects" to NbtList(
+                                                listOf(
+                                                    NbtCompound(
+                                                        mapOf(
+                                                            "id" to NbtString("minecraft:slow_falling"),
+                                                            "amplifier" to NbtInt(0),
+                                                            "duration" to NbtInt(400)
+                                                        )
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
+                                itemName("Slow Falling I Potion", Color.GRAY)
+                            }
+                        )
+
+                        scoreboard.players.set(self(), "success", 0)
+                        for ((itemTag, item) in items) {
+                            for (slot in 3..5) {
+                                execute {
+                                    ifCondition {
+                                        entity(self {
+                                            tag = itemTag
+                                            scores {
+                                                score("success", 0)
+                                            }
+                                        })
+                                    }
+                                    ifCondition {
+                                        entity(allPlayers {
+                                            // Find someone in this map that is not spectating
+                                            tag = "${CrossfireTags.SELECTED}-$map"
+                                            tag = !CrossfireTags.SPECTATING
+
+                                            // Find someone within 1.5 blocks of the power-up
+                                            distance = rangeEnd(1.5)
+
+                                            // Find someone with a slot available still
+                                            nbt = !NbtCompound(
+                                                mapOf(
+                                                    "Inventory" to NbtList(
+                                                        listOf(
+                                                            NbtCompound(
+                                                                mapOf(
+                                                                    "Slot" to NbtByte(slot.toByte())
+                                                                )
+                                                            )
+                                                        )
+                                                    )
+                                                )
+                                            )
+                                        })
+                                    }
+                                    run {
+                                        // Give them the item
+                                        items {
+                                            replace(
+                                                allPlayers(true) {
+                                                    // Find someone in this map that is not spectating
+                                                    tag = "${CrossfireTags.SELECTED}-$map"
+                                                    tag = !CrossfireTags.SPECTATING
+
+                                                    // Find someone within 1.5 blocks of the power-up
+                                                    distance = rangeEnd(1.5)
+
+                                                    // Find someone with a slot available still
+                                                    nbt = !NbtCompound(
+                                                        mapOf(
+                                                            "Inventory" to NbtList(
+                                                                listOf(
+                                                                    NbtCompound(
+                                                                        mapOf(
+                                                                            "Slot" to NbtByte(slot.toByte())
+                                                                        )
+                                                                    )
+                                                                )
+                                                            )
+                                                        )
+                                                    )
+                                                },
+                                                CONTAINER[slot],
+                                                item
+                                            )
+                                        }
+
+                                        // Set success to 1 so no other pick-up triggers
+                                        scoreboard.players.set(self(), "success", 1)
+                                    }
+                                }
+                            }
+                        }
+
+                        // Destroy the drop
+                        kill(self())
                     }
                 }
             }
