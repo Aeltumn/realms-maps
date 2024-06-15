@@ -936,74 +936,62 @@ public object Crates : Configurable {
                             }
                         )
 
+                        // Reset success state from previous pickup attempt
                         scoreboard.players.set(self(), "success", 0)
+
+                        // Go through all possible items and slots to pick up
                         for ((itemTag, item) in items) {
                             for (slot in 3..5) {
+                                val targetPlayer = allPlayers(true) {
+                                    // Find someone in this map that is not spectating
+                                    tag = "${CrossfireTags.SELECTED}-$map"
+                                    tag = !CrossfireTags.SPECTATING
+
+                                    // Find someone within 1.5 blocks of the power-up
+                                    distance = rangeEnd(1.5)
+
+                                    // Find someone with a slot available still
+                                    nbt = !NbtCompound(
+                                        mapOf(
+                                            "Inventory" to NbtList(
+                                                listOf(
+                                                    NbtCompound(
+                                                        mapOf(
+                                                            "Slot" to NbtByte(slot.toByte())
+                                                        )
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    )
+                                }
+
                                 execute {
                                     ifCondition {
                                         entity(self {
                                             tag = itemTag
+
+                                            // Only if nothing has yet been picked up!
                                             scores {
                                                 score("success", 0)
                                             }
                                         })
                                     }
                                     ifCondition {
-                                        entity(allPlayers {
-                                            // Find someone in this map that is not spectating
-                                            tag = "${CrossfireTags.SELECTED}-$map"
-                                            tag = !CrossfireTags.SPECTATING
-
-                                            // Find someone within 1.5 blocks of the power-up
-                                            distance = rangeEnd(1.5)
-
-                                            // Find someone with a slot available still
-                                            nbt = !NbtCompound(
-                                                mapOf(
-                                                    "Inventory" to NbtList(
-                                                        listOf(
-                                                            NbtCompound(
-                                                                mapOf(
-                                                                    "Slot" to NbtByte(slot.toByte())
-                                                                )
-                                                            )
-                                                        )
-                                                    )
-                                                )
-                                            )
-                                        })
+                                        entity(targetPlayer)
                                     }
                                     run {
                                         // Give them the item
                                         items {
                                             replace(
-                                                allPlayers(true) {
-                                                    // Find someone in this map that is not spectating
-                                                    tag = "${CrossfireTags.SELECTED}-$map"
-                                                    tag = !CrossfireTags.SPECTATING
-
-                                                    // Find someone within 1.5 blocks of the power-up
-                                                    distance = rangeEnd(1.5)
-
-                                                    // Find someone with a slot available still
-                                                    nbt = !NbtCompound(
-                                                        mapOf(
-                                                            "Inventory" to NbtList(
-                                                                listOf(
-                                                                    NbtCompound(
-                                                                        mapOf(
-                                                                            "Slot" to NbtByte(slot.toByte())
-                                                                        )
-                                                                    )
-                                                                )
-                                                            )
-                                                        )
-                                                    )
-                                                },
+                                                targetPlayer,
                                                 CONTAINER[slot],
                                                 item
                                             )
                                         }
+
+                                        // Play a pick-up sound to the player
+                                        playSound(SoundArgument("entity.item.pickup"), PlaySoundMixer.PLAYER, targetPlayer, AT_POSITION, 1.0, 1.0)
 
                                         // Set success to 1 so no other pick-up triggers
                                         scoreboard.players.set(self(), "success", 1)
