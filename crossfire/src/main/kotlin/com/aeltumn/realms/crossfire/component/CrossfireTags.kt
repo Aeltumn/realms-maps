@@ -53,6 +53,9 @@ public object CrossfireTags : Configurable {
     /** Tag given out for loser. */
     public const val LOSER: String = "loser"
 
+    /** Marks a player as having been hit. */
+    public const val HIT: String = "hit"
+
     // -- Tags that define items
 
     /** Contains just the crossbow. */

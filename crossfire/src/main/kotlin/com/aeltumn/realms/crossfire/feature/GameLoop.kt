@@ -204,7 +204,7 @@ public object GameLoop : Configurable {
                                 clone(vec3(444, 76, 393), vec3(441, 86, 399), vec3(548, 70, 418))
                                 clone(vec3(441, 76, 407), vec3(444, 86, 401), vec3(507, 70, 418))
 
-                                // Remove post-game barriers
+                                // Remove post-game barriers  (over water)
                                 fill(vec3(509, 70, 401), vec3(549, 70, 441), BlockArgument("air", "minecraft"), BlockArgument("barrier", "minecraft"))
 
                                 // Remove the logos
@@ -216,7 +216,7 @@ public object GameLoop : Configurable {
                                 clone(vec3(438, 77, 364), vec3(432, 87, 361), vec3(526, 70, 274))
                                 clone(vec3(438, 77, 369), vec3(432, 87, 366), vec3(526, 70, 315))
 
-                                // Remove post-game barriers
+                                // Remove post-game barriers (over water)
                                 fill(vec3(509, 70, 276), vec3(549, 70, 316), BlockArgument("air", "minecraft"), BlockArgument("barrier", "minecraft"))
 
                                 // Remove the logos
@@ -523,8 +523,9 @@ public object GameLoop : Configurable {
                     }
                 }
 
+                // Add fireworks for the winning team
                 /*
-                execute if score Red winner matches 1 run summon firework_rocket 534.5 73 416.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;11743532]}],Flight:2}}}}
+                TODO execute if score Red winner matches 1 run summon firework_rocket 534.5 73 416.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;11743532]}],Flight:2}}}}
                 execute if score Yellow winner matches 1 run summon firework_rocket 534.5 73 416.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;14602026]}],Flight:2}}}}
                 execute if score Green winner matches 1 run summon firework_rocket 534.5 73 416.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;4312372]}],Flight:2}}}}
                 execute if score Blue winner matches 1 run summon firework_rocket 534.5 73 416.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;6719955]}],Flight:2}}}}
@@ -707,14 +708,117 @@ public object GameLoop : Configurable {
                     remove(CrossfireTags.RELOAD_CROSSBOW)
                 }
 
-                // Teleport all players to the middle of the map
+                // Add a summary showing how many kills each player got
+                // TODO
+                /*
+                tellraw @a[scores={map=0}] [""]
+                tellraw @a[scores={map=0}] [""]
+                tellraw @a[scores={map=0}] ["",{"text":"Point scoreboard for this game:","bold":true}]
+                tellraw @a[scores={map=0}] ["",{"text":"(kills give 1 point, death from water retracts 1 point)","color":"gray"}]
+                tellraw @a[scores={map=0}] [""]
+                execute if entity @a[tag=player1,scores={map=0}] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player1]"},{"text":": "},{"score":{"name":"@a[tag=player1]","objective":"roundKills"},"color":"white"},{"text":" points","color":"white"}]
+                execute if entity @a[tag=player2,scores={map=0}] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player2]"},{"text":": "},{"score":{"name":"@a[tag=player2]","objective":"roundKills"},"color":"white"},{"text":" points","color":"white"}]
+                execute if entity @a[tag=player3,scores={map=0}] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player3]"},{"text":": "},{"score":{"name":"@a[tag=player3]","objective":"roundKills"},"color":"white"},{"text":" points","color":"white"}]
+                execute if entity @a[tag=player4,scores={map=0}] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player4]"},{"text":": "},{"score":{"name":"@a[tag=player4]","objective":"roundKills"},"color":"white"},{"text":" points","color":"white"}]
+                execute if entity @a[tag=player5,scores={map=0}] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player5]"},{"text":": "},{"score":{"name":"@a[tag=player5]","objective":"roundKills"},"color":"white"},{"text":" points","color":"white"}]
+                execute if entity @a[tag=player6,scores={map=0}] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player6]"},{"text":": "},{"score":{"name":"@a[tag=player6]","objective":"roundKills"},"color":"white"},{"text":" points","color":"white"}]
+                execute if entity @a[tag=player7,scores={map=0}] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player7]"},{"text":": "},{"score":{"name":"@a[tag=player7]","objective":"roundKills"},"color":"white"},{"text":" points","color":"white"}]
+                execute if entity @a[tag=player8,scores={map=0}] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player8]"},{"text":": "},{"score":{"name":"@a[tag=player8]","objective":"roundKills"},"color":"white"},{"text":" points","color":"white"}]
+                execute if entity @a[tag=player9,scores={map=0}] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player9]"},{"text":": "},{"score":{"name":"@a[tag=player9]","objective":"roundKills"},"color":"white"},{"text":" points","color":"white"}]
+                execute if entity @a[tag=player10,scores={map=0}] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player10]"},{"text":": "},{"score":{"name":"@a[tag=player10]","objective":"roundKills"},"color":"white"},{"text":" points","color":"white"}]
+                execute if entity @a[tag=player11,scores={map=0}] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player11]"},{"text":": "},{"score":{"name":"@a[tag=player11]","objective":"roundKills"},"color":"white"},{"text":" points","color":"white"}]
+                tellraw @a[scores={map=0}] [""]
+                execute if entity @a[team=red] run tellraw @a[scores={map=0}] ["",{"text":"Red Team","color":"red"},{"text":": "},{"score":{"name":"Red","objective":"kills"},"color":"white"},{"text":" points","color":"white"}]
+                execute if entity @a[team=yellow] run tellraw @a[scores={map=0}] ["",{"text":"Yellow Team","color":"yellow"},{"text":": "},{"score":{"name":"Yellow","objective":"kills"},"color":"white"},{"text":" points","color":"white"}]
+                execute if entity @a[team=green] run tellraw @a[scores={map=0}] ["",{"text":"Green Team","color":"green"},{"text":": "},{"score":{"name":"Green","objective":"kills"},"color":"white"},{"text":" points","color":"white"}]
+                execute if entity @a[team=blue] run tellraw @a[scores={map=0}] ["",{"text":"Blue Team","color":"aqua"},{"text":": "},{"score":{"name":"Blue","objective":"kills"},"color":"white"},{"text":" points","color":"white"}]
+                execute if entity @a[team=orange] run tellraw @a[scores={map=1}] ["",{"text":"Orange Team","color":"gold"},{"text":": "},{"score":{"name":"Orange","objective":"kills"},"color":"white"},{"text":" points","color":"white"}]
+                execute if entity @a[team=magenta] run tellraw @a[scores={map=1}] ["",{"text":"Magenta Team","color":"light_purple"},{"text":": "},{"score":{"name":"Magenta","objective":"kills"},"color":"white"},{"text":" points","color":"white"}]
+                tellraw @a[scores={map=0}] [""]
+                tellraw @a[scores={map=0}] [""]
+                 */
+
+                // TODO
+                /*
+                # Send titles to winners
+                title @a[scores={map=0}] clear
+                title @a[scores={map=0}] subtitle {"text":""}
+                title @a[scores={map=0}] times 40 160 40
+
+                execute unless entity @a[team=red] run scoreboard players set Red kills -999
+                execute unless entity @a[team=yellow] run scoreboard players set Yellow kills -999
+                execute unless entity @a[team=green] run scoreboard players set Green kills -999
+                execute unless entity @a[team=blue] run scoreboard players set Blue kills -999
+                execute if score Red kills > Blue kills if score Red kills > Yellow kills if score Red kills > Green kills run scoreboard players set Red winner 1
+                execute if score Blue kills > Red kills if score Blue kills > Yellow kills if score Blue kills > Green kills run scoreboard players set Blue winner 1
+                execute if score Yellow kills > Blue kills if score Yellow kills > Red kills if score Yellow kills > Green kills run scoreboard players set Yellow winner 1
+                execute if score Green kills > Red kills if score Green kills > Yellow kills if score Green kills > Blue kills run scoreboard players set Green winner 1
+                execute unless score Red winner matches 1.. unless score Green winner matches 1.. unless score Yellow winner matches 1.. unless score Blue winner matches 1.. run scoreboard players set Draw0 winner 1
+                execute if score Red winner matches 1.. run tellraw @a[scores={map=0}] ["",{"text":"Red","bold":true,"color":"red"},{"text":" won the game!"}]
+                execute if score Red winner matches 1.. run title @a[scores={map=0}] title ["",{"text":"Red","bold":true,"color":"red"},{"text":" won the game!"}]
+                execute if score Blue winner matches 1.. run tellraw @a[scores={map=0}] ["",{"text":"Blue","bold":true,"color":"aqua"},{"text":" won the game!"}]
+                execute if score Blue winner matches 1.. run title @a[scores={map=0}] title ["",{"text":"Blue","bold":true,"color":"aqua"},{"text":" won the game!"}]
+                execute if score Yellow winner matches 1.. run tellraw @a[scores={map=0}] ["",{"text":"Yellow","bold":true,"color":"yellow"},{"text":" won the game!"}]
+                execute if score Yellow winner matches 1.. run title @a[scores={map=0}] title ["",{"text":"Yellow","bold":true,"color":"yellow"},{"text":" won the game!"}]
+                execute if score Green winner matches 1.. run tellraw @a[scores={map=0}] ["",{"text":"Green","bold":true,"color":"green"},{"text":" won the game!"}]
+                execute if score Green winner matches 1.. run title @a[scores={map=0}] title ["",{"text":"Green","bold":true,"color":"green"},{"text":" won the game!"}]
+                execute if score Draw0 winner matches 1.. run tellraw @a[scores={map=0}] ["",{"text":"It's a draw!","bold":true,"color":"gold"}]
+                execute if score Draw0 winner matches 1.. run title @a[scores={map=0}] title ["",{"text":"It's a draw!","bold":true,"color":"gold"}]
+
+                execute unless entity @a[team=orange] run scoreboard players set Orange kills -999
+                execute unless entity @a[team=magenta] run scoreboard players set Magenta kills -999
+                execute if score Orange kills > Magenta kills run scoreboard players set Orange winner 1
+                execute if score Magenta kills > Orange kills run scoreboard players set Magenta winner 1
+                execute unless score Orange winner matches 1.. unless score Magenta winner matches 1.. run scoreboard players set Draw1 winner 1
+                execute if score Orange winner matches 1.. run tellraw @a[scores={map=1}] ["",{"text":"Orange","bold":true,"color":"gold"},{"text":" won the game!"}]
+                execute if score Orange winner matches 1.. run title @a[scores={map=1}] title ["",{"text":"Orange","bold":true,"color":"gold"},{"text":" won the game!"}]
+                execute if score Magenta winner matches 1.. run tellraw @a[scores={map=1}] ["",{"text":"Magenta","bold":true,"color":"light_purple"},{"text":" won the game!"}]
+                execute if score Magenta winner matches 1.. run title @a[scores={map=1}] title ["",{"text":"Magenta","bold":true,"color":"light_purple"},{"text":" won the game!"}]
+                execute if score Draw1 winner matches 1.. run tellraw @a[scores={map=1}] ["",{"text":"It's a draw!","bold":true,"color":"gold"}]
+                execute if score Draw1 winner matches 1.. run title @a[scores={map=1}] title ["",{"text":"It's a draw!","bold":true,"color":"gold"}]
+
+                # Actually give the wins to the players
+                execute if score Red winner matches 1.. run scoreboard players add @a[team=red] wins 1
+                execute if score Yellow winner matches 1.. run scoreboard players add @a[team=yellow] wins 1
+                execute if score Green winner matches 1.. run scoreboard players add @a[team=green] wins 1
+                execute if score Blue winner matches 1.. run scoreboard players add @a[team=blue] wins 1
+
+                # Play sound to play depending on if they won or lost
+                execute if score Red winner matches 1.. run tag @a[team=red,scores={map=0}] add won0
+                execute if score Yellow winner matches 1.. run tag @a[team=yellow,scores={map=0}] add won0
+                execute if score Green winner matches 1.. run tag @a[team=green,scores={map=0}] add won0
+                execute if score Blue winner matches 1.. run tag @a[team=blue,scores={map=0}] add won0
+
+                # Actually give the wins to the players
+                execute if score Orange winner matches 1.. run scoreboard players add @a[team=orange] wins 1
+                execute if score Magenta winner matches 1.. run scoreboard players add @a[team=magenta] wins 1
+
+                # Play sound to play depending on if they won or lost
+                execute if score Orange winner matches 1.. run tag @a[team=orange,scores={map=1}] add won1
+                execute if score Magenta winner matches 1.. run tag @a[team=magenta,scores={map=1}] add won1
+
+                # Give lost if you don't have win
+                tag @a[tag=!won0,scores={map=0}] add lost0
+
+                # Reset all players in this map
+                execute as @a[scores={map=0},tag=joined] run function crossfire:reset_player
+                 */
+
                 when (map) {
                     "party" -> {
+                        // Teleport all players to the middle of the map
                         tp(selector, vec3(529, 72, 421), rotation((-90.0).rot, 0.0.rot))
+
+                        // Put barriers over the water
+                        fill(vec3(509, 70, 401), vec3(549, 70, 441), BlockArgument("barrier", "minecraft"), BlockArgument("air", "minecraft"))
                     }
 
                     "duel" -> {
+                        // Teleport all players to the middle of the map
                         tp(selector, vec3(529, 71, 296), rotation((-90.0).rot, 0.0.rot))
+
+                        // Put barriers over the water
+                        fill(vec3(509, 70, 276), vec3(549, 70, 316), BlockArgument("air", "minecraft"), BlockArgument("barrier", "minecraft"))
                     }
 
                     else -> throw IllegalArgumentException("Invalid map name $map")
@@ -723,6 +827,7 @@ public object GameLoop : Configurable {
                 // Start the post game timer
                 scoreboard.players.set(literal(map), CrossfireScoreboards.POST_GAME_TIMER, POST_GAME_TIMER_SECONDS)
                 function(References.NAMESPACE, postGameTimer.path)
+
             }
         }
 

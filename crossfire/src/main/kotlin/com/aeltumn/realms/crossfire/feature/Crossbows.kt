@@ -37,6 +37,7 @@ import io.github.ayfri.kore.commands.PlaySoundMixer
 import io.github.ayfri.kore.commands.clear
 import io.github.ayfri.kore.commands.command
 import io.github.ayfri.kore.commands.data
+import io.github.ayfri.kore.commands.effect
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.items
@@ -49,6 +50,7 @@ import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.functions.tick
+import io.github.ayfri.kore.generated.Effects
 import io.github.ayfri.kore.generated.Enchantments
 import io.github.ayfri.kore.generated.EntityTypes
 import net.benwoodworth.knbt.NbtByte
@@ -421,6 +423,84 @@ public object Crossbows : Configurable {
 
             // Kill the arrow
             kill(self())
+
+            // Determine if this arrow was a part of a game
+            execute {
+                ifCondition {
+                    entity(self {
+                        tag = !CrossfireTags.SHOOTING_RANGE
+                    })
+                }
+                run {
+                    // Show kill screens
+                    // TODO
+                    /*
+                    # Killscreens
+                    # Red killscreen
+                    execute if entity @s[tag=red,tag=!shootrange] as @a[distance=..3,team=!red,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run title @s subtitle {"text":"\uE004"}
+                    execute if entity @s[tag=red,tag=!shootrange] as @a[distance=..3,team=!red,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run title @s title ["",{"text":" \uE006 "},{"text":"Sploded! ","bold":true,"color":"red"},{"text":"\uE006"}]
+                    execute if entity @s[tag=red,tag=!shootrange] as @a[distance=..3,team=!red,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run tag @s add hit
+
+                    # Yellow killscreen
+                    execute if entity @s[tag=yellow,tag=!shootrange] as @a[distance=..3,team=!yellow,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run title @s subtitle {"text":"\uE004"}
+                    execute if entity @s[tag=yellow,tag=!shootrange] as @a[distance=..3,team=!yellow,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run title @s title ["",{"text":" \uE007 "},{"text":"Sploded! ","bold":true,"color":"yellow"},{"text":"\uE007"}]
+                    execute if entity @s[tag=yellow,tag=!shootrange] as @a[distance=..3,team=!yellow,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run tag @s add hit
+
+                    # Green killscreen
+                    execute if entity @s[tag=green,tag=!shootrange] as @a[distance=..3,team=!green,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run title @s subtitle {"text":"\uE004"}
+                    execute if entity @s[tag=green,tag=!shootrange] as @a[distance=..3,team=!green,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run title @s title ["",{"text":" \uE008 "},{"text":"Sploded! ","bold":true,"color":"green"},{"text":"\uE008"}]
+                    execute if entity @s[tag=green,tag=!shootrange] as @a[distance=..3,team=!green,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run tag @s add hit
+
+                    # Blue killscreen
+                    execute if entity @s[tag=blue,tag=!shootrange] as @a[distance=..3,team=!blue,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run title @s subtitle {"text":"\uE004"}
+                    execute if entity @s[tag=blue,tag=!shootrange] as @a[distance=..3,team=!blue,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run title @s title ["",{"text":" \uE005 "},{"text":"Sploded! ","bold":true,"color":"aqua"},{"text":"\uE005"}]
+                    execute if entity @s[tag=blue,tag=!shootrange] as @a[distance=..3,team=!blue,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run tag @s add hit
+
+                    # Orange killscreen
+                    execute if entity @s[tag=orange,tag=!shootrange] as @a[distance=..3,team=!orange,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run title @s subtitle {"text":"\uE004"}
+                    execute if entity @s[tag=orange,tag=!shootrange] as @a[distance=..3,team=!orange,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run title @s title ["",{"text":" \uE009 "},{"text":"Sploded! ","bold":true,"color":"gold"},{"text":"\uE009"}]
+                    execute if entity @s[tag=orange,tag=!shootrange] as @a[distance=..3,team=!orange,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run tag @s add hit
+
+                    # Magenta killscreen
+                    execute if entity @s[tag=magenta,tag=!shootrange] as @a[distance=..3,team=!magenta,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run title @s subtitle {"text":"\uE004"}
+                    execute if entity @s[tag=magenta,tag=!shootrange] as @a[distance=..3,team=!magenta,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run title @s title ["",{"text":" \uE010 "},{"text":"Sploded! ","bold":true,"color":"light_purple"},{"text":"\uE010"}]
+                    execute if entity @s[tag=magenta,tag=!shootrange] as @a[distance=..3,team=!magenta,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run tag @s add hit
+                     */
+
+                    // Attempt to hit supply crates
+                    // TODO
+                    /*
+                    # Hit supply crates
+                    scoreboard players set result result 0
+                    execute store result score result result as @e[tag=supplycrate,tag=!crateless,distance=..3] run tag @s add wantstodrop
+                    execute if score result result matches 1 as @e[tag=supplycrate,tag=!crateless,tag=wantstodrop] at @s run tag @e[tag=!dropped,tag=!crateless,tag=!wantstodrop,distance=..1.5] add wantstodrop
+                    execute if score result result matches 1 if entity @s[tag=player1,tag=selected0,tag=!shootrange] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player1,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
+                    execute if score result result matches 1 if entity @s[tag=player1,tag=selected1,tag=!shootrange] run tellraw @a[scores={map=1}] ["",{"selector":"@a[tag=player1,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
+                    execute if score result result matches 1 if entity @s[tag=player2,tag=selected0,tag=!shootrange] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player2,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
+                    execute if score result result matches 1 if entity @s[tag=player2,tag=selected1,tag=!shootrange] run tellraw @a[scores={map=1}] ["",{"selector":"@a[tag=player2,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
+                    execute if score result result matches 1 if entity @s[tag=player3,tag=selected0,tag=!shootrange] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player3,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
+                    execute if score result result matches 1 if entity @s[tag=player3,tag=selected1,tag=!shootrange] run tellraw @a[scores={map=1}] ["",{"selector":"@a[tag=player3,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
+                    execute if score result result matches 1 if entity @s[tag=player4,tag=selected0,tag=!shootrange] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player4,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
+                    execute if score result result matches 1 if entity @s[tag=player4,tag=selected1,tag=!shootrange] run tellraw @a[scores={map=1}] ["",{"selector":"@a[tag=player4,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
+                    execute if score result result matches 1 if entity @s[tag=player5,tag=selected0,tag=!shootrange] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player5,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
+                    execute if score result result matches 1 if entity @s[tag=player5,tag=selected1,tag=!shootrange] run tellraw @a[scores={map=1}] ["",{"selector":"@a[tag=player5,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
+                    execute if score result result matches 1 if entity @s[tag=player6,tag=selected0,tag=!shootrange] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player6,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
+                    execute if score result result matches 1 if entity @s[tag=player6,tag=selected1,tag=!shootrange] run tellraw @a[scores={map=1}] ["",{"selector":"@a[tag=player6,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
+                    execute if score result result matches 1 if entity @s[tag=player7,tag=selected0,tag=!shootrange] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player7,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
+                    execute if score result result matches 1 if entity @s[tag=player7,tag=selected1,tag=!shootrange] run tellraw @a[scores={map=1}] ["",{"selector":"@a[tag=player7,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
+                    execute if score result result matches 1 if entity @s[tag=player8,tag=selected0,tag=!shootrange] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player8,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
+                    execute if score result result matches 1 if entity @s[tag=player8,tag=selected1,tag=!shootrange] run tellraw @a[scores={map=1}] ["",{"selector":"@a[tag=player8,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
+                    execute if score result result matches 1 if entity @s[tag=player9,tag=selected0,tag=!shootrange] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player9,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
+                    execute if score result result matches 1 if entity @s[tag=player9,tag=selected1,tag=!shootrange] run tellraw @a[scores={map=1}] ["",{"selector":"@a[tag=player9,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
+                    execute if score result result matches 1 if entity @s[tag=player10,tag=selected0,tag=!shootrange] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player10,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
+                    execute if score result result matches 1 if entity @s[tag=player10,tag=selected1,tag=!shootrange] run tellraw @a[scores={map=1}] ["",{"selector":"@a[tag=player10,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
+                    execute if score result result matches 1 if entity @s[tag=player11,tag=selected0,tag=!shootrange] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player11,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
+                    execute if score result result matches 1 if entity @s[tag=player11,tag=selected1,tag=!shootrange] run tellraw @a[scores={map=1}] ["",{"selector":"@a[tag=player11,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
+                     */
+
+                    // TODO Rest of hit.mcfunction
+                }
+            }
         }
 
         // Detect shooting crossbow
@@ -912,6 +992,7 @@ public object Crossbows : Configurable {
             // We don't remove a charged multi-shot if you lose the effect!
         }
 
+        // Update the current crossbow item state
         function("update_crossbow_state") {
             // Reset the reloading
             scoreboard.players.set(self(), CrossfireScoreboards.IS_RELOADING, 0)
@@ -957,6 +1038,32 @@ public object Crossbows : Configurable {
                     giveCrossbows(false)
                 }
             }
+        }
+
+        // Trigger player hit effect
+        function("player_hit", References.NAMESPACE) {
+            // Mark the player as dead
+            tag(self()) {
+                add(CrossfireTags.DIED)
+                remove(CrossfireTags.HIT)
+            }
+
+            // Take away their crossbow
+            addLine(
+                command(
+                    "clear",
+                    allPlayers {},
+                    ItemTagArgument(CrossfireTags.CROSSBOW, References.NAMESPACE)
+                )
+            )
+
+            // Give them levitation so they float up
+            effect(self()) {
+                give(Effects.LEVITATION, 1, 40, true)
+            }
+
+            // Play a trident sound
+            playSound(SoundArgument("item.trident.riptide_3"), PlaySoundMixer.PLAYER, self(), AT_POSITION, 1.0, 1.0)
         }
     }
 }

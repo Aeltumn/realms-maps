@@ -6,6 +6,7 @@ import com.aeltumn.realms.crossfire.References
 import com.aeltumn.realms.crossfire.component.CrossfireScoreboards
 import com.aeltumn.realms.crossfire.component.CrossfireTags
 import com.aeltumn.realms.crossfire.feature.ManagePlayers.NO_GRAVITY_ATTRIBUTE
+import com.aeltumn.realms.crossfire.feature.TeamJoin.CLEAR_ARMOR
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.enums.Gamemode
 import io.github.ayfri.kore.arguments.maths.vec3
@@ -112,7 +113,7 @@ public object Spectating : Configurable {
                     )
 
                     run {
-                        function(References.NAMESPACE, "${ENTER_SPECTATING_FUNCTION}-$map")
+                        function(References.NAMESPACE, ENTER_SPECTATING_FUNCTION)
                     }
                 }
 
@@ -150,41 +151,44 @@ public object Spectating : Configurable {
                     }
                 }
             }
+        }
 
-            function("${ENTER_SPECTATING_FUNCTION}-$map") {
-                // Put them in the spectator system
-                attributes {
-                    get(self(), Attributes.GENERIC_GRAVITY) {
-                        modifiers {
-                            add(NO_GRAVITY_ATTRIBUTE, "no_gravity", -0.08, AttributeModifierOperation.ADD_VALUE)
-                        }
+        function(ENTER_SPECTATING_FUNCTION) {
+            // Put them in the spectator system
+            attributes {
+                get(self(), Attributes.GENERIC_GRAVITY) {
+                    modifiers {
+                        add(NO_GRAVITY_ATTRIBUTE, "no_gravity", -0.08, AttributeModifierOperation.ADD_VALUE)
                     }
                 }
-                effect(self()) {
-                    giveInfinite(Effects.INVISIBILITY, 255, true)
-                }
+            }
+            effect(self()) {
+                giveInfinite(Effects.INVISIBILITY, 255, true)
+            }
 
-                // Make them be in spectator mode if they have a target already,
-                // otherwise keep them in adventure mode
-                execute {
-                    unlessCondition {
-                        entity(
-                            self {
-                                for (playerIndex in 0 until References.PLAYER_COUNT) {
-                                    tag = !"${CrossfireTags.PLAYER}-$playerIndex"
-                                }
+            // Clear their armor
+            function(References.NAMESPACE, CLEAR_ARMOR)
+
+            // Make them be in spectator mode if they have a target already,
+            // otherwise keep them in adventure mode
+            execute {
+                unlessCondition {
+                    entity(
+                        self {
+                            for (playerIndex in 0 until References.PLAYER_COUNT) {
+                                tag = !"${CrossfireTags.PLAYER}-$playerIndex"
                             }
-                        )
-                    }
-                    run {
-                        gamemode(Gamemode.SPECTATOR, self())
-                    }
+                        }
+                    )
                 }
+                run {
+                    gamemode(Gamemode.SPECTATOR, self())
+                }
+            }
 
-                // Give the player the spectating tag last so the effects don't activate early
-                tag(self()) {
-                    add(CrossfireTags.SPECTATING)
-                }
+            // Give the player the spectating tag last so the effects don't activate early
+            tag(self()) {
+                add(CrossfireTags.SPECTATING)
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.aeltumn.realms.crossfire.feature
 
+import com.aeltumn.realms.common.AT_POSITION
 import com.aeltumn.realms.common.Configurable
 import com.aeltumn.realms.common.clearBossBarPlayers
 import com.aeltumn.realms.common.tick
@@ -8,12 +9,19 @@ import com.aeltumn.realms.crossfire.component.CrossfireBossbars
 import com.aeltumn.realms.crossfire.component.CrossfireScoreboards
 import com.aeltumn.realms.crossfire.component.CrossfireTags
 import com.aeltumn.realms.crossfire.component.CrossfireTeams
+import com.aeltumn.realms.crossfire.feature.Spectating.ENTER_SPECTATING_FUNCTION
+import com.aeltumn.realms.crossfire.feature.TeamJoin.GIVE_ARMOR
 import io.github.ayfri.kore.DataPack
+import io.github.ayfri.kore.arguments.chatcomponents.ChatComponents
+import io.github.ayfri.kore.arguments.chatcomponents.scoreComponent
+import io.github.ayfri.kore.arguments.chatcomponents.textComponent
+import io.github.ayfri.kore.arguments.colors.Color
 import io.github.ayfri.kore.arguments.enums.ExperienceType
 import io.github.ayfri.kore.arguments.enums.Gamemode
 import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.arguments.numbers.Xp
 import io.github.ayfri.kore.arguments.numbers.rot
+import io.github.ayfri.kore.arguments.numbers.ticks
 import io.github.ayfri.kore.arguments.numbers.worldPos
 import io.github.ayfri.kore.arguments.scores.score
 import io.github.ayfri.kore.arguments.selector.scores
@@ -21,6 +29,9 @@ import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.rotation
 import io.github.ayfri.kore.arguments.types.literals.self
+import io.github.ayfri.kore.arguments.types.resources.SoundArgument
+import io.github.ayfri.kore.commands.PlaySoundMixer
+import io.github.ayfri.kore.commands.TitleLocation
 import io.github.ayfri.kore.commands.attributes
 import io.github.ayfri.kore.commands.bossBars
 import io.github.ayfri.kore.commands.clear
@@ -28,15 +39,25 @@ import io.github.ayfri.kore.commands.effect
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.gamemode
+import io.github.ayfri.kore.commands.playSound
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.spectate
+import io.github.ayfri.kore.commands.summon
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.commands.teams
+import io.github.ayfri.kore.commands.title
 import io.github.ayfri.kore.commands.tp
 import io.github.ayfri.kore.commands.xp
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.generated.Attributes
 import io.github.ayfri.kore.generated.Effects
+import io.github.ayfri.kore.generated.EntityTypes
+import net.benwoodworth.knbt.NbtByte
+import net.benwoodworth.knbt.NbtCompound
+import net.benwoodworth.knbt.NbtInt
+import net.benwoodworth.knbt.NbtIntArray
+import net.benwoodworth.knbt.NbtList
+import net.benwoodworth.knbt.NbtString
 import java.util.UUID
 
 /** Sets up player management. */
@@ -91,6 +112,196 @@ public object ManagePlayers : Configurable {
                 )
                 run {
                     scoreboard.players.remove(self(), CrossfireScoreboards.RESPAWN_SHIELD, 1)
+                }
+            }
+
+            // Add visuals to the last four seconds of the dead timer
+            execute {
+                asTarget(
+                    allPlayers {
+                        tag = CrossfireTags.DIED
+                        scores {
+                            score(CrossfireScoreboards.DEAD_TIMER) lessThanOrEqualTo (4 * 20)
+                        }
+                    }
+                )
+                run {
+                    title(self(), 0.ticks, 24.ticks, 0.ticks)
+                    title(self(), TitleLocation.TITLE, textComponent(""))
+                }
+            }
+            for (i in 1..4) {
+                execute {
+                    asTarget(
+                        allPlayers {
+                            tag = CrossfireTags.DIED
+                            scores {
+                                score(CrossfireScoreboards.DEAD_TIMER) equalTo (20 * i)
+                            }
+                        }
+                    )
+                    run {
+                        title(
+                            self(),
+                            TitleLocation.SUBTITLE,
+                            ChatComponents().apply {
+                                plus(textComponent("Respawning in: "))
+                                plus(scoreComponent(CrossfireScoreboards.DEAD_TIMER, self()) {
+                                    bold = true
+                                    color = Color.GOLD
+                                })
+                            }
+                        )
+                    }
+                }
+            }
+
+            // Make dead players spectator when 4 seconds remain on death timer (if not already spectating)
+            execute {
+                asTarget(
+                    allPlayers {
+                        tag = CrossfireTags.DIED
+                        tag = !CrossfireTags.SPECTATING
+
+                        scores {
+                            score(CrossfireScoreboards.DEAD_TIMER) equalTo (4 * 20)
+                        }
+                    }
+                )
+
+                run {
+                    // Add a firework based on the color of the team
+                    for (teamName in References.TEAM_NAMES) {
+                        execute {
+                            ifCondition {
+                                entity(self {
+                                    team = teamName
+                                })
+                            }
+                            at(self())
+                            run {
+                                summon(EntityTypes.FIREWORK_ROCKET, AT_POSITION) {
+                                    put("LifeTime", NbtInt(0))
+                                    put(
+                                        "FireworksItem", NbtCompound(
+                                            mapOf(
+                                                "id" to NbtString("minecraft:firework_rocket"),
+                                                "count" to NbtInt(1),
+                                                "components" to NbtCompound(
+                                                    mapOf(
+                                                        "minecraft:fireworks" to NbtCompound(
+                                                            mapOf(
+                                                                "explosions" to NbtList(
+                                                                    listOf(
+                                                                        NbtCompound(
+                                                                            mapOf(
+                                                                                "shape" to NbtString("large_ball"),
+                                                                                "has_twinkle" to NbtByte(1),
+                                                                                "colors" to NbtIntArray(
+                                                                                    intArrayOf(
+                                                                                        when (teamName) {
+                                                                                            "red" -> 11743532
+                                                                                            "yellow" -> 14602026
+                                                                                            "lime" -> 4312372
+                                                                                            "light_blue" -> 6719955
+                                                                                            "orange" -> 15435844
+                                                                                            "magenta" -> 12801229
+                                                                                            "lobby" -> 11250603
+                                                                                            else -> throw IllegalArgumentException("No firework color known for team $teamName")
+                                                                                        }
+                                                                                    )
+                                                                                )
+                                                                            )
+                                                                        )
+                                                                    )
+                                                                )
+                                                            )
+                                                        )
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // Play a sound and make them a spectator
+                    playSound(SoundArgument("item.trident.return"), PlaySoundMixer.PLAYER, self(), AT_POSITION, 100.0, 0.0)
+                    function(References.NAMESPACE, ENTER_SPECTATING_FUNCTION)
+                }
+            }
+
+            // Respawn dead players when the timer reaches zero
+            execute {
+                asTarget(
+                    allPlayers {
+                        tag = CrossfireTags.DIED
+
+                        scores {
+                            score(CrossfireScoreboards.DEAD_TIMER) equalTo 0
+                        }
+                    }
+                )
+                run {
+                    // Remove spectating related tags
+                    tag(self()) {
+                        for (playerIndex in 0 until References.PLAYER_COUNT) {
+                            remove("${CrossfireTags.SPECTATE_PLAYER}-$playerIndex")
+                        }
+
+                        remove(CrossfireTags.SPECTATING)
+                        remove(CrossfireTags.DIED_IN_WATER)
+                        remove(CrossfireTags.DIED)
+                    }
+
+                    // Reset the player's state (only the ones given by spectating)
+                    attributes {
+                        get(self(), Attributes.GENERIC_GRAVITY) {
+                            modifiers {
+                                remove(NO_GRAVITY_ATTRIBUTE)
+                            }
+                        }
+                    }
+                    effect(self()) {
+                        clear(Effects.INVISIBILITY)
+                    }
+                    gamemode(Gamemode.ADVENTURE)
+
+                    // Clear the title
+                    title(self(), TitleLocation.TITLE, textComponent(""))
+                    title(self(), TitleLocation.SUBTITLE, textComponent(""))
+
+                    // Remove them from any spectator target
+                    execute {
+                        asTarget(self())
+                        run {
+                            spectate()
+                        }
+                    }
+
+                    // Give them back armor
+                    function(References.NAMESPACE, GIVE_ARMOR)
+
+                    // Play sound for all other players in the map indicating the respawn
+                    for ((index, map) in References.MAPS.withIndex()) {
+                        execute {
+                            ifCondition {
+                                entity(self {
+                                    tag = "${CrossfireTags.SELECTED}-$map"
+                                })
+                            }
+                            asTarget(mapMembersSelector(index))
+                            at(self())
+                            run {
+                                playSound(SoundArgument("item.armor.equip_turtle"), PlaySoundMixer.PLAYER, self(), AT_POSITION, 0.4, 1.0)
+                            }
+                        }
+                    }
+
+                    // Initialize the player again
+                    function(References.NAMESPACE, "init_player")
                 }
             }
         }

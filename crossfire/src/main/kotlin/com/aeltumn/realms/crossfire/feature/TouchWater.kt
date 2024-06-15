@@ -8,6 +8,7 @@ import com.aeltumn.realms.crossfire.References
 import com.aeltumn.realms.crossfire.component.CrossfireScoreboards
 import com.aeltumn.realms.crossfire.component.CrossfireTags
 import com.aeltumn.realms.crossfire.feature.ManagePlayers.NO_GRAVITY_ATTRIBUTE
+import com.aeltumn.realms.crossfire.feature.Spectating.ENTER_SPECTATING_FUNCTION
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.chatcomponents.entityComponent
 import io.github.ayfri.kore.arguments.chatcomponents.textComponent
@@ -69,22 +70,13 @@ public object TouchWater : Configurable {
                     }
 
                     // Reset the player's state to prepare them for spectating
-                    function(References.NAMESPACE, TeamJoin.CLEAR_ARMOR)
                     tag(self()) {
                         add(CrossfireTags.DIED_IN_WATER)
-                        add(CrossfireTags.SPECTATING)
                         add(CrossfireTags.DIED)
                     }
-                    attributes {
-                        get(self(), Attributes.GENERIC_GRAVITY) {
-                            modifiers {
-                                add(NO_GRAVITY_ATTRIBUTE, "no_gravity", -0.08, AttributeModifierOperation.ADD_VALUE)
-                            }
-                        }
-                    }
-                    effect(self()) {
-                        giveInfinite(EffectArgument("invisibility"), 255, true)
-                    }
+
+                    // Start spectating for the player
+                    function(References.NAMESPACE, ENTER_SPECTATING_FUNCTION)
 
                     // Reduce kills by 1
                     scoreboard.players.remove(self(), CrossfireScoreboards.ROUND_KILLS, 1)
