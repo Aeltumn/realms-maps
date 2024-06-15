@@ -54,6 +54,8 @@ import io.github.ayfri.kore.helpers.predicateRandomChance
 /** Sets up the main game loop. */
 public object GameLoop : Configurable {
 
+    private const val POST_GAME_TIMER_SECONDS: Int = 26
+
     override fun DataPack.configure() {
         for ((mapIndex, map) in References.MAPS.withIndex()) {
             val startTimer = TimerIdentifier(map, "start")
@@ -537,6 +539,60 @@ public object GameLoop : Configurable {
                 execute if score Magenta winner matches 1 run summon firework_rocket 533.5 76 300.5 {Tags:["custom"],LifeTime:18,FireworksItem:{id:firework_rocket,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Colors:[I;12801229]}],Flight:2}}}}
                  */
 
+                // Play a song during the first 5 seconds of the post game
+                for ((index, winnerNote) in listOf(1.3, 1.1, 1.4, 1.6, 1.9).withIndex()) {
+                    execute {
+                        ifCondition {
+                            score(literal(map), CrossfireScoreboards.POST_GAME_TIMER) equalTo (POST_GAME_TIMER_SECONDS - index - 1)
+                        }
+                        asTarget(
+                            allPlayers {
+                                tag = CrossfireTags.WINNER
+                                scores {
+                                    score(CrossfireScoreboards.TARGET_MAP_INDEX) equalTo mapIndex
+                                }
+                            }
+                        )
+                        at(self())
+                        run {
+                            playSound(
+                                SoundArgument("block.note_block.bit"),
+                                PlaySoundMixer.PLAYER,
+                                self(),
+                                AT_POSITION,
+                                100.0,
+                                winnerNote
+                            )
+                        }
+                    }
+                }
+                for ((index, loserNote) in listOf(1.0, 0.9, 0.7, 0.6, 0.3).withIndex()) {
+                    execute {
+                        ifCondition {
+                            score(literal(map), CrossfireScoreboards.POST_GAME_TIMER) equalTo (POST_GAME_TIMER_SECONDS - index - 1)
+                        }
+                        asTarget(
+                            allPlayers {
+                                tag = CrossfireTags.LOSER
+                                scores {
+                                    score(CrossfireScoreboards.TARGET_MAP_INDEX) equalTo mapIndex
+                                }
+                            }
+                        )
+                        at(self())
+                        run {
+                            playSound(
+                                SoundArgument("block.note_block.bit"),
+                                PlaySoundMixer.PLAYER,
+                                self(),
+                                AT_POSITION,
+                                100.0,
+                                loserNote
+                            )
+                        }
+                    }
+                }
+
                 // If we're at zero we run the end script
                 execute {
                     ifCondition {
@@ -665,7 +721,7 @@ public object GameLoop : Configurable {
                 }
 
                 // Start the post game timer
-                scoreboard.players.set(literal(map), CrossfireScoreboards.POST_GAME_TIMER, 26)
+                scoreboard.players.set(literal(map), CrossfireScoreboards.POST_GAME_TIMER, POST_GAME_TIMER_SECONDS)
                 function(References.NAMESPACE, postGameTimer.path)
             }
         }

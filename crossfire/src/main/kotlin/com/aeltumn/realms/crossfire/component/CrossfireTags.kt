@@ -47,6 +47,12 @@ public object CrossfireTags : Configurable {
     /** Indicates a player's crossbow has multishot loaded. */
     public const val HAS_MULTISHOT_LOADED: String = "has_multishot_loaded"
 
+    /** Tag given out for winning. */
+    public const val WINNER: String = "winner"
+
+    /** Tag given out for loser. */
+    public const val LOSER: String = "loser"
+
     // -- Tags that define items
 
     /** Contains just the crossbow. */
