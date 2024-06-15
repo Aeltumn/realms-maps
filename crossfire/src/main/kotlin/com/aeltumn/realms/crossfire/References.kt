@@ -72,6 +72,18 @@ public object References {
             else -> ""
         }
 
+    /** Returns the kill screen icon to use for [team]. */
+    public fun getKillIconForTeam(team: String): String =
+        when (team) {
+            "red" -> "\uE006"
+            "yellow" -> "\uE007"
+            "lime" -> "\uE008"
+            "light_blue" -> "\uE005"
+            "orange" -> "\uE009"
+            "magenta" -> "\uE010"
+            else -> ""
+        }
+
     /** Returns the name to display for [team]. */
     public fun getDisplayNameForTeam(team: String): String {
         if (team == "light_blue") return "Blue"

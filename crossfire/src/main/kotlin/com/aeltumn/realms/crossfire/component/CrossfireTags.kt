@@ -75,7 +75,7 @@ public object CrossfireTags : Configurable {
     /** For copters that have dropped their crate or crates that are leaving. */
     public const val LEFT_PAYLOAD: String = "left_payload"
 
-    /** For crates that have dropped. */
+    /** For crates that have started dropping (stopped rotating). */
     public const val DROPPED: String = "dropped"
 
     /** For dropped power-ups. */

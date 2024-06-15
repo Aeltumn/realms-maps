@@ -10,6 +10,9 @@ import com.aeltumn.realms.crossfire.component.CrossfireTeams
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.CONTAINER
 import io.github.ayfri.kore.arguments.ItemSlotType
+import io.github.ayfri.kore.arguments.chatcomponents.ChatComponents
+import io.github.ayfri.kore.arguments.chatcomponents.entityComponent
+import io.github.ayfri.kore.arguments.chatcomponents.textComponent
 import io.github.ayfri.kore.arguments.colors.Color
 import io.github.ayfri.kore.arguments.components.types.chargedProjectiles
 import io.github.ayfri.kore.arguments.components.types.customModelData
@@ -21,6 +24,7 @@ import io.github.ayfri.kore.arguments.components.types.unbreakable
 import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.arguments.numbers.ranges.rangeEnd
 import io.github.ayfri.kore.arguments.numbers.ranges.rangeOrInt
+import io.github.ayfri.kore.arguments.numbers.ticks
 import io.github.ayfri.kore.arguments.scores.score
 import io.github.ayfri.kore.arguments.selector.scores
 import io.github.ayfri.kore.arguments.types.literals.allEntities
@@ -34,6 +38,7 @@ import io.github.ayfri.kore.arguments.types.resources.item
 import io.github.ayfri.kore.arguments.types.resources.tagged.ItemTagArgument
 import io.github.ayfri.kore.commands.Command
 import io.github.ayfri.kore.commands.PlaySoundMixer
+import io.github.ayfri.kore.commands.TitleLocation
 import io.github.ayfri.kore.commands.clear
 import io.github.ayfri.kore.commands.command
 import io.github.ayfri.kore.commands.data
@@ -47,6 +52,8 @@ import io.github.ayfri.kore.commands.playSound
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.summon
 import io.github.ayfri.kore.commands.tag
+import io.github.ayfri.kore.commands.tellraw
+import io.github.ayfri.kore.commands.title
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.functions.tick
@@ -390,73 +397,320 @@ public object Crossbows : Configurable {
                     })
                 }
                 run {
+                    // Remove hit from everyone so we can use it to determine the target
+                    tag(allEntities {}) {
+                        remove(CrossfireTags.HIT)
+                    }
+
                     // Show kill screens
-                    // TODO
-                    /*
-                    # Killscreens
-                    # Red killscreen
-                    execute if entity @s[tag=red,tag=!shootrange] as @a[distance=..3,team=!red,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run title @s subtitle {"text":"\uE004"}
-                    execute if entity @s[tag=red,tag=!shootrange] as @a[distance=..3,team=!red,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run title @s title ["",{"text":" \uE006 "},{"text":"Sploded! ","bold":true,"color":"red"},{"text":"\uE006"}]
-                    execute if entity @s[tag=red,tag=!shootrange] as @a[distance=..3,team=!red,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run tag @s add hit
+                    for (teamName in References.TEAM_NAMES) {
+                        execute {
+                            ifCondition {
+                                entity(self {
+                                    tag = teamName
+                                })
+                            }
 
-                    # Yellow killscreen
-                    execute if entity @s[tag=yellow,tag=!shootrange] as @a[distance=..3,team=!yellow,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run title @s subtitle {"text":"\uE004"}
-                    execute if entity @s[tag=yellow,tag=!shootrange] as @a[distance=..3,team=!yellow,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run title @s title ["",{"text":" \uE007 "},{"text":"Sploded! ","bold":true,"color":"yellow"},{"text":"\uE007"}]
-                    execute if entity @s[tag=yellow,tag=!shootrange] as @a[distance=..3,team=!yellow,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run tag @s add hit
+                            // Find all players that might've been killed
+                            asTarget(allPlayers {
+                                distance = rangeEnd(3.0)
+                                team = !teamName
+                                tag = !CrossfireTags.DIED
+                                scores {
+                                    score(CrossfireScoreboards.RESPAWN_SHIELD) lessThanOrEqualTo 0
+                                }
+                            })
+                            run {
+                                // Show them the title
+                                title(self(), TitleLocation.SUBTITLE, textComponent("\uE004"))
 
-                    # Green killscreen
-                    execute if entity @s[tag=green,tag=!shootrange] as @a[distance=..3,team=!green,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run title @s subtitle {"text":"\uE004"}
-                    execute if entity @s[tag=green,tag=!shootrange] as @a[distance=..3,team=!green,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run title @s title ["",{"text":" \uE008 "},{"text":"Sploded! ","bold":true,"color":"green"},{"text":"\uE008"}]
-                    execute if entity @s[tag=green,tag=!shootrange] as @a[distance=..3,team=!green,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run tag @s add hit
+                                val char = References.getKillIconForTeam(teamName)
+                                title(
+                                    self(),
+                                    TitleLocation.TITLE,
+                                    ChatComponents().apply {
+                                        plus(textComponent(" $char "))
+                                        plus(textComponent("Sploded!") {
+                                            bold = true
+                                            color = References.getColorForTeam(teamName)
+                                        })
+                                        plus(textComponent(" $char "))
+                                    }
+                                )
 
-                    # Blue killscreen
-                    execute if entity @s[tag=blue,tag=!shootrange] as @a[distance=..3,team=!blue,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run title @s subtitle {"text":"\uE004"}
-                    execute if entity @s[tag=blue,tag=!shootrange] as @a[distance=..3,team=!blue,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run title @s title ["",{"text":" \uE005 "},{"text":"Sploded! ","bold":true,"color":"aqua"},{"text":"\uE005"}]
-                    execute if entity @s[tag=blue,tag=!shootrange] as @a[distance=..3,team=!blue,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run tag @s add hit
-
-                    # Orange killscreen
-                    execute if entity @s[tag=orange,tag=!shootrange] as @a[distance=..3,team=!orange,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run title @s subtitle {"text":"\uE004"}
-                    execute if entity @s[tag=orange,tag=!shootrange] as @a[distance=..3,team=!orange,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run title @s title ["",{"text":" \uE009 "},{"text":"Sploded! ","bold":true,"color":"gold"},{"text":"\uE009"}]
-                    execute if entity @s[tag=orange,tag=!shootrange] as @a[distance=..3,team=!orange,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run tag @s add hit
-
-                    # Magenta killscreen
-                    execute if entity @s[tag=magenta,tag=!shootrange] as @a[distance=..3,team=!magenta,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run title @s subtitle {"text":"\uE004"}
-                    execute if entity @s[tag=magenta,tag=!shootrange] as @a[distance=..3,team=!magenta,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run title @s title ["",{"text":" \uE010 "},{"text":"Sploded! ","bold":true,"color":"light_purple"},{"text":"\uE010"}]
-                    execute if entity @s[tag=magenta,tag=!shootrange] as @a[distance=..3,team=!magenta,tag=!died,tag=!admin,scores={respawnshield=..0},tag=!shootrange] run tag @s add hit
-                     */
+                                // Mark this player as hit
+                                tag(self()) {
+                                    add(CrossfireTags.HIT)
+                                }
+                            }
+                        }
+                    }
 
                     // Attempt to hit supply crates
-                    // TODO
-                    /*
-                    # Hit supply crates
-                    scoreboard players set result result 0
-                    execute store result score result result as @e[tag=supplycrate,tag=!crateless,distance=..3] run tag @s add wantstodrop
-                    execute if score result result matches 1 as @e[tag=supplycrate,tag=!crateless,tag=wantstodrop] at @s run tag @e[tag=!dropped,tag=!crateless,tag=!wantstodrop,distance=..1.5] add wantstodrop
-                    execute if score result result matches 1 if entity @s[tag=player1,tag=selected0,tag=!shootrange] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player1,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
-                    execute if score result result matches 1 if entity @s[tag=player1,tag=selected1,tag=!shootrange] run tellraw @a[scores={map=1}] ["",{"selector":"@a[tag=player1,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
-                    execute if score result result matches 1 if entity @s[tag=player2,tag=selected0,tag=!shootrange] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player2,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
-                    execute if score result result matches 1 if entity @s[tag=player2,tag=selected1,tag=!shootrange] run tellraw @a[scores={map=1}] ["",{"selector":"@a[tag=player2,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
-                    execute if score result result matches 1 if entity @s[tag=player3,tag=selected0,tag=!shootrange] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player3,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
-                    execute if score result result matches 1 if entity @s[tag=player3,tag=selected1,tag=!shootrange] run tellraw @a[scores={map=1}] ["",{"selector":"@a[tag=player3,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
-                    execute if score result result matches 1 if entity @s[tag=player4,tag=selected0,tag=!shootrange] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player4,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
-                    execute if score result result matches 1 if entity @s[tag=player4,tag=selected1,tag=!shootrange] run tellraw @a[scores={map=1}] ["",{"selector":"@a[tag=player4,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
-                    execute if score result result matches 1 if entity @s[tag=player5,tag=selected0,tag=!shootrange] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player5,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
-                    execute if score result result matches 1 if entity @s[tag=player5,tag=selected1,tag=!shootrange] run tellraw @a[scores={map=1}] ["",{"selector":"@a[tag=player5,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
-                    execute if score result result matches 1 if entity @s[tag=player6,tag=selected0,tag=!shootrange] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player6,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
-                    execute if score result result matches 1 if entity @s[tag=player6,tag=selected1,tag=!shootrange] run tellraw @a[scores={map=1}] ["",{"selector":"@a[tag=player6,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
-                    execute if score result result matches 1 if entity @s[tag=player7,tag=selected0,tag=!shootrange] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player7,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
-                    execute if score result result matches 1 if entity @s[tag=player7,tag=selected1,tag=!shootrange] run tellraw @a[scores={map=1}] ["",{"selector":"@a[tag=player7,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
-                    execute if score result result matches 1 if entity @s[tag=player8,tag=selected0,tag=!shootrange] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player8,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
-                    execute if score result result matches 1 if entity @s[tag=player8,tag=selected1,tag=!shootrange] run tellraw @a[scores={map=1}] ["",{"selector":"@a[tag=player8,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
-                    execute if score result result matches 1 if entity @s[tag=player9,tag=selected0,tag=!shootrange] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player9,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
-                    execute if score result result matches 1 if entity @s[tag=player9,tag=selected1,tag=!shootrange] run tellraw @a[scores={map=1}] ["",{"selector":"@a[tag=player9,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
-                    execute if score result result matches 1 if entity @s[tag=player10,tag=selected0,tag=!shootrange] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player10,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
-                    execute if score result result matches 1 if entity @s[tag=player10,tag=selected1,tag=!shootrange] run tellraw @a[scores={map=1}] ["",{"selector":"@a[tag=player10,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
-                    execute if score result result matches 1 if entity @s[tag=player11,tag=selected0,tag=!shootrange] run tellraw @a[scores={map=0}] ["",{"selector":"@a[tag=player11,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
-                    execute if score result result matches 1 if entity @s[tag=player11,tag=selected1,tag=!shootrange] run tellraw @a[scores={map=1}] ["",{"selector":"@a[tag=player11,limit=1]"},{"text":" has hit a crate! It's about to fall down!","color":"white"}]
-                     */
+                    scoreboard.players.set(self(), "success", 0)
+                    execute {
+                        storeResult {
+                            score(self(), "success")
+                        }
+                        asTarget(allEntities {
+                            tag = CrossfireTags.COPTER
+                            tag = !CrossfireTags.LEFT_PAYLOAD
+                            distance = rangeEnd(3.0)
+                        })
+                        at(self())
+                        run {
+                            // Mark this copter as wanting to drop its payload
+                            tag(self()) {
+                                add(CrossfireTags.READY_TO_DROP)
+                            }
 
-                    // TODO Rest of hit.mcfunction
+                            // Find the crate that belongs to this copter and mark it too
+                            execute {
+                                asTarget(allEntities {
+                                    tag = CrossfireTags.CRATE
+                                    tag = !CrossfireTags.READY_TO_DROP
+                                    tag = !CrossfireTags.LEFT_PAYLOAD
+                                    tag = !CrossfireTags.DROPPED
+                                    distance = rangeEnd(1.5)
+                                })
+                                run {
+                                    tag(self()) {
+                                        add(CrossfireTags.READY_TO_DROP)
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Add a message indicating a crate was hit
+                    for ((mapIndex, map) in References.MAPS.withIndex()) {
+                        for (playerIndex in 0 until References.PLAYER_COUNT) {
+                            val target = self {
+                                tag = "${CrossfireTags.PLAYER}-$playerIndex"
+                                tag = "${CrossfireTags.SELECTED}-$map"
+                            }
+
+                            execute {
+                                // Only if a crate was hit
+                                ifCondition {
+                                    score(self(), "success") equalTo 1
+                                }
+
+                                // Only if this entity exists
+                                ifCondition {
+                                    entity(target)
+                                }
+
+                                // Tell everyone about it!
+                                run {
+                                    tellraw(
+                                        mapMembersSelector(mapIndex),
+                                        ChatComponents().apply {
+                                            plus(entityComponent(target.toString()))
+                                            plus(textComponent(" has hit a crate! It's about to fall down!"))
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // Add messages for teamkilling
+                    for (teamName in References.TEAM_NAMES) {
+                        for (playerIndex in 0 until References.PLAYER_COUNT) {
+                            execute {
+                                // If you are a player on this team
+                                ifCondition {
+                                    entity(self {
+                                        tag = teamName
+                                        tag = "${CrossfireTags.PLAYER}-$playerIndex"
+                                    })
+                                }
+
+                                // If you hit someone on this team that's not you
+                                ifCondition {
+                                    entity(allPlayers {
+                                        distance = rangeEnd(3.0)
+                                        team = teamName
+                                        tag = !"${CrossfireTags.PLAYER}-$playerIndex"
+                                    })
+                                }
+
+                                run {
+                                    // Tell you off about team killing!
+                                    title(
+                                        allPlayers {
+                                            tag = "${CrossfireTags.PLAYER}-$playerIndex"
+                                        },
+                                        TitleLocation.ACTIONBAR,
+                                        textComponent("Don't attack your teammates!", Color.RED)
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // Add messages for respawn shield hitting
+                    for (teamName in References.TEAM_NAMES) {
+                        for (playerIndex in 0 until References.PLAYER_COUNT) {
+                            execute {
+                                // If you are a player on this team
+                                ifCondition {
+                                    entity(self {
+                                        tag = teamName
+                                        tag = "${CrossfireTags.PLAYER}-$playerIndex"
+                                    })
+                                }
+
+                                // If you hit someone on another team with a shield
+                                ifCondition {
+                                    entity(allPlayers {
+                                        distance = rangeEnd(3.0)
+                                        team = !teamName
+
+                                        scores {
+                                            score(CrossfireScoreboards.RESPAWN_SHIELD) greaterThan 0
+                                        }
+                                    })
+                                }
+
+                                run {
+                                    // Tell you off about team killing!
+                                    title(
+                                        allPlayers {
+                                            tag = "${CrossfireTags.PLAYER}-$playerIndex"
+                                        },
+                                        TitleLocation.ACTIONBAR,
+                                        textComponent("You've hit a player that was still respawning!", Color.YELLOW)
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // Add the kill effect
+                    for (playerIndex in 0 until References.PLAYER_COUNT) {
+                        val target = allPlayers {
+                            tag = "${CrossfireTags.PLAYER}-$playerIndex"
+                        }
+
+                        execute {
+                            ifCondition {
+                                entity(self {
+                                    tag = "${CrossfireTags.PLAYER}-$playerIndex"
+                                })
+                            }
+                            asTarget(allPlayers {
+                                tag = CrossfireTags.HIT
+                            })
+                            run {
+                                // Add the kill title
+                                title(target, 10.ticks, 30.ticks, 10.ticks)
+                                title(target, TitleLocation.SUBTITLE, ChatComponents().apply {
+                                    plus(textComponent("You've killed: "))
+                                    plus(entityComponent(self().toString()))
+                                })
+                                title(target, TitleLocation.TITLE, textComponent(""))
+
+                                // Make that player spectate the killer
+                                tag(self()) {
+                                    add("${CrossfireTags.SPECTATE_PLAYER}-$playerIndex")
+                                }
+
+                                // Give out a kill to the killer
+                                scoreboard.players.set(target, CrossfireScoreboards.LIFETIME_KILLS, 1)
+                                scoreboard.players.set(target, CrossfireScoreboards.ROUND_KILLS, 1)
+                            }
+                        }
+
+
+                        // Add a ding if someone got killed
+                        execute {
+                            // If playerX shot this firework
+                            ifCondition {
+                                entity(self {
+                                    tag = "${CrossfireTags.PLAYER}-$playerIndex"
+                                })
+                            }
+
+                            // If someone got hit
+                            ifCondition {
+                                entity(
+                                    allEntities {
+                                        tag = CrossfireTags.HIT
+                                    }
+                                )
+                            }
+
+                            // At the target
+                            asTarget(target)
+                            at(self())
+
+                            // Play the noise to playerX
+                            run {
+                                playSound(SoundArgument("block.note_block.bell"), PlaySoundMixer.PLAYER, self(), AT_POSITION, 0.5, 0.0)
+                            }
+                        }
+
+                        // Add a kill to the shooter's team
+                        for (teamName in References.TEAM_NAMES) {
+                            execute {
+                                ifCondition {
+                                    entity(self {
+                                        tag = teamName
+                                        tag = "${CrossfireTags.PLAYER}-$playerIndex"
+                                    })
+                                }
+                                asTarget(allPlayers {
+                                    tag = CrossfireTags.HIT
+                                })
+                                run {
+                                    scoreboard.players.set(literal(References.getDisplayNameForTeam(teamName)), CrossfireScoreboards.TEAM_KILLS, 1)
+                                }
+                            }
+                        }
+                    }
+
+                    // Add the chat message for the kill
+                    for ((mapIndex, map) in References.MAPS.withIndex()) {
+                        for (playerIndex in 0 until References.PLAYER_COUNT) {
+                            execute {
+                                ifCondition {
+                                    entity(self {
+                                        tag = "${CrossfireTags.PLAYER}-$playerIndex"
+                                        tag = "${CrossfireTags.SELECTED}-$map"
+                                    })
+                                }
+                                asTarget(allPlayers {
+                                    tag = CrossfireTags.HIT
+                                })
+                                run {
+                                    val target = allPlayers {
+                                        tag = "${CrossfireTags.PLAYER}-$playerIndex"
+                                    }
+
+                                    tellraw(
+                                        mapMembersSelector(mapIndex),
+                                        ChatComponents().apply {
+                                            plus(entityComponent(self().toString()))
+                                            plus(textComponent(" was sploded by "))
+                                            plus(entityComponent(target.toString()))
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // Add the hit effect itself for the hit player
+                    execute {
+                        asTarget(allPlayers {
+                            tag = CrossfireTags.HIT
+                        })
+                        run {
+                            function(References.NAMESPACE, "player_hit")
+                        }
+                    }
                 }
             }
         }
