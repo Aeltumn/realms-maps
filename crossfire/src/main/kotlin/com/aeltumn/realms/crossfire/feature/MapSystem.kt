@@ -10,6 +10,7 @@ import com.aeltumn.realms.crossfire.component.CrossfireScoreboards
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.chatcomponents.textComponent
 import io.github.ayfri.kore.arguments.types.literals.literal
+import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.teams
 
@@ -25,6 +26,15 @@ public object MapSystem : Configurable {
                 setBossBarName(CrossfireBossbars.getTimer(map), References.NAMESPACE, textComponent(""))
                 clearBossBarPlayers(CrossfireBossbars.getPostGameTimer(map), References.NAMESPACE)
                 setBossBarName(CrossfireBossbars.getPostGameTimer(map), References.NAMESPACE, textComponent(""))
+
+                // Clear the kills values
+                for (teamName in requireNotNull(References.TEAMS[map]).keys) {
+                    execute {
+                        run {
+                            scoreboard.players.reset(literal(References.getDisplayNameForTeam(teamName)), CrossfireScoreboards.TEAM_KILLS)
+                        }
+                    }
+                }
 
                 // Clear out all teams
                 for (key in References.TEAMS[map]!!.keys) {

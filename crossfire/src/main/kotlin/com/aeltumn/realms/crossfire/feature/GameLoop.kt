@@ -751,7 +751,7 @@ public object GameLoop : Configurable {
                             tellraw(
                                 selector,
                                 ChatComponents().apply {
-                                    plus(entityComponent(target.toString()))
+                                    plus(entityComponent(target.selector.toString()))
                                     plus(textComponent(": "))
                                     plus(scoreComponent(CrossfireScoreboards.ROUND_KILLS, target))
                                     plus(textComponent(" points"))
@@ -991,8 +991,9 @@ public object GameLoop : Configurable {
                 }
             }
 
-            // Prevent crossbow reloading
+            // Prevent crossbow reloading (but give it back!)
             tag(self()) {
+                add(CrossfireTags.GIVE_CROSSBOW)
                 remove(CrossfireTags.RELOAD_CROSSBOW)
                 remove(CrossfireTags.SHOOTING_RANGE)
                 remove(CrossfireTags.HAS_CROSSBOW_LOADED)

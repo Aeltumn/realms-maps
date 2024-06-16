@@ -506,7 +506,7 @@ public object Crossbows : Configurable {
                                     tellraw(
                                         mapMembersSelector(mapIndex),
                                         ChatComponents().apply {
-                                            plus(entityComponent(target.toString()))
+                                            plus(entityComponent(target.selector.toString()))
                                             plus(textComponent(" has hit a crate! It's about to fall down!"))
                                         }
                                     )
@@ -608,7 +608,7 @@ public object Crossbows : Configurable {
                                 title(target, 10.ticks, 30.ticks, 10.ticks)
                                 title(target, TitleLocation.SUBTITLE, ChatComponents().apply {
                                     plus(textComponent("You've killed: "))
-                                    plus(entityComponent(self().toString()))
+                                    plus(entityComponent(self().selector.toString()))
                                 })
                                 title(target, TitleLocation.TITLE, textComponent(""))
 
@@ -692,9 +692,9 @@ public object Crossbows : Configurable {
                                     tellraw(
                                         mapMembersSelector(mapIndex),
                                         ChatComponents().apply {
-                                            plus(entityComponent(self().toString()))
+                                            plus(entityComponent(self().selector.toString()))
                                             plus(textComponent(" was sploded by "))
-                                            plus(entityComponent(target.toString()))
+                                            plus(entityComponent(target.selector.toString()))
                                         }
                                     )
                                 }
@@ -943,12 +943,40 @@ public object Crossbows : Configurable {
                         giveExactlyOne(switchItem, CONTAINER[8])
                     }
                 }
-
-                // If the game has started give out the quit item
                 execute {
                     // If this map has started
                     unlessCondition {
                         score(literal(map), CrossfireScoreboards.STARTED, rangeOrInt(0))
+                    }
+
+                    // If we're in the post-game
+                    ifCondition {
+                        score(literal(map), CrossfireScoreboards.GAME_STATE, rangeOrInt(3))
+                    }
+
+                    // On all players in this map
+                    asTarget(allPlayers {
+                        scores {
+                            score(CrossfireScoreboards.TARGET_MAP_INDEX, index)
+                        }
+                    })
+
+                    // Give them the map changer item (once)
+                    run {
+                        giveExactlyOne(switchItem, CONTAINER[8])
+                    }
+                }
+
+                // If the game has started give out the quit item
+                execute {
+                    // Let you leave if the map has started
+                    unlessCondition {
+                        score(literal(map), CrossfireScoreboards.STARTED, rangeOrInt(0))
+                    }
+
+                    // Don't let you leave anymore during game state 3 (post-game)
+                    unlessCondition {
+                        score(literal(map), CrossfireScoreboards.GAME_STATE, rangeOrInt(3))
                     }
 
                     // On all players in this map that are not spectating

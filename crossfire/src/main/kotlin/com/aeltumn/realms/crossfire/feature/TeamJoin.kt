@@ -29,6 +29,7 @@ import io.github.ayfri.kore.arguments.numbers.relativePos
 import io.github.ayfri.kore.arguments.scores.score
 import io.github.ayfri.kore.arguments.selector.scores
 import io.github.ayfri.kore.arguments.types.literals.allPlayers
+import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.arguments.types.resources.EnchantmentArgument
 import io.github.ayfri.kore.arguments.types.resources.item
@@ -70,6 +71,11 @@ public object TeamJoin : Configurable {
                         at(self())
                         ifCondition {
                             block(vec3(0.relativePos, (-1).relativePos, 0.relativePos), io.github.ayfri.kore.arguments.types.resources.block("${teamName}_concrete"))
+                        }
+
+                        // Only allow joining teams outside of game
+                        ifCondition {
+                            score(literal(map), CrossfireScoreboards.GAME_STATE) equalTo 0
                         }
 
                         run {

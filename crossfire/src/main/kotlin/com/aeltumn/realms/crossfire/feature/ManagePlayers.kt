@@ -13,7 +13,6 @@ import com.aeltumn.realms.crossfire.feature.Spectating.ENTER_SPECTATING_FUNCTION
 import com.aeltumn.realms.crossfire.feature.TeamJoin.GIVE_ARMOR
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.chatcomponents.ChatComponents
-import io.github.ayfri.kore.arguments.chatcomponents.scoreComponent
 import io.github.ayfri.kore.arguments.chatcomponents.textComponent
 import io.github.ayfri.kore.arguments.colors.Color
 import io.github.ayfri.kore.arguments.enums.ExperienceType
@@ -42,7 +41,6 @@ import io.github.ayfri.kore.commands.gamemode
 import io.github.ayfri.kore.commands.playSound
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.spectate
-import io.github.ayfri.kore.commands.summon
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.commands.teams
 import io.github.ayfri.kore.commands.title
@@ -51,13 +49,6 @@ import io.github.ayfri.kore.commands.xp
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.generated.Attributes
 import io.github.ayfri.kore.generated.Effects
-import io.github.ayfri.kore.generated.EntityTypes
-import net.benwoodworth.knbt.NbtByte
-import net.benwoodworth.knbt.NbtCompound
-import net.benwoodworth.knbt.NbtInt
-import net.benwoodworth.knbt.NbtIntArray
-import net.benwoodworth.knbt.NbtList
-import net.benwoodworth.knbt.NbtString
 import java.util.UUID
 
 /** Sets up player management. */
@@ -146,7 +137,7 @@ public object ManagePlayers : Configurable {
                             TitleLocation.SUBTITLE,
                             ChatComponents().apply {
                                 plus(textComponent("Respawning in: "))
-                                plus(scoreComponent(CrossfireScoreboards.DEAD_TIMER, self()) {
+                                plus(textComponent(i.toString()) {
                                     bold = true
                                     color = Color.GOLD
                                 })
@@ -162,6 +153,7 @@ public object ManagePlayers : Configurable {
                     allPlayers {
                         tag = CrossfireTags.DIED
                         tag = !CrossfireTags.SPECTATING
+                        tag = !CrossfireTags.DIED_IN_WATER
 
                         scores {
                             score(CrossfireScoreboards.DEAD_TIMER) equalTo (4 * 20)
@@ -343,12 +335,14 @@ public object ManagePlayers : Configurable {
             }
 
             // Reset values
+            scoreboard.players.set(self(), CrossfireScoreboards.MAP_SWITCH_COOLDOWN, 0)
             scoreboard.players.set(self(), CrossfireScoreboards.INTRO, 0)
             scoreboard.players.set(self(), CrossfireScoreboards.IS_RELOADING, 0)
             scoreboard.players.set(self(), CrossfireScoreboards.RELOAD_TIMER, 0)
             scoreboard.players.set(self(), CrossfireScoreboards.DEAD_TIMER, 0)
             scoreboard.players.set(self(), CrossfireScoreboards.RESPAWN_SHIELD, 0)
             scoreboard.players.set(self(), CrossfireScoreboards.ROUND_KILLS, 0)
+            scoreboard.players.set(self(), CrossfireScoreboards.WINS, 0)
 
             // Enable triggers
             scoreboard.players.enable(self(), CrossfireScoreboards.INTRO_START_TRIGGER)
