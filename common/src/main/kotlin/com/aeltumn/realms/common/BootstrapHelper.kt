@@ -23,7 +23,7 @@ public data class BootstrapHelper(
 
     public companion object {
         /** Whether active development is happening, during which exporting to a folder is easier to debug. */
-        public const val DEVELOPMENT_MODE: Boolean = true
+        public const val DEVELOPMENT_MODE: Boolean = false
     }
 
     @OptIn(ExperimentalPathApi::class)
@@ -59,10 +59,12 @@ public data class BootstrapHelper(
             path = outputFolder.resolve("datapacks/").createDirectories()
             builder()
         }
-        if (DEVELOPMENT_MODE) {
+
+        // Wait for duplicate entry on random_chance.json to be fixed
+        //if (DEVELOPMENT_MODE) {
             datapack.generate()
-        } else {
-            datapack.generateZip()
-        }
+        //} else {
+        //    datapack.generateZip()
+        //}
     }
 }
