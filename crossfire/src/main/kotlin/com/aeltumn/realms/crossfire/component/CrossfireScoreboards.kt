@@ -69,6 +69,7 @@ public object CrossfireScoreboards : Setuppable {
 
         // Create all dummy objectives
         for (objective in listOf(
+            GAME_STATE,
             GAME_TIMER,
             POST_GAME_TIMER,
             DEAD_TIMER,
@@ -111,7 +112,6 @@ public object CrossfireScoreboards : Setuppable {
             objectives {
                 add(TEAM_KILLS, ScoreboardCriteria.DUMMY, textComponent("Kills"))
                 add(LIFETIME_KILLS, ScoreboardCriteria.DUMMY, textComponent("Kills"))
-                setDisplay(DisplaySlots.sidebar, TEAM_KILLS)
                 setDisplay(DisplaySlots.belowName, LIFETIME_KILLS)
             }
         }

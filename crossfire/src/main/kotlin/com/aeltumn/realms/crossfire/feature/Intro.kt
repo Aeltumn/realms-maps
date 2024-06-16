@@ -234,6 +234,7 @@ public object Intro : Configurable {
                     allPlayers {
                         scores {
                             score(CrossfireScoreboards.INTRO) matches (0 * 20)..<(18 * 20)
+                            score(CrossfireScoreboards.TARGET_MAP_INDEX) equalTo -1
                         }
                     }
                 )
@@ -252,6 +253,7 @@ public object Intro : Configurable {
                     allPlayers {
                         scores {
                             score(CrossfireScoreboards.INTRO) matches (18 * 20)..(31 * 20)
+                            score(CrossfireScoreboards.TARGET_MAP_INDEX) equalTo -1
                         }
                     }
                 )
@@ -270,6 +272,7 @@ public object Intro : Configurable {
                     allPlayers {
                         scores {
                             score(CrossfireScoreboards.INTRO) greaterThan (31 * 20)
+                            score(CrossfireScoreboards.TARGET_MAP_INDEX) equalTo -1
                         }
                     }
                 )

@@ -10,8 +10,10 @@ import com.aeltumn.realms.crossfire.References
 import com.aeltumn.realms.crossfire.TimerIdentifier
 import com.aeltumn.realms.crossfire.component.CrossfireBossbars
 import com.aeltumn.realms.crossfire.component.CrossfireScoreboards
+import com.aeltumn.realms.crossfire.component.CrossfireScoreboards.TEAM_KILLS
 import com.aeltumn.realms.crossfire.component.CrossfireTags
 import io.github.ayfri.kore.DataPack
+import io.github.ayfri.kore.arguments.DisplaySlots
 import io.github.ayfri.kore.arguments.chatcomponents.ChatComponents
 import io.github.ayfri.kore.arguments.chatcomponents.entityComponent
 import io.github.ayfri.kore.arguments.chatcomponents.scoreComponent
@@ -192,6 +194,13 @@ public object GameLoop : Configurable {
                         // Set this game to started
                         scoreboard.players.set(literal(map), CrossfireScoreboards.STARTED, 1)
                         scoreboard.players.set(literal(map), CrossfireScoreboards.GAME_STATE, 1)
+
+                        // Show the scoreboard
+                        scoreboard {
+                            objectives {
+                                setDisplay(DisplaySlots.sidebar, TEAM_KILLS)
+                            }
+                        }
 
                         // Set the timings for all players
                         title(selector, 0.0, 20 * 6.0, 0.0)
@@ -993,7 +1002,6 @@ public object GameLoop : Configurable {
 
             // Prevent crossbow reloading (but give it back!)
             tag(self()) {
-                add(CrossfireTags.GIVE_CROSSBOW)
                 remove(CrossfireTags.RELOAD_CROSSBOW)
                 remove(CrossfireTags.SHOOTING_RANGE)
                 remove(CrossfireTags.HAS_CROSSBOW_LOADED)

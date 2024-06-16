@@ -8,8 +8,11 @@ import com.aeltumn.realms.crossfire.References
 import com.aeltumn.realms.crossfire.component.CrossfireBossbars
 import com.aeltumn.realms.crossfire.component.CrossfireScoreboards
 import io.github.ayfri.kore.DataPack
+import io.github.ayfri.kore.arguments.DisplaySlots
 import io.github.ayfri.kore.arguments.chatcomponents.textComponent
+import io.github.ayfri.kore.arguments.scores.score
 import io.github.ayfri.kore.arguments.types.literals.literal
+import io.github.ayfri.kore.commands.command
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.teams
@@ -50,6 +53,26 @@ public object MapSystem : Configurable {
                         set(CrossfireScoreboards.START_TIMER, -1)
                         set(CrossfireScoreboards.GAME_TIMER, -1)
                         set(CrossfireScoreboards.POST_GAME_TIMER, -1)
+                    }
+                }
+
+                // Hide the sidebar if no game is running
+                execute {
+                    // Test if any map is still running
+                    for (mapName in References.MAPS) {
+                        unlessCondition {
+                            score(literal(mapName), CrossfireScoreboards.STARTED) equalTo 1
+                        }
+                    }
+
+                    run {
+                        // Clear the objective
+                        command(
+                            "scoreboard",
+                            literal("objectives"),
+                            literal("setdisplay"),
+                            DisplaySlots.sidebar
+                        )
                     }
                 }
             }

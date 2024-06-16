@@ -252,6 +252,12 @@ public object ManagePlayers : Configurable {
 
                     // Initialize the player again
                     function(References.NAMESPACE, "init_player")
+
+                    // Give them their crossbow
+                    tag(self()) {
+                        add(CrossfireTags.GIVE_CROSSBOW)
+                        add(CrossfireTags.RELOAD_CROSSBOW)
+                    }
                 }
             }
         }

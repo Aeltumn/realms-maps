@@ -25,7 +25,7 @@ public object References {
             "red" to FormattingColor.RED,
             "yellow" to FormattingColor.YELLOW,
             "lime" to FormattingColor.GREEN,
-            "light_blue" to FormattingColor.BLUE,
+            "light_blue" to FormattingColor.AQUA,
         ),
         "duel" to mapOf(
             "orange" to FormattingColor.GOLD,
