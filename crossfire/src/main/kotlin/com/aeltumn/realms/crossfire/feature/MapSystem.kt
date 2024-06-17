@@ -67,11 +67,13 @@ public object MapSystem : Configurable {
 
                     run {
                         // Clear the objective
-                        command(
-                            "scoreboard",
-                            literal("objectives"),
-                            literal("setdisplay"),
-                            DisplaySlots.sidebar
+                        addLine(
+                            command(
+                                "scoreboard",
+                                literal("objectives"),
+                                literal("setdisplay"),
+                                DisplaySlots.sidebar
+                            )
                         )
                     }
                 }

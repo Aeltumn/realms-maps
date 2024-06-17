@@ -90,7 +90,7 @@ public object Crates : Configurable {
                                         "count" to NbtInt(10),
                                         "components" to NbtCompound(
                                             mapOf(
-                                                "minecraft:custom_model_data" to NbtInt(3)
+                                                "minecraft:custom_model_data" to NbtInt(4)
                                             )
                                         )
                                     )
@@ -118,7 +118,7 @@ public object Crates : Configurable {
                                         "count" to NbtInt(10),
                                         "components" to NbtCompound(
                                             mapOf(
-                                                "minecraft:custom_model_data" to NbtInt(4)
+                                                "minecraft:custom_model_data" to NbtInt(3)
                                             )
                                         )
                                     )
@@ -164,7 +164,7 @@ public object Crates : Configurable {
                                         "count" to NbtInt(10),
                                         "components" to NbtCompound(
                                             mapOf(
-                                                "minecraft:custom_model_data" to NbtInt(2)
+                                                "minecraft:custom_model_data" to NbtInt(4)
                                             )
                                         )
                                     )
@@ -192,7 +192,7 @@ public object Crates : Configurable {
                                         "count" to NbtInt(10),
                                         "components" to NbtCompound(
                                             mapOf(
-                                                "minecraft:custom_model_data" to NbtInt(4)
+                                                "minecraft:custom_model_data" to NbtInt(2)
                                             )
                                         )
                                     )
@@ -276,6 +276,7 @@ public object Crates : Configurable {
                     allEntities {
                         tag = CrossfireTags.CRATE
                         tag = !CrossfireTags.DROPPED
+                        tag = !CrossfireTags.LEFT_PAYLOAD
                     }
                 )
                 at(self())
@@ -937,7 +938,7 @@ public object Crates : Configurable {
                         )
 
                         // Reset success state from previous pickup attempt
-                        scoreboard.players.set(self(), "success", 0)
+                        scoreboard.players.set(self(), CrossfireScoreboards.SUCCESS, 0)
 
                         // Go through all possible items and slots to pick up
                         for ((itemTag, item) in items) {
@@ -973,7 +974,7 @@ public object Crates : Configurable {
 
                                             // Only if nothing has yet been picked up!
                                             scores {
-                                                score("success", 0)
+                                                score(CrossfireScoreboards.SUCCESS, 0)
                                             }
                                         })
                                     }
@@ -994,7 +995,7 @@ public object Crates : Configurable {
                                         playSound(SoundArgument("entity.item.pickup"), PlaySoundMixer.PLAYER, targetPlayer, AT_POSITION, 1.0, 1.0)
 
                                         // Set success to 1 so no other pick-up triggers
-                                        scoreboard.players.set(self(), "success", 1)
+                                        scoreboard.players.set(self(), CrossfireScoreboards.SUCCESS, 1)
                                     }
                                 }
                             }
@@ -1002,6 +1003,9 @@ public object Crates : Configurable {
 
                         // Destroy the drop
                         kill(self())
+
+                        // Reset the scoreboard
+                        scoreboard.players.reset(self(), CrossfireScoreboards.SUCCESS)
                     }
                 }
             }

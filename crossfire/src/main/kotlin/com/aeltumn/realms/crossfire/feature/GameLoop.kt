@@ -761,9 +761,9 @@ public object GameLoop : Configurable {
                                 selector,
                                 ChatComponents().apply {
                                     plus(entityComponent(target.selector.toString()))
-                                    plus(textComponent(": "))
+                                    plus(textComponent(": ", Color.WHITE))
                                     plus(scoreComponent(CrossfireScoreboards.ROUND_KILLS, target))
-                                    plus(textComponent(" points"))
+                                    plus(textComponent(" points", Color.WHITE))
                                 }
                             )
                         }

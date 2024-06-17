@@ -36,6 +36,7 @@ public object CrossfireScoreboards : Setuppable {
     public const val LIFETIME_KILLS: String = "lifetime_kills"
 
     public const val RESPAWN_SHIELD: String = "respawn_shield"
+    public const val SUCCESS: String = "success"
     public const val SPECTATE_SUCCESS: String = "spectate_success"
     public const val IS_RELOADING: String = "is_reloading"
     public const val INTRO_COMPLETED: String = "intro_completed"
@@ -86,6 +87,7 @@ public object CrossfireScoreboards : Setuppable {
             WINNER,
             RESPAWN_SHIELD,
             ROUND_KILLS,
+            SUCCESS,
             SPECTATE_SUCCESS,
             IS_RELOADING,
             INTRO_COMPLETED,

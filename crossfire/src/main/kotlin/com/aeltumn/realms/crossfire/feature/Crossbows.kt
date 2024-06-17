@@ -70,6 +70,8 @@ import net.benwoodworth.knbt.NbtString
 /** Sets up the crossbow mechanic as well as inventory items in general. */
 public object Crossbows : Configurable {
 
+    private const val HIT_RANGE: Double = 3.75
+
     /** Gives out crossbows based on team color. */
     private fun Function.giveCrossbows(multishot: Boolean): Command {
         execute {
@@ -396,6 +398,8 @@ public object Crossbows : Configurable {
                         tag = !CrossfireTags.SHOOTING_RANGE
                     })
                 }
+                at(self())
+
                 run {
                     // Remove hit from everyone so we can use it to determine the target
                     tag(allEntities {}) {
@@ -413,7 +417,7 @@ public object Crossbows : Configurable {
 
                             // Find all players that might've been killed
                             asTarget(allPlayers {
-                                distance = rangeEnd(3.0)
+                                distance = rangeEnd(HIT_RANGE)
                                 team = !teamName
                                 tag = !CrossfireTags.DIED
                                 scores {
@@ -447,15 +451,15 @@ public object Crossbows : Configurable {
                     }
 
                     // Attempt to hit supply crates
-                    scoreboard.players.set(self(), "success", 0)
+                    scoreboard.players.set(self(), CrossfireScoreboards.SUCCESS, 0)
                     execute {
                         storeResult {
-                            score(self(), "success")
+                            score(self(), CrossfireScoreboards.SUCCESS)
                         }
                         asTarget(allEntities {
                             tag = CrossfireTags.COPTER
                             tag = !CrossfireTags.LEFT_PAYLOAD
-                            distance = rangeEnd(3.0)
+                            distance = rangeEnd(HIT_RANGE)
                         })
                         at(self())
                         run {
@@ -493,7 +497,7 @@ public object Crossbows : Configurable {
                             execute {
                                 // Only if a crate was hit
                                 ifCondition {
-                                    score(self(), "success") equalTo 1
+                                    score(self(), CrossfireScoreboards.SUCCESS) equalTo 1
                                 }
 
                                 // Only if this entity exists
@@ -507,13 +511,14 @@ public object Crossbows : Configurable {
                                         mapMembersSelector(mapIndex),
                                         ChatComponents().apply {
                                             plus(entityComponent(target.selector.toString()))
-                                            plus(textComponent(" has hit a crate! It's about to fall down!"))
+                                            plus(textComponent(" has hit a crate! It's about to fall down!", Color.WHITE))
                                         }
                                     )
                                 }
                             }
                         }
                     }
+                    scoreboard.players.reset(self(), CrossfireScoreboards.SUCCESS)
 
                     // Add messages for teamkilling
                     for (teamName in References.TEAM_NAMES) {
@@ -530,7 +535,7 @@ public object Crossbows : Configurable {
                                 // If you hit someone on this team that's not you
                                 ifCondition {
                                     entity(allPlayers {
-                                        distance = rangeEnd(3.0)
+                                        distance = rangeEnd(HIT_RANGE)
                                         team = teamName
                                         tag = !"${CrossfireTags.PLAYER}-$playerIndex"
                                     })
@@ -565,7 +570,7 @@ public object Crossbows : Configurable {
                                 // If you hit someone on another team with a shield
                                 ifCondition {
                                     entity(allPlayers {
-                                        distance = rangeEnd(3.0)
+                                        distance = rangeEnd(HIT_RANGE)
                                         team = !teamName
 
                                         scores {
@@ -618,8 +623,8 @@ public object Crossbows : Configurable {
                                 }
 
                                 // Give out a kill to the killer
-                                scoreboard.players.set(target, CrossfireScoreboards.LIFETIME_KILLS, 1)
-                                scoreboard.players.set(target, CrossfireScoreboards.ROUND_KILLS, 1)
+                                scoreboard.players.add(target, CrossfireScoreboards.LIFETIME_KILLS, 1)
+                                scoreboard.players.add(target, CrossfireScoreboards.ROUND_KILLS, 1)
                             }
                         }
 
@@ -693,7 +698,7 @@ public object Crossbows : Configurable {
                                         mapMembersSelector(mapIndex),
                                         ChatComponents().apply {
                                             plus(entityComponent(self().selector.toString()))
-                                            plus(textComponent(" was sploded by "))
+                                            plus(textComponent(" was sploded by ", Color.WHITE))
                                             plus(entityComponent(target.selector.toString()))
                                         }
                                     )
@@ -830,10 +835,12 @@ public object Crossbows : Configurable {
 
             // Take away all illegal items
             addLine(
-                command(
-                    "clear",
-                    allPlayers {},
-                    ItemTagArgument(CrossfireTags.ILLEGAL_ITEMS, References.NAMESPACE)
+                addLine(
+                    command(
+                        "clear",
+                        allPlayers {},
+                        ItemTagArgument(CrossfireTags.ILLEGAL_ITEMS, References.NAMESPACE)
+                    )
                 )
             )
 
@@ -1299,7 +1306,7 @@ public object Crossbows : Configurable {
 
             // Give them levitation so they float up
             effect(self()) {
-                give(Effects.LEVITATION, 1, 40, true)
+                give(Effects.LEVITATION, 40, 1, true)
             }
 
             // Play a trident sound
