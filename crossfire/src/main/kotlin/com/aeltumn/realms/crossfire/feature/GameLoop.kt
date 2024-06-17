@@ -762,7 +762,9 @@ public object GameLoop : Configurable {
                                 ChatComponents().apply {
                                     plus(entityComponent(target.selector.toString()))
                                     plus(textComponent(": ", Color.WHITE))
-                                    plus(scoreComponent(CrossfireScoreboards.ROUND_KILLS, target))
+                                    plus(scoreComponent(CrossfireScoreboards.ROUND_KILLS, target) {
+                                        color = Color.WHITE
+                                    })
                                     plus(textComponent(" points", Color.WHITE))
                                 }
                             )
@@ -785,9 +787,11 @@ public object GameLoop : Configurable {
                                 selector,
                                 ChatComponents().apply {
                                     plus(textComponent("${References.getDisplayNameForTeam(teamName)} Team", color = References.getColorForTeam(teamName)))
-                                    plus(textComponent(": "))
-                                    plus(scoreComponent(CrossfireScoreboards.TEAM_KILLS, literal(References.getDisplayNameForTeam(teamName))))
-                                    plus(textComponent(" points"))
+                                    plus(textComponent(": ", Color.WHITE))
+                                    plus(scoreComponent(TEAM_KILLS, literal(References.getDisplayNameForTeam(teamName))) {
+                                        color = Color.WHITE
+                                    })
+                                    plus(textComponent(" points", Color.WHITE))
                                 }
                             )
                         }
@@ -806,7 +810,7 @@ public object GameLoop : Configurable {
                             })
                         }
                         run {
-                            scoreboard.players.set(literal(References.getDisplayNameForTeam(teamName)), CrossfireScoreboards.TEAM_KILLS, -999)
+                            scoreboard.players.set(literal(References.getDisplayNameForTeam(teamName)), TEAM_KILLS, -999)
                         }
                     }
                 }
