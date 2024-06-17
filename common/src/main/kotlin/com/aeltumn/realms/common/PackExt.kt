@@ -6,7 +6,7 @@ import io.github.ayfri.kore.pack.filter
 /** Sets up filters to remove base recipes & advancements. */
 public fun DataPack.filterOutDefaults() {
     filter {
-        block("minecraft", "recipes/.*")
-        block("minecraft", "advancements/.*")
+        block("minecraft", "recipe/.*")
+        block("minecraft", "advancement/.*")
     }
 }

@@ -7,6 +7,7 @@ import io.github.ayfri.kore.arguments.numbers.relativePos
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.functions.setTag
+import kotlinx.serialization.Serializable
 
 /** A position at ~ ~ ~. */
 public val AT_POSITION: Vec3

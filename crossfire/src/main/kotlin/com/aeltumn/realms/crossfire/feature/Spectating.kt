@@ -1,11 +1,11 @@
 package com.aeltumn.realms.crossfire.feature
 
 import com.aeltumn.realms.common.Configurable
+import com.aeltumn.realms.common.addAttribute
 import com.aeltumn.realms.common.tick
 import com.aeltumn.realms.crossfire.References
 import com.aeltumn.realms.crossfire.component.CrossfireScoreboards
 import com.aeltumn.realms.crossfire.component.CrossfireTags
-import com.aeltumn.realms.crossfire.feature.ManagePlayers.NO_GRAVITY_ATTRIBUTE
 import com.aeltumn.realms.crossfire.feature.TeamJoin.CLEAR_ARMOR
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.enums.Gamemode
@@ -19,7 +19,6 @@ import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.AttributeModifierOperation
-import io.github.ayfri.kore.commands.attributes
 import io.github.ayfri.kore.commands.command
 import io.github.ayfri.kore.commands.effect
 import io.github.ayfri.kore.commands.execute.execute
@@ -155,13 +154,7 @@ public object Spectating : Configurable {
 
         function(ENTER_SPECTATING_FUNCTION) {
             // Put them in the spectator system
-            attributes {
-                get(self(), Attributes.GENERIC_GRAVITY) {
-                    modifiers {
-                        add(NO_GRAVITY_ATTRIBUTE, "no_gravity", -0.08, AttributeModifierOperation.ADD_VALUE)
-                    }
-                }
-            }
+            addAttribute(self(), Attributes.GENERIC_GRAVITY, "no_gravity", -0.08f, AttributeModifierOperation.ADD_VALUE)
             effect(self()) {
                 giveInfinite(Effects.INVISIBILITY, 255, true)
             }

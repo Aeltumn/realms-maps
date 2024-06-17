@@ -3,6 +3,7 @@ package com.aeltumn.realms.crossfire.feature
 import com.aeltumn.realms.common.AT_POSITION
 import com.aeltumn.realms.common.Configurable
 import com.aeltumn.realms.common.clearBossBarPlayers
+import com.aeltumn.realms.common.removeAttribute
 import com.aeltumn.realms.common.tick
 import com.aeltumn.realms.crossfire.References
 import com.aeltumn.realms.crossfire.component.CrossfireBossbars
@@ -56,9 +57,6 @@ public object ManagePlayers : Configurable {
 
     /** The name of the reset player function. */
     public const val RESET_PLAYER_FUNCTION: String = "reset_player"
-
-    /** The attribute used for removing gravity. */
-    public val NO_GRAVITY_ATTRIBUTE: UUID = UUID.fromString("057b7e57-6d30-4c39-b65c-16efc5025383")
 
     override fun DataPack.configure() {
         tick("init_new_player") {
@@ -207,13 +205,7 @@ public object ManagePlayers : Configurable {
                     }
 
                     // Reset the player's state (only the ones given by spectating)
-                    attributes {
-                        get(self(), Attributes.GENERIC_GRAVITY) {
-                            modifiers {
-                                remove(NO_GRAVITY_ATTRIBUTE)
-                            }
-                        }
-                    }
+                    removeAttribute(self(), Attributes.GENERIC_GRAVITY, "no_gravity")
                     effect(self()) {
                         clear(Effects.INVISIBILITY)
                     }
@@ -313,13 +305,7 @@ public object ManagePlayers : Configurable {
             }
 
             // Remove the no gravity attribute
-            attributes {
-                get(self(), Attributes.GENERIC_GRAVITY) {
-                    modifiers {
-                        remove(NO_GRAVITY_ATTRIBUTE)
-                    }
-                }
-            }
+            removeAttribute(self(), Attributes.GENERIC_GRAVITY, "no_gravity")
 
             // Add to the lobby team
             teams {

@@ -7,7 +7,6 @@ import com.aeltumn.realms.common.tick
 import com.aeltumn.realms.crossfire.References
 import com.aeltumn.realms.crossfire.component.CrossfireScoreboards
 import com.aeltumn.realms.crossfire.component.CrossfireTags
-import com.aeltumn.realms.crossfire.feature.ManagePlayers.NO_GRAVITY_ATTRIBUTE
 import com.aeltumn.realms.crossfire.feature.Spectating.ENTER_SPECTATING_FUNCTION
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.chatcomponents.entityComponent
@@ -18,18 +17,13 @@ import io.github.ayfri.kore.arguments.selector.scores
 import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
-import io.github.ayfri.kore.arguments.types.resources.EffectArgument
-import io.github.ayfri.kore.commands.AttributeModifierOperation
 import io.github.ayfri.kore.commands.TitleLocation
-import io.github.ayfri.kore.commands.attributes
-import io.github.ayfri.kore.commands.effect
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.commands.tellraw
 import io.github.ayfri.kore.commands.title
-import io.github.ayfri.kore.generated.Attributes
 
 /** Sets up water touch handling. */
 public object TouchWater : Configurable {
