@@ -1237,6 +1237,56 @@ public object Crossbows : Configurable {
             }
 
             // We don't remove a charged multi-shot if you lose the effect!
+
+            // If you have no crossbow at all we take away the loaded tag
+            execute {
+                asTarget(
+                    allEntities {
+                        tag = CrossfireTags.GIVE_CROSSBOW
+                        tag = CrossfireTags.HAS_CROSSBOW_LOADED
+                    }
+                )
+
+                run {
+                    execute {
+                        storeResult {
+                            score(
+                                self(),
+                                CrossfireScoreboards.ITEM_COUNT
+                            )
+                        }
+                        run {
+                            clear(
+                                self(),
+                                item = ItemArgument("crossbow", "minecraft"),
+                                maxCount = 0,
+                            )
+                        }
+                    }
+                    execute {
+                        ifCondition {
+                            score(self(), CrossfireScoreboards.ITEM_COUNT) greaterThanOrEqualTo 2
+                        }
+                        run {
+                            clear(
+                                self(),
+                                item = ItemArgument("crossbow", "minecraft"),
+                            )
+                        }
+                    }
+                    execute {
+                        unlessCondition {
+                            score(self(), CrossfireScoreboards.ITEM_COUNT) equalTo 1
+                        }
+                        run {
+                            // Take away the loaded tag which will start the reload again
+                            tag(self()) {
+                                remove(CrossfireTags.HAS_CROSSBOW_LOADED)
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         // Update the current crossbow item state

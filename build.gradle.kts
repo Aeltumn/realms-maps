@@ -13,12 +13,14 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
 
     repositories {
+        mavenLocal()
         mavenCentral()
     }
 
     val implementation by configurations
     dependencies {
-        implementation("io.github.ayfri.kore:kore:1.10.1-1.20.6")
+        // implementation("io.github.ayfri.kore:kore:1.10.1-1.20.6")
+        implementation("io.github.ayfri.kore:kore:local")
     }
 
     tasks {
