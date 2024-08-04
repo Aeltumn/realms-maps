@@ -8,7 +8,6 @@ import com.aeltumn.realms.common.load
 import com.aeltumn.realms.crossfire.component.CrossfireBossbars
 import com.aeltumn.realms.crossfire.component.CrossfirePredicates
 import com.aeltumn.realms.crossfire.component.CrossfireScoreboards
-import com.aeltumn.realms.crossfire.component.CrossfireTags
 import com.aeltumn.realms.crossfire.component.CrossfireTeams
 import com.aeltumn.realms.crossfire.component.CrossfireTimers
 import com.aeltumn.realms.crossfire.feature.Crates
@@ -94,7 +93,6 @@ public fun main(args: Array<String>) {
         Configurable.apply(
             this,
             CrossfirePredicates,
-            CrossfireTags,
             Crossbows,
             GameLoop,
             Crates,

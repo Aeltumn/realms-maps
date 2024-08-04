@@ -77,7 +77,8 @@ public object Crates : Configurable {
                     put("Tags", NbtList(listOf(NbtString("iron"), NbtString(map), NbtString("cleanup"), NbtString("cleanup-$map"), NbtString(CrossfireTags.CRATE))))
                     put("NoGravity", NbtByte(1))
                     put("Invisible", NbtByte(1))
-                    put("Marker", NbtByte(1))
+                    // Cannot be a marker as that makes it impossible to detect if it's above y=120!
+                    // put("Marker", NbtByte(1))
                     put(
                         "ArmorItems", NbtList(
                             listOf(
@@ -105,7 +106,8 @@ public object Crates : Configurable {
                     put("Tags", NbtList(listOf(NbtString("iron"), NbtString(map), NbtString("cleanup"), NbtString("cleanup-$map"), NbtString(CrossfireTags.COPTER))))
                     put("NoGravity", NbtByte(1))
                     put("Invisible", NbtByte(1))
-                    put("Marker", NbtByte(1))
+                    // Cannot be a marker as that makes it impossible to detect if it's above y=120!
+                    // put("Marker", NbtByte(1))
                     put(
                         "ArmorItems", NbtList(
                             listOf(
@@ -151,7 +153,8 @@ public object Crates : Configurable {
                     put("Tags", NbtList(listOf(NbtString("gold"), NbtString(map), NbtString("cleanup"), NbtString("cleanup-$map"), NbtString(CrossfireTags.CRATE))))
                     put("NoGravity", NbtByte(1))
                     put("Invisible", NbtByte(1))
-                    put("Marker", NbtByte(1))
+                    // Cannot be a marker as that makes it impossible to detect if it's above y=120!
+                    // put("Marker", NbtByte(1))
                     put(
                         "ArmorItems", NbtList(
                             listOf(
@@ -179,7 +182,8 @@ public object Crates : Configurable {
                     put("Tags", NbtList(listOf(NbtString("gold"), NbtString(map), NbtString("cleanup"), NbtString("cleanup-$map"), NbtString(CrossfireTags.COPTER))))
                     put("NoGravity", NbtByte(1))
                     put("Invisible", NbtByte(1))
-                    put("Marker", NbtByte(1))
+                    // Cannot be a marker as that makes it impossible to detect if it's above y=120!
+                    // put("Marker", NbtByte(1))
                     put(
                         "ArmorItems", NbtList(
                             listOf(
@@ -368,9 +372,6 @@ public object Crates : Configurable {
                         tag = CrossfireTags.POWER_UP
                     }
                 )
-                ifCondition {
-                    data(self(), "{Marker:1b,NoGravity:1b}")
-                }
                 at(self())
 
                 run {
@@ -515,7 +516,7 @@ public object Crates : Configurable {
                             }
                         )
 
-                        summon(EntityTypes.ARMOR_STAND, vec3(6.relativePos, 85.worldPos, 0.relativePos)) {
+                        summon(EntityTypes.ARMOR_STAND, AT_POSITION) {
                             put("Tags", NbtList(listOf(NbtString("rapid_fire"), NbtString(CrossfireTags.POWER_UP), NbtString(map), NbtString("cleanup"), NbtString("cleanup-$map"))))
                             put("Marker", NbtByte(1))
                             put("Invisible", NbtByte(1))
@@ -557,7 +558,7 @@ public object Crates : Configurable {
                             }
                         )
 
-                        summon(EntityTypes.ARMOR_STAND, vec3(6.relativePos, 85.worldPos, 0.relativePos)) {
+                        summon(EntityTypes.ARMOR_STAND, AT_POSITION) {
                             put("Tags", NbtList(listOf(NbtString("multishot"), NbtString(CrossfireTags.POWER_UP), NbtString(map), NbtString("cleanup"), NbtString("cleanup-$map"))))
                             put("Marker", NbtByte(1))
                             put("Invisible", NbtByte(1))
@@ -608,7 +609,7 @@ public object Crates : Configurable {
                             }
                         )
 
-                        summon(EntityTypes.ARMOR_STAND, vec3(6.relativePos, 85.worldPos, 0.relativePos)) {
+                        summon(EntityTypes.ARMOR_STAND, AT_POSITION) {
                             put("Tags", NbtList(listOf(NbtString("swiftness"), NbtString(CrossfireTags.POWER_UP), NbtString(map), NbtString("cleanup"), NbtString("cleanup-$map"))))
                             put("Marker", NbtByte(1))
                             put("Invisible", NbtByte(1))
@@ -665,7 +666,7 @@ public object Crates : Configurable {
                             }
                         )
 
-                        summon(EntityTypes.ARMOR_STAND, vec3(6.relativePos, 85.worldPos, 0.relativePos)) {
+                        summon(EntityTypes.ARMOR_STAND, AT_POSITION) {
                             put("Tags", NbtList(listOf(NbtString("jump_boost"), NbtString(CrossfireTags.POWER_UP), NbtString(map), NbtString("cleanup"), NbtString("cleanup-$map"))))
                             put("Marker", NbtByte(1))
                             put("Invisible", NbtByte(1))
@@ -722,7 +723,7 @@ public object Crates : Configurable {
                             }
                         )
 
-                        summon(EntityTypes.ARMOR_STAND, vec3(6.relativePos, 85.worldPos, 0.relativePos)) {
+                        summon(EntityTypes.ARMOR_STAND, AT_POSITION) {
                             put("Tags", NbtList(listOf(NbtString("slow_falling"), NbtString(CrossfireTags.POWER_UP), NbtString(map), NbtString("cleanup"), NbtString("cleanup-$map"))))
                             put("Marker", NbtByte(1))
                             put("Invisible", NbtByte(1))

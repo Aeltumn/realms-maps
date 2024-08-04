@@ -425,6 +425,9 @@ public object Crossbows : Configurable {
                                 }
                             })
                             run {
+                                // Set the title times
+                                title(self(), 20.ticks, 60.ticks, 0.ticks)
+
                                 // Show them the title
                                 title(self(), TitleLocation.SUBTITLE, textComponent("\uE004"))
 
@@ -451,11 +454,8 @@ public object Crossbows : Configurable {
                     }
 
                     // Attempt to hit supply crates
-                    scoreboard.players.set(self(), CrossfireScoreboards.SUCCESS, 0)
+                    scoreboard.players.set(literal("crate"), CrossfireScoreboards.SUCCESS, 0)
                     execute {
-                        storeResult {
-                            score(self(), CrossfireScoreboards.SUCCESS)
-                        }
                         asTarget(allEntities {
                             tag = CrossfireTags.COPTER
                             tag = !CrossfireTags.LEFT_PAYLOAD
@@ -463,6 +463,9 @@ public object Crossbows : Configurable {
                         })
                         at(self())
                         run {
+                            // Success! A crate got hit, we need to mark that down so we can send a message.
+                            scoreboard.players.set(literal("crate"), CrossfireScoreboards.SUCCESS, 1)
+
                             // Mark this copter as wanting to drop its payload
                             tag(self()) {
                                 add(CrossfireTags.READY_TO_DROP)
@@ -489,20 +492,18 @@ public object Crossbows : Configurable {
                     // Add a message indicating a crate was hit
                     for ((mapIndex, map) in References.MAPS.withIndex()) {
                         for (playerIndex in 0 until References.PLAYER_COUNT) {
-                            val target = self {
-                                tag = "${CrossfireTags.PLAYER}-$playerIndex"
-                                tag = "${CrossfireTags.SELECTED}-$map"
-                            }
-
                             execute {
                                 // Only if a crate was hit
                                 ifCondition {
-                                    score(self(), CrossfireScoreboards.SUCCESS) equalTo 1
+                                    score(literal("crate"), CrossfireScoreboards.SUCCESS) equalTo 1
                                 }
 
                                 // Only if this entity exists
                                 ifCondition {
-                                    entity(target)
+                                    entity(self {
+                                        tag = "${CrossfireTags.PLAYER}-$playerIndex"
+                                        tag = "${CrossfireTags.SELECTED}-$map"
+                                    })
                                 }
 
                                 // Tell everyone about it!
@@ -510,7 +511,11 @@ public object Crossbows : Configurable {
                                     tellraw(
                                         mapMembersSelector(mapIndex),
                                         ChatComponents().apply {
-                                            plus(entityComponent(target.selector.toString()))
+                                            // Find the player that corresponds to this arrow!
+                                            plus(entityComponent(allPlayers {
+                                                tag = "${CrossfireTags.PLAYER}-$playerIndex"
+                                                tag = "${CrossfireTags.SELECTED}-$map"
+                                            }.selector.toString()))
                                             plus(textComponent(" has hit a crate! It's about to fall down!", Color.WHITE))
                                         }
                                     )
@@ -518,7 +523,7 @@ public object Crossbows : Configurable {
                             }
                         }
                     }
-                    scoreboard.players.reset(self(), CrossfireScoreboards.SUCCESS)
+                    scoreboard.players.reset(literal("crate"), CrossfireScoreboards.SUCCESS)
 
                     // Add messages for teamkilling
                     for (teamName in References.TEAM_NAMES) {
@@ -834,15 +839,8 @@ public object Crossbows : Configurable {
             killAllDropped("minecraft:glass_bottle")
 
             // Take away all illegal items
-            addLine(
-                addLine(
-                    command(
-                        "clear",
-                        allPlayers {},
-                        ItemTagArgument(CrossfireTags.ILLEGAL_ITEMS, References.NAMESPACE)
-                    )
-                )
-            )
+            clear(allPlayers(), ItemArgument("arrow", "minecraft"))
+            clear(allPlayers(), ItemArgument("glass_bottle", "minecraft"))
 
             // Take away tags for getting crossbows from admins and spectators
             execute {
@@ -1225,6 +1223,7 @@ public object Crossbows : Configurable {
                 asTarget(
                     allEntities {
                         tag = CrossfireTags.GIVE_CROSSBOW
+                        tag = CrossfireTags.HAS_CROSSBOW_LOADED
                         tag = !CrossfireTags.HAS_MULTISHOT_LOADED
                         predicate = CrossfirePredicates.HAS_MULTISHOT
                     }
@@ -1282,6 +1281,7 @@ public object Crossbows : Configurable {
                             // Take away the loaded tag which will start the reload again
                             tag(self()) {
                                 remove(CrossfireTags.HAS_CROSSBOW_LOADED)
+                                remove(CrossfireTags.HAS_MULTISHOT_LOADED)
                             }
                         }
                     }
@@ -1346,17 +1346,11 @@ public object Crossbows : Configurable {
             }
 
             // Take away their crossbow
-            addLine(
-                command(
-                    "clear",
-                    allPlayers {},
-                    ItemTagArgument(CrossfireTags.CROSSBOW, References.NAMESPACE)
-                )
-            )
+            clear(allPlayers(), ItemArgument("crossbow", "minecraft"))
 
             // Give them levitation so they float up
             effect(self()) {
-                give(Effects.LEVITATION, 40, 1, true)
+                give(Effects.LEVITATION, 1, 40, true)
             }
 
             // Play a trident sound

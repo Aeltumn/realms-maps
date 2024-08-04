@@ -152,7 +152,7 @@ public object Spectating : Configurable {
             }
         }
 
-        function(ENTER_SPECTATING_FUNCTION) {
+        function(ENTER_SPECTATING_FUNCTION, References.NAMESPACE) {
             // Put them in the spectator system
             addAttribute(self(), Attributes.GENERIC_GRAVITY, "no_gravity", -0.08f, AttributeModifierOperation.ADD_VALUE)
             effect(self()) {
@@ -169,13 +169,27 @@ public object Spectating : Configurable {
                     entity(
                         self {
                             for (playerIndex in 0 until References.PLAYER_COUNT) {
-                                tag = !"${CrossfireTags.PLAYER}-$playerIndex"
+                                tag = !"${CrossfireTags.SPECTATE_PLAYER}-$playerIndex"
                             }
                         }
                     )
                 }
                 run {
                     gamemode(Gamemode.SPECTATOR, self())
+                }
+            }
+            execute {
+                ifCondition {
+                    entity(
+                        self {
+                            for (playerIndex in 0 until References.PLAYER_COUNT) {
+                                tag = !"${CrossfireTags.SPECTATE_PLAYER}-$playerIndex"
+                            }
+                        }
+                    )
+                }
+                run {
+                    gamemode(Gamemode.ADVENTURE, self())
                 }
             }
 

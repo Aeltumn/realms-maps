@@ -5,7 +5,7 @@ import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.features.tags.tag
 
 /** Defines basic tags for crossfire. */
-public object CrossfireTags : Configurable {
+public object CrossfireTags {
 
     // -- Tags added to entities
     /** For players that have been initialized. */
@@ -56,14 +56,6 @@ public object CrossfireTags : Configurable {
     /** Marks a player as having been hit. */
     public const val HIT: String = "hit"
 
-    // -- Tags that define items
-
-    /** Contains just the crossbow. */
-    public const val CROSSBOW: String = "crossbow"
-
-    /** All items that are illegal for non-admins to have. */
-    public const val ILLEGAL_ITEMS: String = "illegal_items"
-
     // -- Tags added to entities
 
     /** For crates. */
@@ -83,15 +75,4 @@ public object CrossfireTags : Configurable {
 
     /** For copters and crates ready to drop their item. */
     public const val READY_TO_DROP: String = "ready_to_drop"
-
-    override fun DataPack.configure() {
-        tag(CROSSBOW, "items") {
-            add("minecraft:crossbow")
-        }
-
-        tag(ILLEGAL_ITEMS, "items") {
-            add("minecraft:arrow")
-            add("minecraft:glass_bottle")
-        }
-    }
 }

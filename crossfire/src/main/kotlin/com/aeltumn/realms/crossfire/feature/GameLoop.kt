@@ -470,6 +470,9 @@ public object GameLoop : Configurable {
                     ifCondition {
                         score(literal(map), CrossfireScoreboards.GAME_TIMER) equalTo 0
                     }
+                    unlessCondition {
+                        score(literal(map), CrossfireScoreboards.GAME_STATE) equalTo 3
+                    }
                     run {
                         function(References.NAMESPACE, "end_map_$map")
                     }

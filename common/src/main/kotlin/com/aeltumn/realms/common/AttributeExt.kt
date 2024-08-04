@@ -19,7 +19,6 @@ public fun Function.addAttribute(target: EntityArgument, attribute: AttributeArg
             attribute,
             literal("modifier"),
             literal("add"),
-            literal(UUID.randomUUID().toString()), // TODO Temp 1.20.6 support
             literal(id),
             float(value),
             literal(operation.name.lowercase())
@@ -28,4 +27,4 @@ public fun Function.addAttribute(target: EntityArgument, attribute: AttributeArg
 
 /** Removes an attribute [id] from [target] of [attribute]. */
 public fun Function.removeAttribute(target: EntityArgument, attribute: AttributeArgument, id: String): Command =
-    addLine(command("attribute", target, attribute, literal("modifier"), literal("remove"), literal(UUID.randomUUID().toString()))) // TODO Temp 1.20.6 support
+    addLine(command("attribute", target, attribute, literal("modifier"), literal("remove"), literal(id)))
