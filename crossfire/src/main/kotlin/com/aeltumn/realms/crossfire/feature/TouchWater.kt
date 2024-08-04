@@ -34,6 +34,7 @@ public object TouchWater : Configurable {
                 asTarget(
                     allPlayers {
                         tag = CrossfireTags.JOINED
+                        tag = !CrossfireTags.DIED
                         tag = !CrossfireTags.DIED_IN_WATER
                     }
                 )
