@@ -1346,7 +1346,7 @@ public object Crossbows : Configurable {
             }
 
             // Take away their crossbow
-            clear(allPlayers(), ItemArgument("crossbow", "minecraft"))
+            clear(self(), ItemArgument("crossbow", "minecraft"))
 
             // Give them levitation so they float up
             effect(self()) {
