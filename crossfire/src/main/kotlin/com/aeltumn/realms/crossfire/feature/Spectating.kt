@@ -65,9 +65,6 @@ public object Spectating : Configurable {
                         tag(self()) {
                             remove("${CrossfireTags.SPECTATE_PLAYER}-$playerIndex")
                         }
-
-                        // Set game mode back to adventure (we only let you be in spectator while spectating someone)
-                        gamemode(Gamemode.ADVENTURE, self())
                     }
                 }
 
@@ -118,11 +115,13 @@ public object Spectating : Configurable {
 
                 // Teleport them to the flight path of this map
                 execute {
-                    // Find all spectators in adventure mode on this map
+                    // Find all spectators on this map that are not spectating anyone
                     asTarget(
                         allPlayers {
-                            gamemode = Gamemode.ADVENTURE
                             tag = CrossfireTags.SPECTATING
+                            for (playerIndex in 0 until References.PLAYER_COUNT) {
+                                tag = !"${CrossfireTags.SPECTATE_PLAYER}-$playerIndex"
+                            }
 
                             scores {
                                 score(CrossfireScoreboards.TARGET_MAP_INDEX) equalTo index
@@ -154,6 +153,7 @@ public object Spectating : Configurable {
 
         function(ENTER_SPECTATING_FUNCTION, References.NAMESPACE) {
             // Put them in the spectator system
+            addAttribute(self(), Attributes.GENERIC_MOVEMENT_SPEED, "no_move", -0.3f, AttributeModifierOperation.ADD_VALUE)
             addAttribute(self(), Attributes.GENERIC_GRAVITY, "no_gravity", -0.08f, AttributeModifierOperation.ADD_VALUE)
             effect(self()) {
                 giveInfinite(Effects.INVISIBILITY, 255, true)
@@ -162,36 +162,8 @@ public object Spectating : Configurable {
             // Clear their armor
             function(References.NAMESPACE, CLEAR_ARMOR)
 
-            // Make them be in spectator mode if they have a target already,
-            // otherwise keep them in adventure mode
-            execute {
-                unlessCondition {
-                    entity(
-                        self {
-                            for (playerIndex in 0 until References.PLAYER_COUNT) {
-                                tag = !"${CrossfireTags.SPECTATE_PLAYER}-$playerIndex"
-                            }
-                        }
-                    )
-                }
-                run {
-                    gamemode(Gamemode.SPECTATOR, self())
-                }
-            }
-            execute {
-                ifCondition {
-                    entity(
-                        self {
-                            for (playerIndex in 0 until References.PLAYER_COUNT) {
-                                tag = !"${CrossfireTags.SPECTATE_PLAYER}-$playerIndex"
-                            }
-                        }
-                    )
-                }
-                run {
-                    gamemode(Gamemode.ADVENTURE, self())
-                }
-            }
+            // Put them in spectator mode
+            gamemode(Gamemode.SPECTATOR, self())
 
             // Give the player the spectating tag last so the effects don't activate early
             tag(self()) {

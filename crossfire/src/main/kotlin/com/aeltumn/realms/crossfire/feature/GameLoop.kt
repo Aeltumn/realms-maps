@@ -932,7 +932,21 @@ public object GameLoop : Configurable {
                     }
                 }
 
-                // Take away crossbows and loaded ammo!
+                // Respawn anyone that's dead before ending the game
+                execute {
+                    asTarget(allPlayers {
+                        tag = CrossfireTags.SPECTATING
+                        scores {
+                            score(CrossfireScoreboards.TARGET_MAP_INDEX) equalTo mapIndex
+                        }
+                    })
+
+                    execute {
+                        function(References.NAMESPACE, ManagePlayers.RESPAWN_PLAYER_FUNCTION)
+                    }
+                }
+
+                // Take away crossbows and loaded ammo! (after respawning)
                 tag(selector) {
                     remove(CrossfireTags.RELOAD_CROSSBOW)
                     remove(CrossfireTags.SHOOTING_RANGE)
@@ -954,7 +968,7 @@ public object GameLoop : Configurable {
                         tp(selector, vec3(529, 71, 296), rotation((-90.0).rot, 0.0.rot))
 
                         // Put barriers over the water
-                        fill(vec3(509, 70, 276), vec3(549, 70, 316), BlockArgument("air", "minecraft"), BlockArgument("barrier", "minecraft"))
+                        fill(vec3(509, 70, 276), vec3(549, 70, 316), BlockArgument("barrier", "minecraft"), BlockArgument("air", "minecraft"))
                     }
 
                     else -> throw IllegalArgumentException("Invalid map name $map")
@@ -997,13 +1011,13 @@ public object GameLoop : Configurable {
             execute {
                 asTarget(self { team = "orange" })
                 run {
-                    tp(self(), vec3(529.5.worldPos, 71.0.worldPos, 317.0.worldPos), rotation(180.0.rot, 0.0.rot))
+                    tp(self(), vec3(529.5.worldPos, 71.0.worldPos, 276.0.worldPos), rotation(0.0.rot, 0.0.rot))
                 }
             }
             execute {
                 asTarget(self { team = "magenta" })
                 run {
-                    tp(self(), vec3(529.5.worldPos, 71.0.worldPos, 276.0.worldPos), rotation(0.0.rot, 0.0.rot))
+                    tp(self(), vec3(529.5.worldPos, 71.0.worldPos, 317.0.worldPos), rotation(180.0.rot, 0.0.rot))
                 }
             }
 

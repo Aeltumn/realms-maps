@@ -58,6 +58,9 @@ public object ManagePlayers : Configurable {
     /** The name of the reset player function. */
     public const val RESET_PLAYER_FUNCTION: String = "reset_player"
 
+    /** The name of the respawn player function. */
+    public const val RESPAWN_PLAYER_FUNCTION: String = "respawn_player"
+
     override fun DataPack.configure() {
         tick("init_new_player") {
             execute {
@@ -193,64 +196,69 @@ public object ManagePlayers : Configurable {
                     }
                 )
                 run {
-                    // Remove spectating related tags
-                    tag(self()) {
-                        for (playerIndex in 0 until References.PLAYER_COUNT) {
-                            remove("${CrossfireTags.SPECTATE_PLAYER}-$playerIndex")
-                        }
+                    function(References.NAMESPACE, RESPAWN_PLAYER_FUNCTION)
+                }
+            }
+        }
 
-                        remove(CrossfireTags.SPECTATING)
-                        remove(CrossfireTags.DIED_IN_WATER)
-                        remove(CrossfireTags.DIED)
+        function(RESPAWN_PLAYER_FUNCTION) {
+            // Remove spectating related tags
+            tag(self()) {
+                for (playerIndex in 0 until References.PLAYER_COUNT) {
+                    remove("${CrossfireTags.SPECTATE_PLAYER}-$playerIndex")
+                }
+
+                remove(CrossfireTags.SPECTATING)
+                remove(CrossfireTags.DIED_IN_WATER)
+                remove(CrossfireTags.DIED)
+            }
+
+            // Reset the player's state (only the ones given by spectating)
+            removeAttribute(self(), Attributes.GENERIC_MOVEMENT_SPEED, "no_move")
+            removeAttribute(self(), Attributes.GENERIC_GRAVITY, "no_gravity")
+            effect(self()) {
+                clear(Effects.INVISIBILITY)
+            }
+            gamemode(Gamemode.ADVENTURE)
+
+            // Clear the title
+            title(self(), TitleLocation.TITLE, textComponent(""))
+            title(self(), TitleLocation.SUBTITLE, textComponent(""))
+
+            // Remove them from any spectator target
+            execute {
+                asTarget(self())
+                run {
+                    spectate()
+                }
+            }
+
+            // Give them back armor
+            function(References.NAMESPACE, GIVE_ARMOR)
+
+            // Play sound for all other players in the map indicating the respawn
+            for ((index, map) in References.MAPS.withIndex()) {
+                execute {
+                    ifCondition {
+                        entity(self {
+                            tag = "${CrossfireTags.SELECTED}-$map"
+                        })
                     }
-
-                    // Reset the player's state (only the ones given by spectating)
-                    removeAttribute(self(), Attributes.GENERIC_GRAVITY, "no_gravity")
-                    effect(self()) {
-                        clear(Effects.INVISIBILITY)
-                    }
-                    gamemode(Gamemode.ADVENTURE)
-
-                    // Clear the title
-                    title(self(), TitleLocation.TITLE, textComponent(""))
-                    title(self(), TitleLocation.SUBTITLE, textComponent(""))
-
-                    // Remove them from any spectator target
-                    execute {
-                        asTarget(self())
-                        run {
-                            spectate()
-                        }
-                    }
-
-                    // Give them back armor
-                    function(References.NAMESPACE, GIVE_ARMOR)
-
-                    // Play sound for all other players in the map indicating the respawn
-                    for ((index, map) in References.MAPS.withIndex()) {
-                        execute {
-                            ifCondition {
-                                entity(self {
-                                    tag = "${CrossfireTags.SELECTED}-$map"
-                                })
-                            }
-                            asTarget(mapMembersSelector(index))
-                            at(self())
-                            run {
-                                playSound(SoundArgument("item.armor.equip_turtle"), PlaySoundMixer.PLAYER, self(), AT_POSITION, 0.4, 1.0)
-                            }
-                        }
-                    }
-
-                    // Initialize the player again
-                    function(References.NAMESPACE, "init_player")
-
-                    // Give them their crossbow
-                    tag(self()) {
-                        add(CrossfireTags.GIVE_CROSSBOW)
-                        add(CrossfireTags.RELOAD_CROSSBOW)
+                    asTarget(mapMembersSelector(index))
+                    at(self())
+                    run {
+                        playSound(SoundArgument("item.armor.equip_turtle"), PlaySoundMixer.PLAYER, self(), AT_POSITION, 0.4, 1.0)
                     }
                 }
+            }
+
+            // Initialize the player again
+            function(References.NAMESPACE, "init_player")
+
+            // Give them their crossbow
+            tag(self()) {
+                add(CrossfireTags.GIVE_CROSSBOW)
+                add(CrossfireTags.RELOAD_CROSSBOW)
             }
         }
 
@@ -305,6 +313,7 @@ public object ManagePlayers : Configurable {
             }
 
             // Remove the no gravity attribute
+            removeAttribute(self(), Attributes.GENERIC_MOVEMENT_SPEED, "no_move")
             removeAttribute(self(), Attributes.GENERIC_GRAVITY, "no_gravity")
 
             // Add to the lobby team

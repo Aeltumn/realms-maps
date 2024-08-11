@@ -675,7 +675,7 @@ public object Crossbows : Configurable {
                                     tag = CrossfireTags.HIT
                                 })
                                 run {
-                                    scoreboard.players.set(literal(References.getDisplayNameForTeam(teamName)), CrossfireScoreboards.TEAM_KILLS, 1)
+                                    scoreboard.players.add(literal(References.getDisplayNameForTeam(teamName)), CrossfireScoreboards.TEAM_KILLS, 1)
                                 }
                             }
                         }
@@ -1240,7 +1240,7 @@ public object Crossbows : Configurable {
             // If you have no crossbow at all we take away the loaded tag
             execute {
                 asTarget(
-                    allEntities {
+                    allPlayers {
                         tag = CrossfireTags.GIVE_CROSSBOW
                         tag = CrossfireTags.HAS_CROSSBOW_LOADED
                     }

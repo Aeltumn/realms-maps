@@ -27,7 +27,7 @@ public object ShootingRange : Configurable {
                         tag = !CrossfireTags.SHOOTING_RANGE
 
                         scores {
-                            score(CrossfireScoreboards.TARGET_MAP_INDEX) equalTo 0
+                            score(CrossfireScoreboards.TARGET_MAP_INDEX) greaterThan -1
                         }
                     }
                 )
