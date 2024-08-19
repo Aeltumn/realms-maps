@@ -35,6 +35,7 @@ import io.github.ayfri.kore.commands.TitleLocation
 import io.github.ayfri.kore.commands.attributes
 import io.github.ayfri.kore.commands.bossBars
 import io.github.ayfri.kore.commands.clear
+import io.github.ayfri.kore.commands.command
 import io.github.ayfri.kore.commands.effect
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
@@ -218,6 +219,11 @@ public object ManagePlayers : Configurable {
             removeAttribute(self(), Attributes.GENERIC_GRAVITY, "no_gravity")
             effect(self()) {
                 clear(Effects.INVISIBILITY)
+                clear(Effects.LUCK)
+                clear(Effects.UNLUCK)
+                clear(Effects.SLOW_FALLING)
+                clear(Effects.SPEED)
+                clear(Effects.JUMP_BOOST)
             }
             gamemode(Gamemode.ADVENTURE)
 
@@ -304,9 +310,6 @@ public object ManagePlayers : Configurable {
 
             // Reset game mode and state
             gamemode(Gamemode.ADVENTURE, self())
-            effect(self()) {
-                clear()
-            }
             xp(self()) {
                 set(Xp(0, ExperienceType.LEVELS))
                 set(Xp(0, ExperienceType.POINTS))

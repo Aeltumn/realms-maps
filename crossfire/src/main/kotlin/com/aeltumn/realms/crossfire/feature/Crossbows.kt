@@ -329,9 +329,9 @@ public object Crossbows : Configurable {
                     ifCondition {
                         entity(allPlayers {
                             team = !teamName
+                            tag = CrossfireTags.SELECTED
                             tag = !CrossfireTags.DIED
                             tag = !CrossfireTags.SPECTATING
-                            tag = !CrossfireTags.SELECTED
                             distance = rangeEnd(2.5)
                         })
                     }

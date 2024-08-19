@@ -51,10 +51,11 @@ public object Intro : Configurable {
                     scoreboard.players.set(self(), CrossfireScoreboards.INTRO_SKIPPED_TRIGGER, 0)
 
                     // If the player is currently in the intro we take them out of it!
+                    scoreboard.players.set(self(), CrossfireScoreboards.INTRO_COMPLETED, 1)
                     executeIfEqualTo(CrossfireScoreboards.TARGET_MAP_INDEX, -1) {
                         scoreboard.players.set(self(), CrossfireScoreboards.TARGET_MAP_INDEX, 0)
+                        function(References.NAMESPACE, ManagePlayers.RESET_PLAYER_FUNCTION)
                     }
-                    scoreboard.players.set(self(), CrossfireScoreboards.INTRO_COMPLETED, 1)
 
                     title(self(), TitleLocation.ACTIONBAR, textComponent("You've skipped the tutorial.", Color.YELLOW))
                 }

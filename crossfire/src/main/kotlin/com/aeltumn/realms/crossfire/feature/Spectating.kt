@@ -45,7 +45,6 @@ public object Spectating : Configurable {
                     asTarget(
                         allPlayers {
                             tag = "${CrossfireTags.SPECTATE_PLAYER}-$playerIndex"
-                            tag = CrossfireTags.SPECTATING
                         }
                     )
 

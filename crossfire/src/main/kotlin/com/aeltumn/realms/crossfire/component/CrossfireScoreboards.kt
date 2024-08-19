@@ -112,9 +112,11 @@ public object CrossfireScoreboards : Setuppable {
         // Create the kills objective
         scoreboard {
             objectives {
-                add(TEAM_KILLS, ScoreboardCriteria.DUMMY, textComponent("Kills"))
+                add(TEAM_KILLS, ScoreboardCriteria.DUMMY, textComponent("Score"))
                 add(LIFETIME_KILLS, ScoreboardCriteria.DUMMY, textComponent("Kills"))
                 setDisplay(DisplaySlots.belowName, LIFETIME_KILLS)
+                setDisplay(DisplaySlots.list, LIFETIME_KILLS)
+                setDisplay(DisplaySlots.sidebar, TEAM_KILLS)
             }
         }
     }
