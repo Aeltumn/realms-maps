@@ -44,6 +44,7 @@ public object Spectating : Configurable {
                     // Find anyone spectating player index
                     asTarget(
                         allPlayers {
+                            tag = CrossfireTags.SPECTATING
                             tag = "${CrossfireTags.SPECTATE_PLAYER}-$playerIndex"
                         }
                     )
@@ -63,6 +64,14 @@ public object Spectating : Configurable {
                         // Remove spectating tag
                         tag(self()) {
                             remove("${CrossfireTags.SPECTATE_PLAYER}-$playerIndex")
+                        }
+
+                        // Stop spectating the user
+                        execute {
+                            asTarget(self())
+                            run {
+                                spectate()
+                            }
                         }
                     }
                 }

@@ -224,6 +224,10 @@ public object ManagePlayers : Configurable {
                 clear(Effects.SLOW_FALLING)
                 clear(Effects.SPEED)
                 clear(Effects.JUMP_BOOST)
+
+                giveInfinite(Effects.JUMP_BOOST, 1, true)
+                giveInfinite(Effects.SPEED, 0, true)
+
             }
             gamemode(Gamemode.ADVENTURE)
 

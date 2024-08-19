@@ -195,6 +195,13 @@ public object GameLoop : Configurable {
                         scoreboard.players.set(literal(map), CrossfireScoreboards.STARTED, 1)
                         scoreboard.players.set(literal(map), CrossfireScoreboards.GAME_STATE, 1)
 
+                        // Show the scoreboard
+                        scoreboard {
+                            objectives {
+                                setDisplay(DisplaySlots.sidebar, TEAM_KILLS)
+                            }
+                        }
+
                         // Set the timings for all players
                         title(selector, 0.0, 20 * 6.0, 0.0)
 

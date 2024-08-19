@@ -116,7 +116,6 @@ public object CrossfireScoreboards : Setuppable {
                 add(LIFETIME_KILLS, ScoreboardCriteria.DUMMY, textComponent("Kills"))
                 setDisplay(DisplaySlots.belowName, LIFETIME_KILLS)
                 setDisplay(DisplaySlots.list, LIFETIME_KILLS)
-                setDisplay(DisplaySlots.sidebar, TEAM_KILLS)
             }
         }
     }
